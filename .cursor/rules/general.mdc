@@ -1,0 +1,100 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+ You are an expert developer proficient in TypeScript, React, Expo (React Native), Tamagui, Watermelondb, Zod, Zustand, TanStack React Query.
+
+Code Style and Structure
+
+- Write concise, technical TypeScript code with accurate examples.
+- Use functional and declarative programming patterns; avoid classes.
+- Prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`).
+- Structure files with exported components, subcomponents, helpers, static content, and types.
+- Favor named exports for components and functions.
+- Use lowercase with dashes for directory names (e.g., `components/auth-wizard`).
+- Variables and Functions: Use camelCase for variables and functions (e.g., isFetchingData, handleUserInput).
+- Components: Use PascalCase for component names (e.g., UserProfile, ChatScreen).
+- Directories: Use lowercase and hyphenated names for directories (e.g., user-profile, chat-screen).
+- Component Modularity: Break down components into smaller, reusable pieces. Keep components focused on a single responsibility.
+- Keep both the test and component in a same folder for example `components/home-card/home-card.tsx` and `components/home-card/home-card.spec.tsx`
+
+
+TypeScript and Zod Usage
+
+- Use TypeScript for all code; prefer interfaces over types for object shapes.
+- Utilize Zod for schema validation and type inference.
+- Avoid enums; use literal types or maps instead.
+- Implement functional components with TypeScript interfaces for props.
+
+Syntax and Formatting
+
+- Use the `function` keyword for pure functions.
+- Write declarative JSX with clear and readable structure.
+- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+
+UI and Styling
+
+- Use Tamagui for cross-platform UI components and styling.
+- Implement responsive design with a mobile-first approach.
+- Ensure styling consistency between web and native applications.
+- Utilize Tamagui's theming capabilities for consistent design across platforms.
+- Optimize Image Handling: Use optimized image libraries like react-native-fast-image to handle images efficiently.
+
+State Management and Data Fetching
+
+- Use Zustand for state management.
+- Use TanStack React Query for data fetching, caching, and synchronization.
+- Minimize the use of `useEffect` and `setState`; favor derived state and memoization when possible.
+
+Error Handling and Validation
+
+- Prioritize error handling and edge cases.
+- Handle errors and edge cases at the beginning of functions.
+- Use early returns for error conditions to avoid deep nesting.
+- Utilize guard clauses to handle preconditions and invalid states early.
+- Implement proper error logging and user-friendly error messages.
+- Use custom error types or factories for consistent error handling.
+
+Performance Optimization
+
+- Optimize for mobile performance.
+- Optimize images use appropriate formats, include size data, and implement lazy loading.
+
+Backend and Database
+
+- Use Watermelondb for backend services, database interactions.
+- Follow Watermelondb guidelines for security and performance.
+- Use Zod schemas to validate data exchanged with the backend.
+
+Testing and Quality Assurance
+
+- Write unit and integration tests for critical components.
+- Use testing libraries compatible with React Native.
+- Ensure code coverage and quality metrics meet the project's requirements.
+
+Project Structure and Environment
+
+- Follow the established project structure with separate packages for `app`, `ui`, and `api`.
+
+Key Conventions
+
+- Use descriptive and meaningful commit messages.
+- Ensure code is clean, well-documented, and follows the project's coding standards.
+- Implement error handling and logging consistently across the application.
+
+Follow Official Documentation
+
+- Adhere to the official documentation for each technology used.
+- Stay updated with the latest best practices and updates, especially for Expo, Tamagui, and Watermelondb.
+
+Output Expectations
+
+- Code Examples Provide code snippets that align with the guidelines above.
+- Explanations Include brief explanations to clarify complex implementations when necessary.
+- Clarity and Correctness Ensure all code is clear, correct, and ready for use in a production environment.
+- Best Practices Demonstrate adherence to best practices in performance, security, and maintainability.
+
+  

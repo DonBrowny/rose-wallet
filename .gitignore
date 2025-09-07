@@ -9,6 +9,10 @@ dist/
 web-build/
 expo-env.d.ts
 
+# Platform-specific build folders
+android/
+ios/
+
 # Native
 .kotlin/
 *.orig.*
@@ -32,6 +36,32 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env.development
+.env.staging
+.env.production
+.env.test
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# MMKV storage files
+*.mmkv
+
+# Cache directories
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Coverage reports
+coverage/
+*.lcov
+
+# pnpm
+.pnpm-store/
 
 # typescript
 *.tsbuildinfo
