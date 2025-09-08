@@ -14,10 +14,7 @@ export default function HomeScreen() {
     setProcessingResult(null)
 
     try {
-      const result = await SMSService.processSMSMessages({
-        daysBack: 15,
-        includeDuplicates: true,
-      })
+      const result = await SMSService.processSMSMessagesLastNDays(15)
 
       setProcessingResult(result)
       setTransactions(result.transactions)

@@ -10,8 +10,13 @@ web-build/
 expo-env.d.ts
 
 # Platform-specific build folders
-android/
-ios/
+android/build/
+android/app/build/
+android/.gradle/
+ios/build/
+ios/DerivedData/
+modules/*/android/build/
+modules/*/ios/build/
 
 # Native
 .kotlin/

@@ -14,7 +14,8 @@ export interface SMSProcessingResult {
 }
 
 export interface SMSProcessingOptions {
-  daysBack?: number
+  startTimestamp: number
+  endTimestamp: number
   includeDuplicates?: boolean
   patterns?: any[]
 }
@@ -23,8 +24,8 @@ export class SMSService {
   /**
    * Main method to process SMS messages and extract transactions
    */
-  static async processSMSMessages(options: SMSProcessingOptions = {}): Promise<SMSProcessingResult> {
-    const { daysBack = 15, includeDuplicates = true } = options
+  static async processSMSMessages(options: SMSProcessingOptions): Promise<SMSProcessingResult> {
+    const { startTimestamp, endTimestamp, includeDuplicates = true } = options
 
     try {
       // Step 1: Check and request SMS permission
@@ -44,9 +45,12 @@ export class SMSService {
 
       // Step 2: Read SMS messages
       const smsReadResult = await SMSReaderService.readSMS({
-        daysBack,
+        startTimestamp,
+        endTimestamp,
         includeRead: true,
       })
+
+      console.log('SMSService: SMS read result:', smsReadResult)
 
       if (!smsReadResult.success) {
         return {
@@ -94,8 +98,8 @@ export class SMSService {
   /**
    * Get mock SMS messages for testing (without permission check)
    */
-  static async getMockSMSMessages(daysBack: number = 15): Promise<SMSMessage[]> {
-    const smsReadResult = await SMSReaderService.readSMS({ daysBack })
+  static async getMockSMSMessages(startTimestamp: number, endTimestamp: number): Promise<SMSMessage[]> {
+    const smsReadResult = await SMSReaderService.readSMS({ startTimestamp, endTimestamp })
     return smsReadResult.messages
   }
 
@@ -195,5 +199,21 @@ export class SMSService {
         },
         {} as { [category: string]: number }
       )
+  }
+
+  /**
+   * Process SMS messages for the last N days using timestamps
+   */
+  static async processSMSMessagesLastNDays(
+    days: number,
+    options: Omit<SMSProcessingOptions, 'startTimestamp' | 'endTimestamp'> = {}
+  ): Promise<SMSProcessingResult> {
+    const timestampRange = SMSReaderService.createLastNDaysRange(days)
+
+    return await this.processSMSMessages({
+      ...options,
+      startTimestamp: timestampRange.startTimestamp,
+      endTimestamp: timestampRange.endTimestamp,
+    })
   }
 }

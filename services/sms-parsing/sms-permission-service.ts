@@ -1,3 +1,7 @@
+import {
+  checkSMSPermission as expoCheckPermission,
+  requestSMSPermission as expoRequestPermission,
+} from 'expo-sms-reader'
 import { Alert, Platform } from 'react-native'
 
 export interface PermissionResult {
@@ -9,7 +13,6 @@ export interface PermissionResult {
 export class SMSPermissionService {
   /**
    * Check if SMS permission is granted
-   * For prototype purposes, we'll simulate permission status
    */
   static async checkPermission(): Promise<PermissionResult> {
     if (Platform.OS !== 'android') {
@@ -20,18 +23,24 @@ export class SMSPermissionService {
       }
     }
 
-    // For prototype, we'll simulate that permission is available
-    // In a real app, you'd use react-native-permissions or expo-permissions
-    return {
-      granted: true,
-      canAskAgain: true,
-      message: 'SMS permission is available (prototype mode)',
+    try {
+      const result = await expoCheckPermission()
+      return {
+        granted: result.granted,
+        canAskAgain: result.canAskAgain,
+        message: result.message,
+      }
+    } catch (error) {
+      return {
+        granted: false,
+        canAskAgain: false,
+        message: `Error checking SMS permission: ${error}`,
+      }
     }
   }
 
   /**
    * Request SMS permission from user
-   * For prototype purposes, we'll simulate permission request
    */
   static async requestPermission(): Promise<PermissionResult> {
     if (Platform.OS !== 'android') {
@@ -42,11 +51,19 @@ export class SMSPermissionService {
       }
     }
 
-    // For prototype, we'll simulate permission granted
-    return {
-      granted: true,
-      canAskAgain: true,
-      message: 'SMS permission granted (prototype mode)',
+    try {
+      const result = await expoRequestPermission()
+      return {
+        granted: result.granted,
+        canAskAgain: result.canAskAgain,
+        message: result.message,
+      }
+    } catch (error) {
+      return {
+        granted: false,
+        canAskAgain: false,
+        message: `Error requesting SMS permission: ${error}`,
+      }
     }
   }
 
@@ -116,6 +133,24 @@ export class SMSPermissionService {
       }
     }
 
-    return await this.requestPermission()
+    // Request permission
+    const result = await this.requestPermission()
+
+    // After requesting, check again to see if permission was actually granted
+    if (!result.granted) {
+      // Wait a moment for the permission dialog to complete
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // Check permission status again
+      const recheckResult = await this.checkPermission()
+
+      if (recheckResult.granted) {
+        return recheckResult
+      }
+
+      this.showPermissionDeniedDialog()
+    }
+
+    return result
   }
 }

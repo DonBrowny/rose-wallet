@@ -1,0 +1,33 @@
+{
+  "name": "expo-sms-reader",
+  "version": "1.0.0",
+  "description": "Custom Expo module for reading SMS messages on Android",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "sms",
+    "android"
+  ],
+  "repository": "https://github.com/expo/expo",
+  "author": "Rose Wallet Team",
+  "license": "MIT",
+  "homepage": "https://docs.expo.dev/modules/",
+  "dependencies": {},
+  "devDependencies": {
+    "expo-module-scripts": "^3.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}
