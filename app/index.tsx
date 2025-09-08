@@ -79,8 +79,6 @@ export default function HomeScreen() {
     if (!processingResult) return null
 
     const stats = SMSService.getProcessingStats(processingResult)
-    const totalSpending = SMSService.getTotalSpending(transactions)
-    const spendingByCategory = SMSService.getSpendingByCategory(transactions)
 
     return (
       <View style={{ margin: 16, padding: 16, backgroundColor: '#e9ecef', borderRadius: 8 }}>
@@ -105,26 +103,6 @@ export default function HomeScreen() {
           <Text>Duplicates:</Text>
           <Text style={{ fontWeight: 'bold' }}>{processingResult.duplicatesFound}</Text>
         </View>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
-          <Text>Total Spending:</Text>
-          <Text style={{ fontWeight: 'bold', color: '#dc3545' }}>₹{totalSpending.toFixed(2)}</Text>
-        </View>
-
-        {Object.keys(spendingByCategory).length > 0 && (
-          <View>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>Spending by Category:</Text>
-            {Object.entries(spendingByCategory).map(([category, amount]) => (
-              <View
-                key={category}
-                style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}
-              >
-                <Text style={{ fontSize: 12 }}>{category}:</Text>
-                <Text style={{ fontSize: 12, fontWeight: 'bold' }}>₹{amount.toFixed(2)}</Text>
-              </View>
-            ))}
-          </View>
-        )}
       </View>
     )
   }

@@ -95,6 +95,9 @@ importers:
       react-native-webview:
         specifier: 13.13.5
         version: 13.13.5(react-native@0.79.5(@babel/core@7.28.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+      transaction-sms-parser:
+        specifier: ^3.3.0
+        version: 3.3.0
     devDependencies:
       '@babel/core':
         specifier: ^7.25.2
@@ -3740,6 +3743,9 @@ packages:
 
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+
+  transaction-sms-parser@3.3.0:
+    resolution: {integrity: sha512-OcqIyUTFI1wAgUNoEIwAhXaP47vwMnYCA6AoiRNiN3hiR7bfMegA1vWet3lLde8O6SOHzXd5y2kygZoh/OxDVw==}
 
   ts-api-utils@2.1.0:
     resolution: {integrity: sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==}
@@ -8500,6 +8506,8 @@ snapshots:
   toidentifier@1.0.1: {}
 
   tr46@0.0.3: {}
+
+  transaction-sms-parser@3.3.0: {}
 
   ts-api-utils@2.1.0(typescript@5.8.3):
     dependencies:

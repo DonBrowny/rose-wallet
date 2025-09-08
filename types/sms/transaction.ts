@@ -10,6 +10,7 @@ export interface ParsedTransaction {
   isDuplicate?: boolean
   category?: string
   balance?: number
+  referenceNo?: string
 }
 
 export interface SMSMessage {
@@ -18,27 +19,4 @@ export interface SMSMessage {
   address: string // sender number
   date: number // timestamp
   read: boolean
-}
-
-export interface BankPattern {
-  bankName: string
-  senderNumbers: string[]
-  patterns: {
-    name: string
-    regex: RegExp
-    fields: {
-      amount: string
-      merchant: string
-      date: string
-      account: string
-      balance?: string
-    }
-  }[]
-}
-
-export interface SMSParseResult {
-  success: boolean
-  transaction?: ParsedTransaction
-  error?: string
-  matchedPattern?: string
 }

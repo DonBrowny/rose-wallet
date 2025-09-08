@@ -1,8 +1,7 @@
-import { ALL_PATTERNS } from '@/constants/sms/bank-patterns'
-import { BankPattern, ParsedTransaction, SMSMessage, SMSParseResult } from '@/types/sms/transaction'
+import { ParsedTransaction, SMSMessage } from '@/types/sms/transaction'
+import { getTransactionInfo, type ITransactionInfo } from 'transaction-sms-parser'
 
 export interface ParseOptions {
-  patterns?: BankPattern[]
   includeDuplicates?: boolean
 }
 
@@ -16,10 +15,10 @@ export interface ParseResult {
 
 export class SMSParserService {
   /**
-   * Parse SMS messages into transaction objects
+   * Parse SMS messages into transaction objects using transaction-sms-parser library
    */
   static async parseSMSMessages(messages: SMSMessage[], options: ParseOptions = {}): Promise<ParseResult> {
-    const { patterns = ALL_PATTERNS, includeDuplicates = true } = options
+    const { includeDuplicates = true } = options
 
     const transactions: ParsedTransaction[] = []
     const errors: string[] = []
@@ -27,7 +26,7 @@ export class SMSParserService {
 
     for (const message of messages) {
       try {
-        const parseResult = this.parseSingleSMS(message, patterns)
+        const parseResult = this.parseSingleSMS(message)
 
         if (parseResult.success && parseResult.transaction) {
           // Check for duplicates
@@ -60,184 +59,84 @@ export class SMSParserService {
   }
 
   /**
-   * Parse a single SMS message
+   * Parse a single SMS message using transaction-sms-parser library
    */
-  private static parseSingleSMS(message: SMSMessage, patterns: BankPattern[]): SMSParseResult {
-    // Find matching bank pattern
-    const bankPattern = this.findMatchingBankPattern(message, patterns)
+  private static parseSingleSMS(message: SMSMessage): {
+    success: boolean
+    transaction?: ParsedTransaction
+    error?: string
+  } {
+    try {
+      // Use the transaction-sms-parser library to parse the SMS
+      const transactionInfo = getTransactionInfo(message.body)
+      console.log('----transactionInfo', transactionInfo)
 
-    if (!bankPattern) {
-      return {
-        success: false,
-        error: 'No matching bank pattern found',
-      }
-    }
-
-    // Try to match against bank's patterns
-    for (const pattern of bankPattern.patterns) {
-      const regex = new RegExp(pattern.regex, 'i')
-      const match = message.body.match(regex)
-
-      if (match) {
-        try {
-          const transaction = this.extractTransactionFromMatch(match, pattern, bankPattern.bankName, message)
-
-          return {
-            success: true,
-            transaction,
-            matchedPattern: pattern.name,
-          }
-        } catch (error) {
-          return {
-            success: false,
-            error: `Failed to extract transaction data: ${error}`,
-          }
+      // Check if we got valid transaction data
+      if (!transactionInfo.transaction.amount || !transactionInfo.account.type) {
+        return {
+          success: false,
+          error: 'No valid transaction data found in SMS',
         }
       }
-    }
 
-    return {
-      success: false,
-      error: 'No matching pattern found for this SMS format',
+      // Convert the library's result to our ParsedTransaction format
+      const transaction: ParsedTransaction = this.convertToParsedTransaction(transactionInfo, message)
+
+      return {
+        success: true,
+        transaction,
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: `Failed to parse SMS: ${error}`,
+      }
     }
   }
 
   /**
-   * Find matching bank pattern for SMS message
+   * Convert ITransactionInfo to ParsedTransaction
    */
-  private static findMatchingBankPattern(message: SMSMessage, patterns: BankPattern[]): BankPattern | null {
-    return (
-      patterns.find((pattern) =>
-        pattern.senderNumbers.some((sender) => message.address.toUpperCase().includes(sender.toUpperCase()))
-      ) || null
-    )
-  }
+  private static convertToParsedTransaction(transactionInfo: ITransactionInfo, message: SMSMessage): ParsedTransaction {
+    const amount = parseFloat(transactionInfo.transaction.amount || '0')
+    const transactionDate = new Date(message.date)
 
-  /**
-   * Extract transaction data from regex match
-   */
-  private static extractTransactionFromMatch(
-    match: RegExpMatchArray,
-    pattern: any,
-    bankName: string,
-    message: SMSMessage
-  ): ParsedTransaction {
-    const amount = this.extractAmount(match, pattern.fields.amount)
-    const merchant = this.extractMerchant(match, pattern.fields.merchant)
-    const transactionDate = this.extractDate(match, pattern.fields.date, message.date)
-    const accountNumber = this.extractAccount(match, pattern.fields.account)
-    const balance = pattern.fields.balance ? this.extractAmount(match, pattern.fields.balance) : undefined
+    // Extract bank name from account type or use a default
+    const bankName = this.extractBankNameFromAccount(transactionInfo.account)
+
+    // Get merchant name and reference number
+    const merchant = transactionInfo.transaction.merchant || 'Unknown'
+    const referenceNo = transactionInfo.transaction.referenceNo || undefined
 
     return {
       id: this.generateTransactionId(message, amount, transactionDate),
       amount,
       merchant: merchant.trim(),
-      transactionType: 'debit', // All our patterns are for outgoing transactions
+      transactionType: transactionInfo.transaction.type === 'debit' ? 'debit' : 'credit',
       bankName,
-      accountNumber,
+      accountNumber: transactionInfo.account.number || '',
       transactionDate,
       rawSms: message.body,
-      balance,
+      balance: transactionInfo.balance?.available ? parseFloat(transactionInfo.balance.available) : undefined,
       category: this.suggestCategory(merchant),
+      referenceNo,
     }
   }
 
   /**
-   * Extract amount from regex match
+   * Extract bank name from account information
    */
-  private static extractAmount(match: RegExpMatchArray, fieldPattern: string): number {
-    const amountStr = this.replacePlaceholders(match, fieldPattern)
-    const amount = parseFloat(amountStr.replace(/[^\d.-]/g, ''))
-    return isNaN(amount) ? 0 : amount
-  }
-
-  /**
-   * Extract merchant name from regex match
-   */
-  private static extractMerchant(match: RegExpMatchArray, fieldPattern: string): string {
-    return this.replacePlaceholders(match, fieldPattern)
-  }
-
-  /**
-   * Extract transaction date from regex match
-   */
-  private static extractDate(match: RegExpMatchArray, fieldPattern: string, smsDate: number): Date {
-    if (fieldPattern === 'current') {
-      return new Date(smsDate)
+  private static extractBankNameFromAccount(account: any): string {
+    // This is a simplified approach - in a real app, you might want to maintain
+    // a mapping of account numbers to bank names
+    if (account.type === 'CARD') {
+      return 'Credit Card'
+    } else if (account.type === 'WALLET') {
+      return 'Digital Wallet'
+    } else if (account.type === 'ACCOUNT') {
+      return 'Bank Account'
     }
-
-    const dateStr = this.replacePlaceholders(match, fieldPattern)
-    return this.parseDateString(dateStr, smsDate)
-  }
-
-  /**
-   * Extract account number from regex match
-   */
-  private static extractAccount(match: RegExpMatchArray, fieldPattern: string): string {
-    return this.replacePlaceholders(match, fieldPattern)
-  }
-
-  /**
-   * Replace regex placeholders with actual values
-   */
-  private static replacePlaceholders(match: RegExpMatchArray, pattern: string): string {
-    return pattern.replace(/\$(\d+)/g, (_, index) => {
-      const matchIndex = parseInt(index)
-      return match[matchIndex] || ''
-    })
-  }
-
-  /**
-   * Parse date string from SMS
-   */
-  private static parseDateString(dateStr: string, fallbackDate: number): Date {
-    try {
-      // Handle different date formats
-      if (dateStr.includes('-')) {
-        // Format: 15-Dec-24
-        const parts = dateStr.split('-')
-        if (parts.length === 3) {
-          const day = parseInt(parts[0])
-          const month = this.getMonthNumber(parts[1])
-          const year = 2000 + parseInt(parts[2])
-          return new Date(year, month, day)
-        }
-      } else if (dateStr.includes('/')) {
-        // Format: 12/12/24
-        const parts = dateStr.split('/')
-        if (parts.length === 3) {
-          const day = parseInt(parts[0])
-          const month = parseInt(parts[1]) - 1
-          const year = 2000 + parseInt(parts[2])
-          return new Date(year, month, day)
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to parse date:', dateStr, error)
-    }
-
-    return new Date(fallbackDate)
-  }
-
-  /**
-   * Get month number from month name
-   */
-  private static getMonthNumber(monthName: string): number {
-    const months: { [key: string]: number } = {
-      jan: 0,
-      feb: 1,
-      mar: 2,
-      apr: 3,
-      may: 4,
-      jun: 5,
-      jul: 6,
-      aug: 7,
-      sep: 8,
-      oct: 9,
-      nov: 10,
-      dec: 11,
-    }
-    return months[monthName.toLowerCase()] || 0
+    return 'Unknown Bank'
   }
 
   /**

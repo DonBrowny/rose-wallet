@@ -1,5 +1,5 @@
-import { ParsedTransaction, SMSMessage } from '@/types/sms/transaction'
-import { ParseResult, SMSParserService } from './sms-parser-service'
+import { ParsedTransaction } from '@/types/sms/transaction'
+import { SMSParserService } from './sms-parser-service'
 import { PermissionResult, SMSPermissionService } from './sms-permission-service'
 import { SMSReaderService } from './sms-reader-service'
 
@@ -50,8 +50,6 @@ export class SMSService {
         includeRead: true,
       })
 
-      console.log('SMSService: SMS read result:', smsReadResult)
-
       if (!smsReadResult.success) {
         return {
           success: false,
@@ -93,21 +91,6 @@ export class SMSService {
    */
   static async checkPermissionStatus(): Promise<PermissionResult> {
     return await SMSPermissionService.checkPermission()
-  }
-
-  /**
-   * Get mock SMS messages for testing (without permission check)
-   */
-  static async getMockSMSMessages(startTimestamp: number, endTimestamp: number): Promise<SMSMessage[]> {
-    const smsReadResult = await SMSReaderService.readSMS({ startTimestamp, endTimestamp })
-    return smsReadResult.messages
-  }
-
-  /**
-   * Parse mock SMS messages into transactions (without permission check)
-   */
-  static async parseMockSMSMessages(messages: SMSMessage[]): Promise<ParseResult> {
-    return await SMSParserService.parseSMSMessages(messages)
   }
 
   /**
@@ -153,52 +136,6 @@ export class SMSService {
       category: transaction.category || 'Other',
       isDuplicate: transaction.isDuplicate || false,
     }
-  }
-
-  /**
-   * Group transactions by date
-   */
-  static groupTransactionsByDate(transactions: ParsedTransaction[]): {
-    [date: string]: ParsedTransaction[]
-  } {
-    return transactions.reduce(
-      (groups, transaction) => {
-        const date = transaction.transactionDate.toDateString()
-        if (!groups[date]) {
-          groups[date] = []
-        }
-        groups[date].push(transaction)
-        return groups
-      },
-      {} as { [date: string]: ParsedTransaction[] }
-    )
-  }
-
-  /**
-   * Get total spending amount
-   */
-  static getTotalSpending(transactions: ParsedTransaction[]): number {
-    return transactions
-      .filter((t) => t.transactionType === 'debit')
-      .reduce((total, transaction) => total + transaction.amount, 0)
-  }
-
-  /**
-   * Get spending by category
-   */
-  static getSpendingByCategory(transactions: ParsedTransaction[]): {
-    [category: string]: number
-  } {
-    return transactions
-      .filter((t) => t.transactionType === 'debit')
-      .reduce(
-        (categories, transaction) => {
-          const category = transaction.category || 'Other'
-          categories[category] = (categories[category] || 0) + transaction.amount
-          return categories
-        },
-        {} as { [category: string]: number }
-      )
   }
 
   /**
