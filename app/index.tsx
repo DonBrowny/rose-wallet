@@ -145,7 +145,9 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         {processingResult && processingResult.errors.length > 0 && (
-          <View style={{ marginBottom: 16, padding: 12, backgroundColor: '#f8d7da', borderRadius: 8 }}>
+          <ScrollView
+            style={{ marginBottom: 16, padding: 12, backgroundColor: '#f8d7da', borderRadius: 8, maxHeight: 100 }}
+          >
             <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#721c24', marginBottom: 4 }}>Errors:</Text>
             {processingResult.errors.map((error, index) => (
               <Text
@@ -155,7 +157,7 @@ export default function HomeScreen() {
                 • {error}
               </Text>
             ))}
-          </View>
+          </ScrollView>
         )}
       </View>
 
