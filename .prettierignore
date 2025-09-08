@@ -1,0 +1,17 @@
+# Add files here to ignore them from prettier formatting
+
+/dist
+/coverage
+/android
+/ios
+/node_modules
+/assets
+.prettierignore
+.gitignore
+.cursor
+*.png
+*.svg
+pnpm-lock.yaml
+*.env
+*.env.*
+*.spec.tsx.snap

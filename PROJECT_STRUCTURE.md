@@ -1,9 +1,11 @@
 # Rose Expense Tracker - Project Structure
 
 ## Overview
+
 This document outlines the complete file and folder structure for the Rose Expense Tracker project, organized for scalability, maintainability, and team collaboration.
 
 ## Root Directory Structure
+
 ```
 rose-wallet/
 ├── 📁 app/                          # Expo Router app directory
@@ -28,6 +30,7 @@ rose-wallet/
 ## Naming Conventions
 
 ### Files and Folders
+
 - **Components**: kebab-case for files (e.g., `transaction-card.tsx`)
 - **Hooks**: kebab-case with `use` prefix (e.g., `use-transactions.ts`)
 - **Services**: kebab-case (e.g., `sms-parser.ts`)
@@ -37,11 +40,13 @@ rose-wallet/
 - **Tests**: Same as source file with `.spec.` (e.g., `transaction-card.spec.tsx`)
 
 ### Directories
+
 - **All Directories**: kebab-case (e.g., `transaction-card/`, `sms-parsing/`, `database-types/`)
 - **Component Directories**: Each component gets its own directory with co-located tests
 - **Service Directories**: Grouped by functionality (e.g., `sms-parsing/`, `analytics/`)
 
 ### Component Structure
+
 - **Component Files**: `component-name.tsx` (kebab-case)
 - **Test Files**: `component-name.spec.tsx` (co-located with component)
 - **Component Directories**: `component-name/` containing both files
@@ -50,6 +55,7 @@ rose-wallet/
 ## Import/Export Patterns
 
 ### Barrel Exports
+
 Each directory should have an `index.ts` file for clean imports:
 
 ```typescript
@@ -63,6 +69,7 @@ import { Button, Input, Card } from '@/components/base-ui'
 ```
 
 ### Component Imports
+
 Import components from their specific directories:
 
 ```typescript
@@ -74,6 +81,7 @@ import { TransactionCard } from '@/components/cards'
 ```
 
 ### Absolute Imports
+
 Use absolute imports with the `@/` alias:
 
 ```typescript
@@ -88,6 +96,7 @@ import { Button } from '@/components/base-ui'
 ```
 
 ### Hook Imports
+
 ```typescript
 // Data hooks
 import { useTransactions } from '@/hooks/data/use-transactions'
@@ -99,6 +108,7 @@ import { useModal } from '@/hooks/ui/use-modal'
 ```
 
 ### Service Imports
+
 ```typescript
 // SMS services
 import { SMSParser } from '@/services/sms-parsing/sms-parser'
@@ -109,6 +119,7 @@ import { TransactionRepository } from '@/database/repositories/transaction-repos
 ```
 
 ### Type Imports
+
 ```typescript
 // Database types
 import { Transaction } from '@/types/database/transaction'
@@ -121,6 +132,7 @@ import { ComponentProps } from '@/types/ui/components'
 ## Environment Configuration
 
 ### Environment Files
+
 ```
 .env.example                         # Template for environment variables
 .env.local                          # Local development variables
@@ -130,6 +142,7 @@ import { ComponentProps } from '@/types/ui/components'
 ```
 
 ### Environment Variables
+
 ```bash
 # Database
 DATABASE_NAME=rose_expense_tracker
@@ -150,6 +163,7 @@ ENABLE_PERFORMANCE_MONITORING=true
 ```
 
 This structure provides:
+
 - **Clear separation of concerns**
 - **Scalable architecture**
 - **Easy navigation and maintenance**
