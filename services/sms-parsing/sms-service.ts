@@ -17,7 +17,6 @@ export interface SMSProcessingOptions {
   startTimestamp: number
   endTimestamp: number
   includeDuplicates?: boolean
-  patterns?: any[]
 }
 
 export class SMSService {

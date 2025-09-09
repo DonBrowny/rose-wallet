@@ -69,7 +69,6 @@ export class SMSParserService {
     try {
       // Use the transaction-sms-parser library to parse the SMS
       const transactionInfo = getTransactionInfo(message.body)
-      console.log('----transactionInfo', transactionInfo)
 
       // Check if we got valid transaction data
       if (!transactionInfo.transaction.amount || !transactionInfo.account.type) {
@@ -120,6 +119,7 @@ export class SMSParserService {
       balance: transactionInfo.balance?.available ? parseFloat(transactionInfo.balance.available) : undefined,
       category: this.suggestCategory(merchant),
       referenceNo,
+      message,
     }
   }
 

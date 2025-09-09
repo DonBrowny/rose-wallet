@@ -3,6 +3,8 @@ import { ParsedTransaction } from '@/types/sms/transaction'
 import React, { useState } from 'react'
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
+const DAYS_TO_PROCESS = 90
+
 export default function HomeScreen() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [transactions, setTransactions] = useState<ParsedTransaction[]>([])
@@ -14,7 +16,7 @@ export default function HomeScreen() {
     setProcessingResult(null)
 
     try {
-      const result = await SMSService.processSMSMessagesLastNDays(15)
+      const result = await SMSService.processSMSMessagesLastNDays(DAYS_TO_PROCESS)
 
       setProcessingResult(result)
       setTransactions(result.transactions)
@@ -28,8 +30,6 @@ export default function HomeScreen() {
             `Success rate: ${stats.successRate}%\n` +
             `Duplicates: ${result.duplicatesFound}`
         )
-      } else {
-        Alert.alert('SMS Processing Failed', result.errors.join('\n'))
       }
     } catch (error) {
       Alert.alert('Error', `Failed to process SMS: ${error}`)
@@ -140,7 +140,9 @@ export default function HomeScreen() {
               <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>Processing SMS...</Text>
             </View>
           ) : (
-            <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>Process SMS Messages (Last 15 Days)</Text>
+            <Text
+              style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}
+            >{`Process SMS Messages (Last ${DAYS_TO_PROCESS} Days)`}</Text>
           )}
         </TouchableOpacity>
 

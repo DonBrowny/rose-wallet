@@ -11,6 +11,7 @@ export interface ParsedTransaction {
   category?: string
   balance?: number
   referenceNo?: string
+  message: SMSMessage
 }
 
 export interface SMSMessage {
