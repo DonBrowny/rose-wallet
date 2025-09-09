@@ -1,11 +1,13 @@
 import { SMSProcessingResult, SMSService } from '@/services/sms-parsing/sms-service'
 import { ParsedTransaction } from '@/types/sms/transaction'
+import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 const DAYS_TO_PROCESS = 90
 
 export default function HomeScreen() {
+  const router = useRouter()
   const [isProcessing, setIsProcessing] = useState(false)
   const [transactions, setTransactions] = useState<ParsedTransaction[]>([])
   const [processingResult, setProcessingResult] = useState<SMSProcessingResult | null>(null)
@@ -127,7 +129,7 @@ export default function HomeScreen() {
             padding: 16,
             borderRadius: 8,
             alignItems: 'center',
-            marginBottom: 20,
+            marginBottom: 12,
           }}
         >
           {isProcessing ? (
@@ -144,6 +146,32 @@ export default function HomeScreen() {
               style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}
             >{`Process SMS Messages (Last ${DAYS_TO_PROCESS} Days)`}</Text>
           )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push('/patterns' as any)}
+          style={{
+            backgroundColor: '#6f42c1',
+            padding: 16,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginBottom: 12,
+          }}
+        >
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>📊 View SMS Patterns</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push('/another-pattern' as any)}
+          style={{
+            backgroundColor: '#28a745',
+            padding: 16,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginBottom: 20,
+          }}
+        >
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>🔬 Alternative Patterns</Text>
         </TouchableOpacity>
 
         {processingResult && processingResult.errors.length > 0 && (
