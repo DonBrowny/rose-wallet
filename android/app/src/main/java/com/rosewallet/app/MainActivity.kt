@@ -1,4 +1,4 @@
-package com.anonymous.rosewallet
+package com.rosewallet.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

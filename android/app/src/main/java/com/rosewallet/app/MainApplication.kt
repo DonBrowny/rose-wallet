@@ -1,4 +1,4 @@
-package com.anonymous.rosewallet
+package com.rosewallet.app
 
 import android.app.Application
 import android.content.res.Configuration
