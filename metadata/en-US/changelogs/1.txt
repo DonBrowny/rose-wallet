@@ -1,0 +1,8 @@
+Initial release of Rose Wallet
+- Automatic SMS parsing from Indian banks
+- Real-time expense tracking and categorization
+- Budget management with visual indicators
+- Privacy-first local data storage
+- Support for UPI, IMPS, NEFT, RTGS transactions
+- Pattern recognition for transaction types
+- Offline functionality

@@ -1,0 +1,23 @@
+Categories:
+  - Finance
+  - Privacy
+License: MIT
+SourceCode: https://gitlab.com/DonBrowny/rose-wallet
+RepoType: git
+Repo: https://gitlab.com/DonBrowny/rose-wallet
+
+Builds:
+  - versionName: '1.0.0'
+    versionCode: 1
+    commit: v1.0.0
+    subdir: .
+    sudo:
+      - apt-get update
+      - apt-get install -y nodejs npm
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '1.0.0'
+CurrentVersionCode: 1

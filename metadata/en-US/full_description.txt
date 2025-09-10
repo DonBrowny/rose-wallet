@@ -1,0 +1,15 @@
+Rose Wallet is an automatic expense tracking app that reads SMS messages from Indian banks to track your spending without manual data entry.
+
+Key Features:
+• Automatic SMS parsing from major Indian banks
+• Real-time expense tracking and categorization
+• Budget management with visual progress indicators
+• Privacy-first: All data stored locally on your device
+• Offline functionality - no internet required
+• Support for UPI, IMPS, NEFT, RTGS transactions
+• Pattern recognition for distinct transaction types
+• Export transaction data and reports
+
+The app automatically detects and parses bank SMS messages to extract transaction details like amount, merchant name, date, and account information. It categorizes expenses and provides insights into your spending patterns.
+
+Perfect for users who want to track their expenses automatically without compromising their privacy or requiring manual data entry.
