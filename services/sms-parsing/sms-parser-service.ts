@@ -6,7 +6,6 @@ export interface ParseOptions {
 }
 
 export interface ParseResult {
-  success: boolean
   transactions: ParsedTransaction[]
   errors: string[]
   totalProcessed: number
@@ -50,7 +49,6 @@ export class SMSParserService {
     }
 
     return {
-      success: errors.length === 0,
       transactions,
       errors,
       totalProcessed: messages.length,
@@ -69,7 +67,6 @@ export class SMSParserService {
     try {
       // Use the transaction-sms-parser library to parse the SMS
       const transactionInfo = getTransactionInfo(message.body)
-      console.log('----transactionInfo', transactionInfo)
 
       // Check if we got valid transaction data
       if (!transactionInfo.transaction.amount || !transactionInfo.account.type) {
@@ -80,7 +77,7 @@ export class SMSParserService {
       }
 
       // Convert the library's result to our ParsedTransaction format
-      const transaction: ParsedTransaction = this.convertToParsedTransaction(transactionInfo, message)
+      const transaction = this.convertToParsedTransaction(transactionInfo, message)
 
       return {
         success: true,
@@ -120,6 +117,7 @@ export class SMSParserService {
       balance: transactionInfo.balance?.available ? parseFloat(transactionInfo.balance.available) : undefined,
       category: this.suggestCategory(merchant),
       referenceNo,
+      message,
     }
   }
 

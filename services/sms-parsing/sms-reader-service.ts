@@ -1,4 +1,4 @@
-import { isAvailable as expoIsAvailable, readSMS as expoReadSMS } from 'expo-sms-reader'
+import { readSMS as expoReadSMS, isAvailable, type SMSMessage } from 'expo-sms-reader'
 import { Platform } from 'react-native'
 
 export interface SMSReadOptions {
@@ -15,22 +15,13 @@ export interface SMSReadResult {
   totalCount: number
 }
 
-export interface SMSMessage {
-  id: string
-  body: string
-  address: string
-  date: number
-  read: boolean
-  type: number // 1 = Inbox, 2 = Sent
-}
-
 export class SMSReaderService {
   /**
    * Check if SMS reading is available on this platform
    */
-  static async isAvailable(): Promise<boolean> {
+  static async isReaderAvailable(): Promise<boolean> {
     if (Platform.OS !== 'android') return false
-    return await expoIsAvailable()
+    return await isAvailable()
   }
 
   /**
@@ -39,7 +30,7 @@ export class SMSReaderService {
   static async readSMS(options: SMSReadOptions): Promise<SMSReadResult> {
     const { startTimestamp, endTimestamp, senderNumbers = [] } = options
 
-    if (!(await this.isAvailable())) {
+    if (!(await this.isReaderAvailable())) {
       return {
         success: false,
         messages: [],
