@@ -1,5 +1,6 @@
-import { SMSProcessingResult, SMSService } from '@/services/sms-parsing/sms-service'
-import { ParsedTransaction } from '@/types/sms/transaction'
+import { type TransactionResult, SMSService } from '@/services/sms-parsing/sms-service'
+import { Transaction } from '@/types/sms/transaction'
+import { formatTransactionForDisplay } from '@/utils/formatter/format-transaction-display'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { ActivityIndicator, Alert, Clipboard, ScrollView, Text, TouchableOpacity, View } from 'react-native'
@@ -9,8 +10,8 @@ const DAYS_TO_PROCESS = 90
 export default function HomeScreen() {
   const router = useRouter()
   const [isProcessing, setIsProcessing] = useState(false)
-  const [transactions, setTransactions] = useState<ParsedTransaction[]>([])
-  const [processingResult, setProcessingResult] = useState<SMSProcessingResult | null>(null)
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [processingResult, setProcessingResult] = useState<TransactionResult | null>(null)
 
   const handleProcessSMS = async () => {
     setIsProcessing(true)
@@ -24,13 +25,10 @@ export default function HomeScreen() {
       setTransactions(result.transactions)
 
       if (result.success) {
-        const stats = SMSService.getProcessingStats(result)
         Alert.alert(
           'SMS Processing Complete',
           `Successfully processed ${result.totalSMSRead} SMS messages.\n` +
-            `Found ${result.transactions.length} transactions.\n` +
-            `Discovered ${result.totalPatterns} distinct patterns.\n` +
-            `Success rate: ${stats.successRate}%`
+            `Found ${result.transactions.length} transactions`
         )
       }
     } catch (error) {
@@ -44,20 +42,20 @@ export default function HomeScreen() {
     Clipboard.setString(sms)
   }
 
-  const renderTransaction = (transaction: ParsedTransaction, index: number) => {
-    const formatted = SMSService.formatTransactionForDisplay(transaction)
+  const renderTransaction = (transaction: Transaction, index: number) => {
+    const formatted = formatTransactionForDisplay(transaction)
 
     return (
       <View
         key={transaction.id}
         style={{
-          backgroundColor: transaction.isDuplicate ? '#fff3cd' : '#f8f9fa',
+          backgroundColor: '#f8f9fa',
           padding: 14,
           marginVertical: 6,
           marginHorizontal: 16,
           borderRadius: 10,
           borderLeftWidth: 4,
-          borderLeftColor: transaction.isDuplicate ? '#ffc107' : '#28a745',
+          borderLeftColor: '#28a745',
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.1,
@@ -97,10 +95,10 @@ export default function HomeScreen() {
               borderColor: '#dee2e6',
             }}
           >
-            {transaction.rawSms}
+            {transaction.message.body}
           </Text>
           <TouchableOpacity
-            onPress={() => copySMSToClipboard(transaction.rawSms)}
+            onPress={() => copySMSToClipboard(transaction.message.body)}
             style={{
               position: 'absolute',
               top: 4,
@@ -114,22 +112,12 @@ export default function HomeScreen() {
             <Text style={{ fontSize: 10, color: '#ffffff', fontWeight: '500' }}>Copy</Text>
           </TouchableOpacity>
         </View>
-
-        {transaction.isDuplicate && (
-          <View style={{ marginTop: 8, padding: 6, backgroundColor: '#fff3cd', borderRadius: 4 }}>
-            <Text style={{ fontSize: 12, color: '#856404', fontStyle: 'italic', textAlign: 'center' }}>
-              ⚠️ Duplicate transaction
-            </Text>
-          </View>
-        )}
       </View>
     )
   }
 
   const renderStats = () => {
     if (!processingResult) return null
-
-    const stats = SMSService.getProcessingStats(processingResult)
 
     return (
       <View style={{ margin: 16, padding: 12, backgroundColor: '#e9ecef', borderRadius: 8 }}>
@@ -143,14 +131,6 @@ export default function HomeScreen() {
           <View style={{ width: '48%', marginBottom: 4 }}>
             <Text style={{ fontSize: 12, color: '#666' }}>Transactions</Text>
             <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{processingResult.transactions.length}</Text>
-          </View>
-          <View style={{ width: '48%', marginBottom: 4 }}>
-            <Text style={{ fontSize: 12, color: '#666' }}>Patterns</Text>
-            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{processingResult.totalPatterns}</Text>
-          </View>
-          <View style={{ width: '48%', marginBottom: 4 }}>
-            <Text style={{ fontSize: 12, color: '#666' }}>Success Rate</Text>
-            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{stats.successRate}%</Text>
           </View>
         </View>
       </View>

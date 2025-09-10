@@ -1,5 +1,5 @@
 import { SMSService } from '@/services/sms-parsing/sms-service'
-import { DistinctPattern, ParsedTransaction } from '@/types/sms/transaction'
+import type { DistinctPattern, Transaction } from '@/types/sms/transaction'
 import React, { useState } from 'react'
 import { ActivityIndicator, Alert, Clipboard, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
@@ -40,8 +40,8 @@ export default function PatternsScreen() {
     Alert.alert('Copied', 'SMS copied to clipboard')
   }
 
-  const copyAllSMSToClipboard = (transactions: ParsedTransaction[]) => {
-    const allSMS = transactions.map((t) => t.rawSms).join('\n\n---\n\n')
+  const copyAllSMSToClipboard = (transactions: Transaction[]) => {
+    const allSMS = transactions.map((t) => t.message.body).join('\n\n---\n\n')
     Clipboard.setString(allSMS)
     Alert.alert('Copied', 'All SMS messages copied to clipboard')
   }
@@ -98,11 +98,11 @@ export default function PatternsScreen() {
                   style={styles.messageBody}
                   numberOfLines={3}
                 >
-                  {transaction.rawSms}
+                  {transaction.message.body}
                 </Text>
                 <TouchableOpacity
                   style={styles.copyButton}
-                  onPress={() => copySMSToClipboard(transaction.rawSms)}
+                  onPress={() => copySMSToClipboard(transaction.message.body)}
                 >
                   <Text style={styles.copyButtonText}>Copy</Text>
                 </TouchableOpacity>

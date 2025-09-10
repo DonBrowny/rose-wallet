@@ -1,20 +1,14 @@
 // Brain-2: Transaction Fields (rule-based)
-// Works with Brain-1 intents: 'not_txn' | 'expense' | 'income' | 'future_payments'
 
-export type Intent = 'not_txn' | 'expense' | 'income' | 'future_payments'
-
-export type Channel = 'upi' | 'imps' | 'neft' | 'rtgs' | 'pos' | 'atm' | 'netbanking' | 'unknown'
+import type { Channel, Intent } from '@/types/sms/transaction'
 
 export interface TxnFields {
   isTransaction: boolean
   intent: Intent
   amount?: { value: number; currency: string; confidence: number }
-  balance?: { value: number; currency: string; confidence: number }
   bank?: { name: string; confidence: number }
   channel?: { type: Channel; confidence: number }
   merchant?: string // best-effort
-  counterparty?: { name?: string; confidence: number } // only a name (if any)
-  referenceId?: string // single best ref (UTR/RRN/etc)
   datetimeText?: string
   confidence: number
 
@@ -141,17 +135,11 @@ export class SMSDataExtractorService {
       currency: bestAmt.currency,
       confidence: 0.85 - (bestScore < 0 ? 0.2 : 0),
     }
-    const balanceField = balances[0] && { value: balances[0].value, currency: balances[0].currency, confidence: 0.8 }
+    // const balanceField = balances[0] && { value: balances[0].value, currency: balances[0].currency, confidence: 0.8 }
 
     // channel confidence: boost if we saw VPA (UPI) or card/account last4 for POS/ATM hints
     let channelType: Channel = channelHit?.type ?? (hasVPA ? 'upi' : 'unknown')
     let channelConf = channelHit ? 0.8 : hasVPA ? 0.7 : hasLast4 ? 0.6 : 0.4
-
-    // counterparty (name only)
-    const counterparty = merchant ? { name: merchant, confidence: 0.6 } : undefined
-
-    // choose a single best reference ID if any
-    const referenceId = refs[0]
 
     // overall confidence
     let conf = amountField ? 0.9 : 0.7
@@ -163,12 +151,9 @@ export class SMSDataExtractorService {
       isTransaction: true,
       intent,
       amount: amountField,
-      balance: balanceField,
       bank: bank ? { name: bank.toUpperCase(), confidence: 0.7 } : undefined,
       channel: { type: channelType, confidence: channelConf },
       merchant: merchant || undefined,
-      counterparty,
-      referenceId,
       datetimeText: datetime,
       confidence: conf,
       raw: {
