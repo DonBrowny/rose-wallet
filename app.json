@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "rose-wallet",
+    "name": "Rose Wallet",
     "slug": "rose-wallet",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.rosewallet"
+      "bundleIdentifier": "com.rosewallet.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +18,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.rosewallet"
+      "package": "com.rosewallet.app"
     },
     "web": {
       "bundler": "metro",

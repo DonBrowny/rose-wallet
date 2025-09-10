@@ -27,6 +27,10 @@ modules/*/ios/build/
 *.key
 *.mobileprovision
 
+# Keystore files (sensitive - never commit)
+*.keystore
+my-upload-key.keystore
+
 # Metro
 .metro-health-check*
 
