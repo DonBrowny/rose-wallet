@@ -2,7 +2,7 @@ import { SMSProcessingResult, SMSService } from '@/services/sms-parsing/sms-serv
 import { ParsedTransaction } from '@/types/sms/transaction'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, Clipboard, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 const DAYS_TO_PROCESS = 90
 
@@ -28,9 +28,9 @@ export default function HomeScreen() {
         Alert.alert(
           'SMS Processing Complete',
           `Successfully processed ${result.totalSMSRead} SMS messages.\n` +
-            `Found ${result.totalTransactionsParsed} transactions.\n` +
-            `Success rate: ${stats.successRate}%\n` +
-            `Duplicates: ${result.duplicatesFound}`
+            `Found ${result.transactions.length} transactions.\n` +
+            `Discovered ${result.totalPatterns} distinct patterns.\n` +
+            `Success rate: ${stats.successRate}%`
         )
       }
     } catch (error) {
@@ -38,6 +38,10 @@ export default function HomeScreen() {
     } finally {
       setIsProcessing(false)
     }
+  }
+
+  const copySMSToClipboard = (sms: string) => {
+    Clipboard.setString(sms)
   }
 
   const renderTransaction = (transaction: ParsedTransaction, index: number) => {
@@ -48,30 +52,75 @@ export default function HomeScreen() {
         key={transaction.id}
         style={{
           backgroundColor: transaction.isDuplicate ? '#fff3cd' : '#f8f9fa',
-          padding: 12,
-          marginVertical: 4,
+          padding: 14,
+          marginVertical: 6,
           marginHorizontal: 16,
-          borderRadius: 8,
+          borderRadius: 10,
           borderLeftWidth: 4,
           borderLeftColor: transaction.isDuplicate ? '#ffc107' : '#28a745',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+          elevation: 2,
         }}
       >
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#333' }}>{formatted.amount}</Text>
-          <Text style={{ fontSize: 12, color: '#666' }}>{formatted.date}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333' }}>{formatted.amount}</Text>
+          <Text style={{ fontSize: 13, color: '#666', fontWeight: '500' }}>{formatted.date}</Text>
         </View>
 
-        <Text style={{ fontSize: 14, color: '#555', marginTop: 4 }}>{formatted.merchant}</Text>
+        <Text style={{ fontSize: 15, color: '#555', marginBottom: 8, fontWeight: '500' }}>{formatted.merchant}</Text>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
-          <Text style={{ fontSize: 12, color: '#666' }}>{formatted.bank}</Text>
-          <Text style={{ fontSize: 12, color: '#666' }}>{formatted.category}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 12, color: '#888', marginBottom: 2 }}>Bank</Text>
+            <Text style={{ fontSize: 13, color: '#666', fontWeight: '500' }}>{formatted.bank}</Text>
+          </View>
+          <View style={{ flex: 1, alignItems: 'flex-end' }}>
+            <Text style={{ fontSize: 12, color: '#888', marginBottom: 2 }}>Category</Text>
+            <Text style={{ fontSize: 13, color: '#666', fontWeight: '500' }}>{formatted.category}</Text>
+          </View>
+        </View>
+
+        <View style={{ position: 'relative', marginTop: 8 }}>
+          <Text
+            style={{
+              fontSize: 12,
+              color: '#495057',
+              lineHeight: 16,
+              fontFamily: 'monospace',
+              backgroundColor: '#ffffff',
+              padding: 8,
+              borderRadius: 4,
+              borderWidth: 1,
+              borderColor: '#dee2e6',
+            }}
+          >
+            {transaction.rawSms}
+          </Text>
+          <TouchableOpacity
+            onPress={() => copySMSToClipboard(transaction.rawSms)}
+            style={{
+              position: 'absolute',
+              top: 4,
+              right: 4,
+              backgroundColor: '#007bff',
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+              borderRadius: 4,
+            }}
+          >
+            <Text style={{ fontSize: 10, color: '#ffffff', fontWeight: '500' }}>Copy</Text>
+          </TouchableOpacity>
         </View>
 
         {transaction.isDuplicate && (
-          <Text style={{ fontSize: 12, color: '#856404', marginTop: 4, fontStyle: 'italic' }}>
-            ⚠️ Duplicate transaction
-          </Text>
+          <View style={{ marginTop: 8, padding: 6, backgroundColor: '#fff3cd', borderRadius: 4 }}>
+            <Text style={{ fontSize: 12, color: '#856404', fontStyle: 'italic', textAlign: 'center' }}>
+              ⚠️ Duplicate transaction
+            </Text>
+          </View>
         )}
       </View>
     )
@@ -83,27 +132,26 @@ export default function HomeScreen() {
     const stats = SMSService.getProcessingStats(processingResult)
 
     return (
-      <View style={{ margin: 16, padding: 16, backgroundColor: '#e9ecef', borderRadius: 8 }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 12 }}>Processing Statistics</Text>
+      <View style={{ margin: 16, padding: 12, backgroundColor: '#e9ecef', borderRadius: 8 }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>📊 Statistics</Text>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-          <Text>SMS Messages Read:</Text>
-          <Text style={{ fontWeight: 'bold' }}>{processingResult.totalSMSRead}</Text>
-        </View>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-          <Text>Transactions Found:</Text>
-          <Text style={{ fontWeight: 'bold' }}>{processingResult.totalTransactionsParsed}</Text>
-        </View>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-          <Text>Success Rate:</Text>
-          <Text style={{ fontWeight: 'bold' }}>{stats.successRate}%</Text>
-        </View>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-          <Text>Duplicates:</Text>
-          <Text style={{ fontWeight: 'bold' }}>{processingResult.duplicatesFound}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <View style={{ width: '48%', marginBottom: 4 }}>
+            <Text style={{ fontSize: 12, color: '#666' }}>SMS Read</Text>
+            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{processingResult.totalSMSRead}</Text>
+          </View>
+          <View style={{ width: '48%', marginBottom: 4 }}>
+            <Text style={{ fontSize: 12, color: '#666' }}>Transactions</Text>
+            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{processingResult.transactions.length}</Text>
+          </View>
+          <View style={{ width: '48%', marginBottom: 4 }}>
+            <Text style={{ fontSize: 12, color: '#666' }}>Patterns</Text>
+            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{processingResult.totalPatterns}</Text>
+          </View>
+          <View style={{ width: '48%', marginBottom: 4 }}>
+            <Text style={{ fontSize: 12, color: '#666' }}>Success Rate</Text>
+            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{stats.successRate}%</Text>
+          </View>
         </View>
       </View>
     )
@@ -161,19 +209,6 @@ export default function HomeScreen() {
           <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>📊 View SMS Patterns</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => router.push('/another-pattern' as any)}
-          style={{
-            backgroundColor: '#28a745',
-            padding: 16,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginBottom: 20,
-          }}
-        >
-          <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>🔬 Alternative Patterns</Text>
-        </TouchableOpacity>
-
         {processingResult && processingResult.errors.length > 0 && (
           <ScrollView
             style={{ marginBottom: 16, padding: 12, backgroundColor: '#f8d7da', borderRadius: 8, maxHeight: 100 }}
@@ -193,14 +228,28 @@ export default function HomeScreen() {
 
       {renderStats()}
 
-      <ScrollView style={{ flex: 1 }}>
+      <View style={{ flex: 1, marginTop: 8 }}>
         {transactions.length > 0 && (
-          <View style={{ marginBottom: 20 }}>
+          <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 18, fontWeight: 'bold', margin: 16, marginBottom: 8 }}>Recent Transactions</Text>
-            {transactions.map((transaction, index) => renderTransaction(transaction, index))}
+            <ScrollView
+              style={{ flex: 1 }}
+              showsVerticalScrollIndicator={true}
+              contentContainerStyle={{ paddingBottom: 20 }}
+            >
+              {transactions.map((transaction, index) => renderTransaction(transaction, index))}
+            </ScrollView>
           </View>
         )}
-      </ScrollView>
+
+        {transactions.length === 0 && !isProcessing && (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40 }}>
+            <Text style={{ fontSize: 16, color: '#666', textAlign: 'center' }}>
+              No transactions found. Tap &quot;Process SMS Messages&quot; to get started.
+            </Text>
+          </View>
+        )}
+      </View>
     </View>
   )
 }
