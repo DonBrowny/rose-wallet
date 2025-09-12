@@ -4,7 +4,7 @@ globs:
 alwaysApply: true
 ---
 
- You are an expert developer proficient in TypeScript, React, Expo (React Native), Tamagui, Watermelondb, Zod, Zustand, TanStack React Query.
+ You are an expert developer proficient in TypeScript, React, Expo (React Native), react-native-elements, Watermelondb, Zod, Zustand, TanStack React Query.
 
 Code Style and Structure
 
@@ -37,10 +37,10 @@ Syntax and Formatting
 
 UI and Styling
 
-- Use Tamagui for cross-platform UI components and styling.
+- Use react-native-elements for cross-platform UI components and styling.
 - Implement responsive design with a mobile-first approach.
 - Ensure styling consistency between web and native applications.
-- Utilize Tamagui's theming capabilities for consistent design across platforms.
+- Utilize react-native-elements's theming capabilities for consistent design across platforms.
 - Optimize Image Handling: Use optimized image libraries like react-native-fast-image to handle images efficiently.
 
 State Management and Data Fetching
@@ -88,7 +88,7 @@ Key Conventions
 Follow Official Documentation
 
 - Adhere to the official documentation for each technology used.
-- Stay updated with the latest best practices and updates, especially for Expo, Tamagui, and Watermelondb.
+- Stay updated with the latest best practices and updates, especially for Expo, react-native-elements, and Watermelondb.
 
 Output Expectations
 
