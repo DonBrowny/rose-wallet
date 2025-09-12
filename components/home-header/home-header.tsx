@@ -1,30 +1,54 @@
-import { Avatar, Text } from '@rneui/themed'
-import React from 'react'
-import { View } from 'react-native'
+import { Text } from '@/components/ui/text'
+import React, { useEffect, useRef } from 'react'
+import { Animated, View } from 'react-native'
 import { useStyles } from './home-header.style'
 
 export function HomeHeader() {
   const styles = useStyles()
+  const waveAnimation = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      Animated.sequence([
+        Animated.timing(waveAnimation, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(waveAnimation, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(waveAnimation, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(waveAnimation, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start()
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [waveAnimation])
+
+  const waveRotation = waveAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '20deg'],
+  })
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View testID='avatar'>
-          <Avatar
-            size={48}
-            rounded
-            source={{
-              uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face',
-            }}
-            containerStyle={styles.avatarContainer}
-            avatarStyle={styles.avatar}
-          />
+        <View style={styles.greetingRow}>
+          <Text variant='h5'>Hey,</Text>
+          <Animated.Text style={[styles.waveEmoji, { transform: [{ rotate: waveRotation }] }]}>👋</Animated.Text>
         </View>
-
-        <View style={styles.textContainer}>
-          <Text h4>Hey,</Text>
-          <Text>Welcome back!</Text>
-        </View>
+        <Text variant='pMd'>Welcome back!</Text>
       </View>
     </View>
   )

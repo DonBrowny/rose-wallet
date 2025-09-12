@@ -58,4 +58,50 @@ export const elevation = {
   },
 } as const
 
+export const font = {
+  regular: 'Manrope_400Regular',
+  semibold: 'Manrope_600SemiBold',
+  bold: 'Manrope_700Bold',
+  extrabold: 'Manrope_800ExtraBold',
+} as const
+
+export const typography = {
+  family: {
+    regular: font.regular, // 400
+    semibold: font.semibold, // 600
+    bold: font.bold, // 700
+    extrabold: font.extrabold, // 800
+  },
+  // sizes
+  size: {
+    h0: 72,
+    h1: 56,
+    h2: 40,
+    h3: 32,
+    h4: 24,
+    h5: 20,
+    pLg: 18,
+    pMd: 14,
+    pSm: 12,
+  },
+  // line heights (px)
+  line: {
+    h0: Math.round(72 * 1.05), // 76
+    h1: Math.round(56 * 1.12), // 63
+    h2: Math.round(40 * 1.12), // 45
+    h3: 42, // as specified
+    h4: Math.round(24 * 1.3), // 28
+    h5: 30, // as specified
+    pLg: 24,
+    pMd: 24,
+    pSm: 16,
+  },
+  // letter spacing (px)
+  track: {
+    tight: -1,
+    semiTight: -0.5,
+    normal: 0,
+  },
+}
+
 export type Palette = typeof palette

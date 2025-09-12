@@ -1,5 +1,5 @@
 import { createTheme } from '@rneui/themed'
-import { elevation, palette } from './colors'
+import { elevation, palette, typography } from './colors'
 
 declare module '@rneui/themed' {
   export interface Colors {
@@ -17,6 +17,7 @@ declare module '@rneui/themed' {
 
   export interface Theme {
     elevation: typeof elevation
+    typography: typeof typography
   }
 }
 
@@ -57,9 +58,19 @@ export const theme = createTheme({
   },
 
   elevation,
+  typography,
 
   components: {
-    Text: { style: { color: palette.ink[1] } },
+    Text: {
+      style: {
+        color: palette.ink[1],
+        fontFamily: typography.family.regular,
+        fontWeight: '400',
+        fontSize: typography.size.pMd,
+        lineHeight: typography.line.pMd,
+        letterSpacing: typography.track.normal,
+      },
+    },
 
     Button: {
       buttonStyle: { borderRadius: 16, paddingVertical: 12, paddingHorizontal: 16 },
@@ -67,12 +78,12 @@ export const theme = createTheme({
     },
 
     /* Inputs */
-    Input: {
-      inputStyle: { color: palette.ink[1], fontFamily: Font.regular, fontWeight: '400' },
-      labelStyle: { color: palette.ink[2], fontFamily: Font.semibold, fontWeight: '600' },
-      placeholderTextColor: palette.ink[2],
-      inputContainerStyle: { borderBottomColor: palette.ink[5] },
-    },
+    // Input: {
+    //   inputStyle: { color: palette.ink[1], fontFamily: Font.regular, fontWeight: '400' },
+    //   labelStyle: { color: palette.ink[2], fontFamily: Font.semibold, fontWeight: '600' },
+    //   placeholderTextColor: palette.ink[2],
+    //   inputContainerStyle: { borderBottomColor: palette.ink[5] },
+    // },
 
     /* Cards */
     Card: {
@@ -82,6 +93,7 @@ export const theme = createTheme({
         borderWidth: 1,
         borderColor: palette.ink[5],
         padding: 16,
+        ...elevation[2],
       },
     },
 
@@ -119,6 +131,43 @@ export const theme = createTheme({
     FAB: {
       color: palette.ink[7],
       buttonStyle: { backgroundColor: palette.utility.active },
+    },
+
+    Input: {
+      containerStyle: {
+        paddingHorizontal: 0, // align with card edges
+      },
+      inputContainerStyle: {
+        // "filled" field by default
+        backgroundColor: palette.ink[6], // #F4F7FA (muted surface)
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: palette.ink[5], // #E8EEF3 (input/border)
+        minHeight: 48,
+        paddingHorizontal: 12,
+      },
+      inputStyle: {
+        color: palette.ink[1], // #191D21
+        fontFamily: Font.regular,
+        fontWeight: '400',
+        fontSize: 16,
+      },
+      selectionColor: palette.utility.active, // cursor/selection
+      labelStyle: {
+        color: palette.ink[2], // #656F77
+        fontFamily: Font.semibold,
+        fontWeight: '600',
+        marginBottom: 6,
+      },
+      placeholderTextColor: palette.ink[2], // subtle placeholder
+      leftIcon: { color: palette.ink[3] }, // default icon tint
+      rightIcon: { color: palette.ink[3] },
+      errorStyle: {
+        color: palette.utility.danger, // #FF5A5A
+        marginTop: 6,
+        fontFamily: Font.regular,
+        fontWeight: '400',
+      },
     },
   },
 })
