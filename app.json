@@ -35,6 +35,16 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf",
+            "node_modules/@expo-google-fonts/lora/400Regular/Lora_400Regular.ttf",
+            "node_modules/@expo-google-fonts/fira-code/400Regular/FiraCode_400Regular.ttf"
+          ]
+        }
       ]
     ],
     "experiments": {
