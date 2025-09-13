@@ -1,3 +1,5 @@
+import { formatCurrency, formatPercentage } from './format-utils'
+
 /**
  * Calculates all budget-related data needed for the UI
  * @param budget - The monthly budget amount
@@ -35,23 +37,14 @@ export function calculateBudgetData(budget: number, spent: number): BudgetData {
   // Calculate daily spending allowance
   const dailyAllowance = remainingDays > 0 ? remainingBudget / remainingDays : 0
 
-  // Format currency values
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-    }).format(amount)
-  }
-
   // Format values based on extreme value detection
   const budgetFormatted = isExtremeValue ? '₹999Cr+' : formatCurrency(budget)
   const spentFormatted = isExtremeValue ? '₹999Cr+' : formatCurrency(spent)
   const remainingBudgetFormatted = isExtremeValue ? '₹0' : formatCurrency(Math.abs(remainingBudget))
   const dailyAllowanceFormatted = isExtremeValue ? '₹0' : formatCurrency(Math.max(0, dailyAllowance))
 
-  // Format percentage
-  const budgetUsedPercentage = isExtremeValue ? '999999%+' : `${budgetUsed.toFixed(1)}%`
+  // Format percentage with edge case handling
+  const budgetUsedPercentage = isExtremeValue ? '999K%+' : formatPercentage(budgetUsed)
 
   return {
     budgetUsed,

@@ -58,6 +58,11 @@ export const useStyles = makeStyles((theme) => ({
     color: theme.colors.grey3,
     fontFamily: 'Manrope_600SemiBold',
   },
+  budgetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   overBudgetText: {
     color: theme.colors.error,
   },

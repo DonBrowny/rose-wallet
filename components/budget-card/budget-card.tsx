@@ -60,7 +60,6 @@ export function BudgetCard() {
           >
             {budgetData.spentFormatted}
           </Text>
-          <Text style={styles.statSubtext}>{budgetData.budgetUsedPercentage} of budget</Text>
         </View>
 
         <View style={[styles.statCard, styles.budgetCard]}>
@@ -75,8 +74,10 @@ export function BudgetCard() {
             </View>
             <Text variant='pMd'>BUDGET</Text>
           </View>
-          <Text variant='pLgBold'>{budgetData.budgetFormatted}</Text>
-          <Text style={styles.statSubtext}>Monthly limit</Text>
+          <View style={styles.budgetRow}>
+            <Text variant='pLgBold'>{budgetData.budgetFormatted}</Text>
+            <Text style={styles.statSubtext}> / Month</Text>
+          </View>
         </View>
       </View>
 
