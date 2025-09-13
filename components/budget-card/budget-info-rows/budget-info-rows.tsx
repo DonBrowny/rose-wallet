@@ -43,7 +43,7 @@ export function BudgetInfoRows({
         <Text variant='pSm'>Monthly Expense</Text>
         <View style={styles.valueRow}>
           <Text
-            variant='h4'
+            variant='aLg'
             style={isOverBudget && styles.overBudgetText}
           >
             {spentFormatted}
@@ -63,7 +63,7 @@ export function BudgetInfoRows({
       >
         <Text variant='pSm'>Monthly Budget</Text>
         <View style={styles.valueRow}>
-          <Text variant='h4'>{budgetFormatted}</Text>
+          <Text variant='aLg'>{budgetFormatted}</Text>
           <Icon
             name='edit'
             type='material'

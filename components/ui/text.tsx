@@ -1,9 +1,24 @@
-// components/ThemedText.tsx
 import { useTheme } from '@rneui/themed'
 import React from 'react'
 import { Text as RNText, StyleProp, TextProps, TextStyle } from 'react-native'
 
-type Variant = 'h0' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'pLg' | 'pLgBold' | 'pMd' | 'pMdBold' | 'pSm' | 'pSmBold'
+type Variant =
+  | 'h0'
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'pLg'
+  | 'pLgBold'
+  | 'pMd'
+  | 'pMdBold'
+  | 'pSm'
+  | 'pSmBold'
+  | 'aMd'
+  | 'aMdBold'
+  | 'aLg'
+  | 'aLgBold'
 
 type Props = TextProps & {
   variant?: Variant
@@ -24,6 +39,11 @@ export function Text({ variant = 'pMd', color = 'default', style, children, ...r
 
   const t = theme.typography
   const c = theme.colors
+
+  const amountMdSize = (t as any)?.size?.amountMd ?? 16
+  const amountLgSize = (t as any)?.size?.amountLg ?? 24
+  const amountMdLine = (t as any)?.line?.amountMd ?? 20
+  const amountLgLine = (t as any)?.line?.amountLg ?? 28
 
   const map: Record<Variant, TextStyle> = {
     // Headings
@@ -113,6 +133,36 @@ export function Text({ variant = 'pMd', color = 'default', style, children, ...r
       fontWeight: '700',
       fontSize: t.size.pSm,
       lineHeight: t.line.pSm,
+      letterSpacing: t.track.normal,
+    },
+
+    // Amounts (mono digits for perfect alignment on Android)
+    aMd: {
+      fontFamily: t.family.mono,
+      fontWeight: '500',
+      fontSize: amountMdSize,
+      lineHeight: amountMdLine,
+      letterSpacing: t.track.normal,
+    },
+    aMdBold: {
+      fontFamily: t.family.mono,
+      fontWeight: '700',
+      fontSize: amountMdSize,
+      lineHeight: amountMdLine,
+      letterSpacing: t.track.normal,
+    },
+    aLg: {
+      fontFamily: t.family.mono,
+      fontWeight: '500',
+      fontSize: amountLgSize,
+      lineHeight: amountLgLine,
+      letterSpacing: t.track.normal,
+    },
+    aLgBold: {
+      fontFamily: t.family.mono,
+      fontWeight: '700',
+      fontSize: amountLgSize,
+      lineHeight: amountLgLine,
       letterSpacing: t.track.normal,
     },
   }

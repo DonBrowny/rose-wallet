@@ -1,5 +1,5 @@
 import { createTheme } from '@rneui/themed'
-import { elevation, palette, typography } from './colors'
+import { elevation, palette, typography } from './theme'
 
 declare module '@rneui/themed' {
   export interface Colors {

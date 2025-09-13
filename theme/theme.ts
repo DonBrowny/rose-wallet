@@ -60,17 +60,21 @@ export const elevation = {
 
 export const font = {
   regular: 'Manrope_400Regular',
-  semibold: 'Manrope_600SemiBold',
+  semiBold: 'Manrope_600SemiBold',
   bold: 'Manrope_700Bold',
-  extrabold: 'Manrope_800ExtraBold',
+  extraBold: 'Manrope_800ExtraBold',
+  mono: 'IBMPlexMono_500Medium',
+  monoBold: 'IBMPlexMono_700Bold',
 } as const
 
 export const typography = {
   family: {
     regular: font.regular, // 400
-    semibold: font.semibold, // 600
+    semibold: font.semiBold, // 600
     bold: font.bold, // 700
-    extrabold: font.extrabold, // 800
+    extrabold: font.extraBold, // 800
+    mono: font.mono, // 500
+    monoBold: font.monoBold, // 700
   },
   // sizes
   size: {
