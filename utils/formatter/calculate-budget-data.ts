@@ -1,4 +1,4 @@
-import { formatCurrency } from './format-utils'
+import { formatLargeCurrency } from './format-large-currency'
 
 /**
  * Calculates all budget-related data needed for the UI
@@ -29,8 +29,8 @@ export function calculateBudgetData(budget: number, spent: number): BudgetData {
   const dailyAllowance = remainingDays > 0 ? remainingBudget / remainingDays : 0
 
   // Format values
-  const budgetFormatted = formatCurrency(budget)
-  const spentFormatted = formatCurrency(spent)
+  const budgetFormatted = formatLargeCurrency(budget)
+  const spentFormatted = formatLargeCurrency(spent)
 
   // Generate contextual daily allowance message
   let dailyAllowanceMessage = ''

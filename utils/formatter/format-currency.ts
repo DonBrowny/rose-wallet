@@ -3,10 +3,10 @@
  * @param amount - The amount to format
  * @returns Formatted currency string (e.g., "₹3,200")
  */
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number, roundToTwoDecimals = false): string {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    minimumFractionDigits: 0,
+    minimumFractionDigits: roundToTwoDecimals ? 2 : 0,
   }).format(amount)
 }

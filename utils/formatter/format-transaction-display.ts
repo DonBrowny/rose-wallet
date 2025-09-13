@@ -1,5 +1,5 @@
 import type { Transaction } from '@/types/sms/transaction'
-import { formatCurrency } from './format-utils'
+import { formatCurrency } from './format-large-currency'
 
 export function formatTransactionForDisplay(transaction: Transaction): {
   amount: string
