@@ -26,7 +26,7 @@ export function formatCurrency(amount: number): string {
  */
 export function formatPercentage(percentage: number): string {
   if (percentage >= 1000) {
-    return `${(percentage / 1000).toFixed(1)}K%`
+    return `${Math.round(percentage / 1000)}K%`
   } else if (percentage >= 100) {
     return `${percentage.toFixed(0)}%`
   } else {

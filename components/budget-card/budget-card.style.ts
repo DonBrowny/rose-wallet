@@ -2,100 +2,22 @@ import { makeStyles } from '@rneui/themed'
 
 export const useStyles = makeStyles((theme) => ({
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 8,
   },
-  editButton: {
-    backgroundColor: theme.colors.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  editButtonText: {
-    color: theme.colors.white,
-    fontSize: 12,
-    fontFamily: 'Manrope_600SemiBold',
-  },
-  // Stats Cards
-  statsContainer: {
+  contentContainer: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 8,
   },
-  statCard: {
+  gaugeChartContainer: {
     flex: 1,
-    backgroundColor: theme.colors.grey0,
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: theme.colors.grey1,
-  },
-  expenseCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: theme.colors.error,
-  },
-  budgetCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: theme.colors.success,
-  },
-  statHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    maxWidth: '50%',
   },
-  statIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
+  dailyAllowanceContainer: {
+    width: '100%',
     alignItems: 'center',
-    marginRight: 6,
   },
-  statSubtext: {
-    fontSize: 10,
-    color: theme.colors.grey3,
-    fontFamily: 'Manrope_600SemiBold',
-  },
-  budgetRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  overBudgetText: {
-    color: theme.colors.error,
-  },
-  underBudgetText: {
-    color: theme.colors.success,
-  },
-
-  // Progress Section
-  progressSection: {
-    marginBottom: 8,
-  },
-  progressHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  progressBar: {
-    height: 10,
-    backgroundColor: theme.colors.grey1,
-    borderRadius: 5,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 5,
-  },
-  progressPercentage: {
+  dailyAllowanceDays: {
     color: theme.colors.grey4,
-  },
-  dailyAllowanceLabel: {
-    color: theme.colors.grey4,
-    textAlign: 'center',
   },
 }))
