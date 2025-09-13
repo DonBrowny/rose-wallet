@@ -2,11 +2,11 @@ import { makeStyles } from '@rneui/themed'
 
 export const useStyles = makeStyles((theme) => ({
   gauge: {
-    width: 120,
-    height: 80,
-    position: 'relative',
+    width: 124,
+    height: 62,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 4,
   },
   svg: {
     position: 'absolute',
@@ -14,10 +14,7 @@ export const useStyles = makeStyles((theme) => ({
     left: 0,
   },
   valueDisplay: {
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
     zIndex: 10,
-    top: 30,
+    top: 26,
   },
 }))

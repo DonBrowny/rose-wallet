@@ -6,7 +6,8 @@ export const useStyles = makeStyles((theme) => ({
   },
   contentContainer: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    gap: 12,
   },
   gaugeChartContainer: {
     flex: 1,
@@ -14,6 +15,8 @@ export const useStyles = makeStyles((theme) => ({
     maxWidth: '50%',
   },
   dailyAllowanceContainer: {
+    marginTop: 8,
+    paddingHorizontal: 8,
     width: '100%',
     alignItems: 'center',
   },

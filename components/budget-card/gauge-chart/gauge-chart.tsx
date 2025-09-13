@@ -38,7 +38,7 @@ export function GaugeChart({ minValue, maxValue, currentValue }: GaugeChartProps
 
   const getProgressColor = () => {
     if (targetPercentage >= 90) return theme.colors.error
-    if (targetPercentage >= 70) return theme.colors.accentPurple
+    if (targetPercentage >= 80) return theme.colors.warning
     return theme.colors.success
   }
 
@@ -56,12 +56,12 @@ export function GaugeChart({ minValue, maxValue, currentValue }: GaugeChartProps
   return (
     <View style={styles.gauge}>
       <Svg
-        width={120}
-        height={80}
+        width={124}
+        height={66}
         style={styles.svg}
       >
         <Path
-          d={`M 10 60 A 50 50 0 0 1 110 60`}
+          d={`M 12 62 A 50 50 0 0 1 112 62`}
           stroke={theme.colors.grey1}
           strokeWidth={8}
           fill='transparent'
@@ -69,7 +69,7 @@ export function GaugeChart({ minValue, maxValue, currentValue }: GaugeChartProps
         />
 
         <AnimatedPath
-          d={`M 10 60 A 50 50 0 0 1 110 60`}
+          d={`M 12 62 A 50 50 0 0 1 112 62`}
           stroke={getProgressColor()}
           strokeWidth={8}
           fill='transparent'

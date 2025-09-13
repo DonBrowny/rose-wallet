@@ -6,7 +6,7 @@ export const useStyles = makeStyles((theme) => ({
     gap: 8,
   },
   infoRow: {
-    paddingVertical: 8,
+    paddingVertical: 4,
   },
   valueRow: {
     flexDirection: 'row',
