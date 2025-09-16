@@ -1,4 +1,5 @@
 import type { Transaction } from '@/types/sms/transaction'
+import { formatCurrency } from './format-large-currency'
 
 export function formatTransactionForDisplay(transaction: Transaction): {
   amount: string
@@ -12,7 +13,7 @@ export function formatTransactionForDisplay(transaction: Transaction): {
     transaction.transactionDate instanceof Date ? transaction.transactionDate : new Date(transaction.transactionDate)
 
   return {
-    amount: `₹${transaction.amount.toFixed(2)}`,
+    amount: formatCurrency(transaction.amount),
     merchant: transaction.merchant,
     date: transactionDate.toLocaleDateString('en-IN', {
       day: '2-digit',
