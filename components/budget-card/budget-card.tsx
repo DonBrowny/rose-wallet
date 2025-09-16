@@ -5,6 +5,7 @@ import React, { useMemo, useState } from 'react'
 import { View } from 'react-native'
 import { useStyles } from './budget-card.style'
 import { BudgetInfoRows } from './budget-info-rows/budget-info-rows'
+import { BudgetStatusIndicator } from './budget-status-indicator/budget-status-indicator'
 import { GaugeChart } from './gauge-chart/gauge-chart'
 
 export function BudgetCard() {
@@ -23,6 +24,10 @@ export function BudgetCard() {
     <Card>
       <View style={styles.header}>
         <Text variant='h4'>Budget Overview</Text>
+        <BudgetStatusIndicator
+          monthlyBudget={budget}
+          totalExpense={totalExpense}
+        />
       </View>
 
       <View style={styles.contentContainer}>

@@ -1,5 +1,6 @@
 import { Text } from '@/components/ui/text'
-import { Icon, useTheme } from '@rneui/themed'
+import { useTheme } from '@rneui/themed'
+import { ArrowRight, Edit3 } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { BudgetEditModal } from '../../budget-edit-modal/budget-edit-modal'
@@ -48,9 +49,7 @@ export function BudgetInfoRows({
           >
             {spentFormatted}
           </Text>
-          <Icon
-            name='arrow-forward'
-            type='ionicon'
+          <ArrowRight
             size={24}
             color={theme.colors.grey4}
           />
@@ -64,9 +63,7 @@ export function BudgetInfoRows({
         <Text variant='pSm'>Monthly Budget</Text>
         <View style={styles.valueRow}>
           <Text variant='aLg'>{budgetFormatted}</Text>
-          <Icon
-            name='edit'
-            type='material'
+          <Edit3
             size={20}
             color={theme.colors.grey4}
           />
