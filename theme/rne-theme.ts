@@ -33,7 +33,7 @@ export const theme = createTheme({
     primary: palette.utility.active,
     success: palette.utility.success,
     error: palette.utility.danger,
-    warning: palette.accent.yellow,
+    warning: palette.utility.warning,
 
     background: palette.ink[7],
     white: palette.ink[7],

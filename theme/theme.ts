@@ -12,6 +12,7 @@ export const palette = {
     active: '#6F6CD9', // brand/CTA (violet)
     success: '#23E9B4',
     info: '#91D7E0',
+    warning: '#FFAC4B',
     danger: '#FF5A5A',
   },
   accent: {
