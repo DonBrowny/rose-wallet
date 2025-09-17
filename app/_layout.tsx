@@ -40,6 +40,7 @@ export default function Root() {
           },
           tabBarButton: (props) => <TabBarButton {...props} />,
           tabBarShowLabel: false,
+          animation: 'shift',
         }}
       >
         <Tabs.Screen
@@ -68,6 +69,7 @@ export default function Root() {
             headerTitleAlign: 'center',
             headerLeft: () => <HeaderBackButton />,
             tabBarStyle: { display: 'none' },
+            animation: 'fade',
           }}
         />
         <Tabs.Screen
