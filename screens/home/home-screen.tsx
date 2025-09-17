@@ -3,7 +3,7 @@ import { HomeHeader } from '@/components/home-header/home-header'
 import { Text } from '@/components/ui/text'
 import { Button } from '@rneui/themed'
 import { View } from 'react-native'
-import { useStyles } from './home.styles'
+import { useStyles } from './home-screen.styles'
 
 export const HomeScreen = () => {
   const styles = useStyles()
