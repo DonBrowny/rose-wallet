@@ -1,5 +1,6 @@
 import { Text } from '@/components/ui/text'
 import { useTheme } from '@rneui/themed'
+import { useRouter } from 'expo-router'
 import { ArrowRight, Edit3 } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
@@ -23,10 +24,15 @@ export function BudgetInfoRows({
 }: BudgetInfoRowsProps) {
   const styles = useStyles()
   const { theme } = useTheme()
+  const router = useRouter()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const handleEditPress = () => {
     setIsModalVisible(true)
+  }
+
+  const handleExpensePress = () => {
+    router.push('/analytics')
   }
 
   const handleSaveBudget = (newBudget: number) => {
@@ -40,7 +46,10 @@ export function BudgetInfoRows({
 
   return (
     <View style={styles.rightSection}>
-      <TouchableOpacity style={styles.infoRow}>
+      <TouchableOpacity
+        style={styles.infoRow}
+        onPress={handleExpensePress}
+      >
         <Text variant='pSm'>Monthly Expense</Text>
         <View style={styles.valueRow}>
           <Text
