@@ -1,13 +1,5 @@
-import { Text, View } from 'react-native'
-import { useStyles } from './analytics.styles'
+import { AnalyticsScreen } from '@/screens/analytics-screen/analytics-screen'
 
-export default function AnalyticsScreen() {
-  const styles = useStyles()
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Analytics</Text>
-      <Text style={styles.subtitle}>Your spending insights and trends</Text>
-    </View>
-  )
+export default function Analytics() {
+  return <AnalyticsScreen />
 }
