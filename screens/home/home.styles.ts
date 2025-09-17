@@ -8,5 +8,6 @@ export const useStyles = makeStyles((theme) => ({
   scrollContainer: {
     flex: 1,
     paddingTop: 100, // Add padding to account for the fixed header
+    paddingBottom: 100, // Add padding to account for the floating tab bar
   },
 }))
