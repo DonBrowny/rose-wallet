@@ -67,6 +67,7 @@ export default function Root() {
             headerTitle: 'Add Expenses',
             headerTitleAlign: 'center',
             headerLeft: () => <HeaderBackButton />,
+            tabBarStyle: { display: 'none' },
           }}
         />
         <Tabs.Screen
@@ -82,6 +83,7 @@ export default function Root() {
             headerTitle: 'Analytics',
             headerTitleAlign: 'center',
             headerLeft: () => <HeaderBackButton />,
+            tabBarStyle: { display: 'none' },
           }}
         />
       </Tabs>
