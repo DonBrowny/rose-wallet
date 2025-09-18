@@ -3,10 +3,15 @@ import { makeStyles } from '@rneui/themed'
 export const useStyles = makeStyles((theme) => ({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
     paddingHorizontal: 12,
+    marginVertical: 20,
   },
-  underConstructionContainer: {
+  sectionTitle: {
+    marginBottom: 20,
+    color: theme.colors.black,
+    fontWeight: '600',
+  },
+  emptyStateContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -14,41 +19,51 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: 12,
     marginBottom: 100,
   },
-  constructionImage: {
+  emptyImage: {
     width: 250,
     height: 250,
   },
-  constructionTitle: {
+  emptyTitle: {
     marginBottom: 8,
     color: theme.colors.black,
     textAlign: 'center',
   },
-  constructionDescription: {
+  emptyDescription: {
     color: theme.colors.grey3,
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 16,
   },
-  comingSoonButton: {
-    backgroundColor: theme.colors.grey4,
+  addButton: {
+    backgroundColor: theme.colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 25,
-    shadowColor: theme.colors.grey3,
+    shadowColor: theme.colors.primary,
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 3,
   },
-  comingSoonButtonText: {
-    color: theme.colors.grey2,
+  addButtonText: {
+    color: theme.colors.white,
     fontWeight: '600',
     fontSize: 14,
   },
   iconContainer: {
     marginRight: 8,
+  },
+  placeholderContainer: {
+    padding: 20,
+    backgroundColor: theme.colors.grey5,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  placeholderText: {
+    color: theme.colors.grey3,
+    fontStyle: 'italic',
   },
 }))

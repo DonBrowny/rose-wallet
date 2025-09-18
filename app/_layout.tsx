@@ -81,11 +81,7 @@ export default function Root() {
                 color={color}
               />
             ),
-            headerShown: true,
-            headerTitle: 'Analytics',
-            headerTitleAlign: 'center',
-            headerLeft: () => <HeaderBackButton />,
-            tabBarStyle: { display: 'none' },
+            headerShown: false,
           }}
         />
       </Tabs>
