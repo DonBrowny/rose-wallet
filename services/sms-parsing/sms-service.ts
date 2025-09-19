@@ -1,5 +1,4 @@
 import type { Transaction, TransactionPattern } from '@/types/sms/transaction'
-import { parseDate } from '@/utils/formatter/parse-date'
 import { findDistinctPatterns } from '@/utils/pattern/find-distinct-pattern'
 import { SMSDataExtractorService } from './sms-data-extractor-service'
 import { SMSIntentService } from './sms-intent-service'
@@ -63,6 +62,8 @@ export class SMSService {
 
       await SMSIntent.init()
 
+      const dataExtractor = SMSDataExtractorService.getInstance()
+
       for (const sms of smsReadResult.messages || []) {
         try {
           const intentResult = await SMSIntent.classify(sms.body)
@@ -71,20 +72,21 @@ export class SMSService {
             continue
           }
 
-          const extractedData = SMSDataExtractorService.getInstance().extract(sms.body, intentResult.label)
+          const extractedData = dataExtractor.extract(sms.body, intentResult.label)
 
-          const transaction = {
-            id: sms.id,
-            amount: extractedData.amount?.value || 0,
-            merchant: extractedData.merchant || 'Unknown',
-            transactionType: mapIntentToTransactionType(intentResult.label),
-            bankName: extractedData.bank?.name || 'Unknown',
-            transactionDate: parseDate(extractedData.datetimeText) || new Date(sms.date),
-            category: extractedData.channel?.type || 'unknown',
-            message: sms,
+          // Only process if we have a valid amount
+          if (extractedData.amount && extractedData.amount.value > 0) {
+            const transaction: Transaction = {
+              id: sms.id,
+              amount: extractedData.amount.value,
+              merchant: extractedData.merchant || 'Unknown',
+              bankName: extractedData.bank?.name || 'Unknown',
+              transactionDate: new Date(sms.date), // Use SMS timestamp
+              message: sms,
+            }
+
+            transactions.push(transaction)
           }
-
-          transactions.push(transaction)
         } catch (error) {
           errors.push(`Error processing SMS ${sms.id}: ${error instanceof Error ? error.message : 'Unknown error'}`)
         }
@@ -170,18 +172,6 @@ export class SMSService {
 }
 
 // Helper functions
-function mapIntentToTransactionType(intent: string): 'debit' | 'credit' {
-  switch (intent) {
-    case 'expense':
-      return 'debit'
-    case 'income':
-      return 'credit'
-    case 'future_payments':
-      return 'debit' // Future payments are typically debits
-    default:
-      return 'debit'
-  }
-}
 
 function removeDuplicates(transactions: Transaction[]): Transaction[] {
   const seen = new Set<string>()

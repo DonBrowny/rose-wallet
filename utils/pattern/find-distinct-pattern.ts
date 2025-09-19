@@ -2,7 +2,6 @@ import type { DistinctPattern, Transaction } from '@/types/sms/transaction'
 import stringSimilarity from 'string-similarity-js'
 import { calculatePatternConfidence } from './calculate-pattern-confidence'
 import { determinePatternType } from './determine-pattern-type'
-import { extractVariableFields } from './extract-variable-fields'
 import { normalizeSMSTemplate } from './normalize-sms-template'
 
 export function findDistinctPatterns(transactions: Transaction[]): DistinctPattern[] {
@@ -40,7 +39,6 @@ export function findDistinctPatterns(transactions: Transaction[]): DistinctPatte
         confidence: calculatePatternConfidence(similarTransactions),
         transactions: similarTransactions,
         sampleSMS: rawSms,
-        variableFields: extractVariableFields(rawSms),
       }
 
       patterns.push(pattern)
