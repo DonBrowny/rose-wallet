@@ -1,0 +1,44 @@
+import { makeStyles } from '@rneui/themed'
+
+export const useStyles = makeStyles((theme) => ({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: 12,
+  },
+  contentContainer: {
+    flex: 1,
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  title: {
+    marginBottom: 8,
+  },
+  description: {
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  section: {
+    backgroundColor: theme.colors.white,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontWeight: '600',
+    marginBottom: 8,
+    color: theme.colors.black,
+  },
+  sectionContent: {
+    lineHeight: 20,
+  },
+}))
