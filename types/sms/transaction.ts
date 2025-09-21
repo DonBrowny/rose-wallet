@@ -1,15 +1,11 @@
-export type Intent = 'not_txn' | 'expense' | 'income' | 'future_payments'
-
-export type Channel = 'upi' | 'imps' | 'neft' | 'rtgs' | 'pos' | 'atm' | 'netbanking' | 'unknown'
+export type Intent = 'not_txn' | 'expense' | 'income'
 
 export interface Transaction {
   id: string
   amount: number
   merchant: string
-  transactionType: 'debit' | 'credit'
   bankName: string
   transactionDate: Date
-  category?: string
   message: SMSMessage
 }
 
@@ -27,9 +23,8 @@ export interface DistinctPattern {
   sampleSMS: string // first occurrence of this pattern
   occurrences: number
   transactions: Transaction[]
-  patternType: string // UPI_DEBIT, UPI_CREDIT, CARD_TRANSACTION, etc.
+  patternType: 'DEBIT' | 'CREDIT'
   confidence: number // similarity confidence score
-  variableFields: string[] // detected variable fields like [AMOUNT], [DATE], etc.
 }
 
 export interface TransactionPattern {

@@ -1,14 +1,27 @@
-export function determinePatternType(sms: string): string {
+export function determinePatternType(sms: string): 'DEBIT' | 'CREDIT' {
   const upperSms = sms.toUpperCase()
 
-  if (upperSms.includes('UPI')) return 'UPI_TRANSACTION'
-  if (upperSms.includes('CARD')) return 'CARD_TRANSACTION'
-  if (upperSms.includes('ATM')) return 'ATM_TRANSACTION'
-  if (upperSms.includes('IMPS')) return 'IMPS_TRANSACTION'
-  if (upperSms.includes('NEFT')) return 'NEFT_TRANSACTION'
-  if (upperSms.includes('RTGS')) return 'RTGS_TRANSACTION'
-  if (upperSms.includes('EMI')) return 'EMI_TRANSACTION'
-  if (upperSms.includes('SIP')) return 'SIP_TRANSACTION'
+  // Check for debit keywords
+  if (
+    upperSms.includes('DEBITED') ||
+    upperSms.includes('SPENT') ||
+    upperSms.includes('PAID') ||
+    upperSms.includes('PURCHASE') ||
+    upperSms.includes('WITHDRAWAL')
+  ) {
+    return 'DEBIT'
+  }
 
-  return 'GENERAL_TRANSACTION'
+  // Check for credit keywords
+  if (
+    upperSms.includes('CREDITED') ||
+    upperSms.includes('RECEIVED') ||
+    upperSms.includes('DEPOSIT') ||
+    upperSms.includes('REFUND')
+  ) {
+    return 'CREDIT'
+  }
+
+  // Default to debit for most transaction SMS
+  return 'DEBIT'
 }
