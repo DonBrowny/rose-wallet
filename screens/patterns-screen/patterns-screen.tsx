@@ -1,59 +1,39 @@
 import { Loading } from '@/components/loading/loading'
 import { PatternCard } from '@/components/pattern-card/pattern-card'
+import { Text } from '@/components/ui/text'
+import { SMSService } from '@/services/sms-parsing/sms-service'
+import type { DistinctPattern, TransactionPattern } from '@/types/sms/transaction'
 import { useEffect, useState } from 'react'
 import { Alert, ScrollView, View } from 'react-native'
 import { useStyles } from './patterns-screen.styles'
 
-// Sample patterns data
-const samplePatterns = [
-  {
-    id: '1',
-    sampleSms: 'Rs.500 debited from A/c **1234 on 15-Jan-24. Avl Bal: Rs.25,000',
-    similarCount: 12,
-    status: 'approved' as const,
-  },
-  {
-    id: '2',
-    sampleSms: 'Rs.1,200 credited to A/c **5678 on 16-Jan-24. UPI Ref: 123456789',
-    similarCount: 8,
-    status: 'approved' as const,
-  },
-  {
-    id: '3',
-    sampleSms: 'Rs.250 paid to MERCHANT via UPI on 17-Jan-24. UPI Ref: 987654321',
-    similarCount: 3,
-    status: 'action_needed' as const,
-  },
-  {
-    id: '4',
-    sampleSms: 'Your HDFC Bank A/c **9999 has been debited with Rs.1,500 on 18-Jan-24',
-    similarCount: 15,
-    status: 'approved' as const,
-  },
-  {
-    id: '5',
-    sampleSms: 'Rs.750 transferred to SAVINGS A/c **1111 on 19-Jan-24',
-    similarCount: 1,
-    status: 'action_needed' as const,
-  },
-  {
-    id: '6',
-    sampleSms: 'Rs.2,000 credited to A/c **2222 on 20-Jan-24. Salary credit',
-    similarCount: 4,
-    status: 'approved' as const,
-  },
-]
-
 export const PatternsScreen = () => {
   const styles = useStyles()
   const [isLoading, setIsLoading] = useState(true)
+  const [patterns, setPatterns] = useState<DistinctPattern[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+    const loadPatterns = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
 
-    return () => clearTimeout(timer)
+        const result: TransactionPattern = await SMSService.getDistinctSMSMessagesLastNDays(30)
+
+        if (result.success) {
+          setPatterns(result.distinctPatterns)
+        } else {
+          setError(result.errors.join(', ') || 'Failed to load patterns')
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadPatterns()
   }, [])
 
   const handleReviewPattern = (patternId: string) => {
@@ -73,6 +53,20 @@ export const PatternsScreen = () => {
     )
   }
 
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text variant='h3'>Error Loading Patterns</Text>
+        <Text
+          variant='pSm'
+          color='muted'
+        >
+          {error}
+        </Text>
+      </View>
+    )
+  }
+
   return (
     <ScrollView
       style={styles.container}
@@ -81,12 +75,12 @@ export const PatternsScreen = () => {
       bounces={true}
       alwaysBounceVertical={false}
     >
-      {samplePatterns.map((pattern) => (
+      {patterns.map((pattern) => (
         <PatternCard
           key={pattern.id}
-          sampleSms={pattern.sampleSms}
-          similarCount={pattern.similarCount}
-          status={pattern.status}
+          sampleSms={pattern.sampleSMS}
+          similarCount={pattern.occurrences}
+          status={pattern.confidence > 0.8 ? 'approved' : 'action_needed'}
           onReview={() => handleReviewPattern(pattern.id)}
         />
       ))}
