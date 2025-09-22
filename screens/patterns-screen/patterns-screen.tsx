@@ -1,10 +1,32 @@
+import { Loading } from '@/components/loading/loading'
 import { Text } from '@/components/ui/text'
+import { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useStyles } from './patterns-screen.styles'
 
 export const PatternsScreen = () => {
   const styles = useStyles()
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading((current) => !current)
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Loading
+          title='Learning Patterns'
+          description='Rosie is analyzing your SMS messages to understand patterns...'
+        />
+      </View>
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
