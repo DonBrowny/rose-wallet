@@ -89,9 +89,9 @@ export const PatternsScreen = () => {
         {patterns.map((pattern) => (
           <PatternCard
             key={pattern.id}
-            sampleSms={pattern.sampleSMS}
+            template={pattern.template}
             similarCount={pattern.occurrences}
-            status={pattern.confidence > 0.8 ? 'approved' : 'action_needed'}
+            status={pattern.confidence === 1.0 ? 'approved' : 'action_needed'}
             onReview={() => handleReviewPattern(pattern.id)}
           />
         ))}

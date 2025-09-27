@@ -1,9 +1,10 @@
 import { Text } from '@/components/ui/text'
+import { PatternLearningService, type UserCorrection } from '@/services/sms-parsing/pattern-learning-service'
 import type { DistinctPattern } from '@/types/sms/transaction'
 import { Button, Input, useTheme } from '@rneui/themed'
-import { Edit3, X } from 'lucide-react-native'
+import { Edit3, TrendingUp, X } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
-import { Modal, Pressable, View } from 'react-native'
+import { Alert, Modal, Pressable, View } from 'react-native'
 import { useStyles } from './pattern-detail-overlay.styles'
 
 interface PatternDetailOverlayProps {
@@ -17,6 +18,8 @@ export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDet
   const { theme } = useTheme()
   const [editableAmount, setEditableAmount] = useState<string>('')
   const [editableMerchant, setEditableMerchant] = useState<string>('')
+  const [isLearning, setIsLearning] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
 
   // Initialize editable values when pattern changes
   useEffect(() => {
@@ -24,8 +27,73 @@ export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDet
       const firstTransaction = pattern.transactions[0]
       setEditableAmount(firstTransaction.amount.toString())
       setEditableMerchant(firstTransaction.merchant)
+      setHasChanges(false)
     }
   }, [pattern])
+
+  const handleSaveChanges = async () => {
+    if (!pattern) return
+
+    setIsLearning(true)
+
+    try {
+      const firstTransaction = pattern.transactions[0]
+      const correctedAmount = parseFloat(editableAmount)
+      const correctedMerchant = editableMerchant.trim()
+
+      // Check if there are actual changes
+      const hasAmountChange = correctedAmount !== firstTransaction.amount
+      const hasMerchantChange = correctedMerchant !== firstTransaction.merchant
+
+      if (hasAmountChange || hasMerchantChange) {
+        // Create user correction
+        const correction: UserCorrection = {
+          patternId: pattern.id,
+          originalTransaction: firstTransaction,
+          correctedAmount,
+          correctedMerchant,
+          timestamp: new Date(),
+        }
+
+        // Learn from the correction using pattern learning service
+        const result = await PatternLearningService.learnFromUserCorrection(correction, pattern)
+
+        if (result.success) {
+          // Show success message with learning results
+          Alert.alert(
+            'Pattern Updated! 🧠',
+            `Rosie has learned from your correction and updated ${result.transactionsUpdated} similar transactions. The pattern template has been improved and confidence is now ${(result.newConfidence * 100).toFixed(1)}%.`,
+            [{ text: 'Great!', style: 'default' }]
+          )
+        } else {
+          Alert.alert('Learning Failed', result.error || 'Failed to learn from your correction. Please try again.', [
+            { text: 'OK', style: 'default' },
+          ])
+        }
+      }
+
+      onClose()
+    } catch (error) {
+      console.error('Failed to save changes:', error)
+      Alert.alert('Save Failed', 'There was an error saving your changes. Please try again.', [
+        { text: 'OK', style: 'default' },
+      ])
+    } finally {
+      setIsLearning(false)
+    }
+  }
+
+  const handleInputChange = (field: 'amount' | 'merchant', value: string) => {
+    switch (field) {
+      case 'amount':
+        setEditableAmount(value)
+        break
+      case 'merchant':
+        setEditableMerchant(value)
+        break
+    }
+    setHasChanges(true)
+  }
 
   if (!pattern) return null
 
@@ -151,7 +219,7 @@ export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDet
               <Text style={styles.detailLabel}>Amount</Text>
               <Input
                 value={editableAmount}
-                onChangeText={setEditableAmount}
+                onChangeText={(value) => handleInputChange('amount', value)}
                 inputStyle={styles.inputField}
                 keyboardType='numeric'
                 rightIcon={
@@ -168,7 +236,7 @@ export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDet
               <Text style={styles.detailLabel}>Merchant</Text>
               <Input
                 value={editableMerchant}
-                onChangeText={setEditableMerchant}
+                onChangeText={(value) => handleInputChange('merchant', value)}
                 inputStyle={styles.inputField}
                 placeholder='Enter merchant name'
                 rightIcon={
@@ -184,14 +252,20 @@ export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDet
           {/* Footer Buttons */}
           <View style={styles.footer}>
             <Button
-              title='Save Changes'
+              title={isLearning ? 'Learning...' : 'Save Changes'}
               radius='xl'
-              // buttonStyle={styles.saveButton}
+              disabled={isLearning || !hasChanges}
+              buttonStyle={[styles.saveButton, !hasChanges && styles.disabledButton]}
               titleStyle={styles.buttonText}
-              onPress={() => {
-                console.log('Save changes:', { amount: editableAmount, merchant: editableMerchant })
-                onClose()
-              }}
+              onPress={handleSaveChanges}
+              icon={
+                isLearning ? (
+                  <TrendingUp
+                    size={16}
+                    color={theme.colors.white}
+                  />
+                ) : undefined
+              }
             />
             <Button
               title='Cancel'
@@ -199,6 +273,7 @@ export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDet
               buttonStyle={styles.cancelButton}
               titleStyle={styles.buttonText}
               onPress={onClose}
+              disabled={isLearning}
             />
           </View>
         </View>

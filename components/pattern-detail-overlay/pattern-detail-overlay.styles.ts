@@ -101,4 +101,13 @@ export const useStyles = makeStyles((theme) => ({
   buttonText: {
     fontFamily: theme.typography.family.regular,
   },
+  saveButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 24,
+    flex: 1,
+  },
+  disabledButton: {
+    backgroundColor: theme.colors.grey2,
+    opacity: 0.6,
+  },
 }))

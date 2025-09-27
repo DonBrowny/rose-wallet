@@ -20,11 +20,11 @@ export interface SMSMessage {
 export interface DistinctPattern {
   id: string
   template: string
-  sampleSMS: string // first occurrence of this pattern
+  groupingTemplate: string
   occurrences: number
   transactions: Transaction[]
   patternType: 'DEBIT' | 'CREDIT'
-  confidence: number // similarity confidence score
+  confidence: number
 }
 
 export interface TransactionPattern {

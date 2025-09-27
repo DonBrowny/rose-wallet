@@ -75,10 +75,6 @@ export default function HomeScreen() {
             <Text style={{ fontSize: 12, color: '#888', marginBottom: 2 }}>Bank</Text>
             <Text style={{ fontSize: 13, color: '#666', fontWeight: '500' }}>{formatted.bank}</Text>
           </View>
-          <View style={{ flex: 1, alignItems: 'flex-end' }}>
-            <Text style={{ fontSize: 12, color: '#888', marginBottom: 2 }}>Category</Text>
-            <Text style={{ fontSize: 13, color: '#666', fontWeight: '500' }}>{formatted.category}</Text>
-          </View>
         </View>
 
         <View style={{ position: 'relative', marginTop: 8 }}>

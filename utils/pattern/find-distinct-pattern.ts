@@ -1,7 +1,7 @@
 import type { DistinctPattern, Transaction } from '@/types/sms/transaction'
 import stringSimilarity from 'string-similarity-js'
-import { calculatePatternConfidence } from './calculate-pattern-confidence'
 import { determinePatternType } from './determine-pattern-type'
+import { generateExtractionTemplate } from './extraction-template-generator'
 import { normalizeSMSTemplate } from './normalize-sms-template'
 
 export function findDistinctPatterns(transactions: Transaction[]): DistinctPattern[] {
@@ -16,14 +16,16 @@ export function findDistinctPatterns(transactions: Transaction[]): DistinctPatte
 
     const rawSms = transaction.message.body
 
-    const template = normalizeSMSTemplate(rawSms)
+    // First, generate a simple grouping template for fast comparison
+    const groupingTemplate = normalizeSMSTemplate(transaction.message.body)
 
-    // Find all transactions with similar templates
+    // Find all transactions with similar grouping templates
     const similarTransactions = transactions.filter((t) => {
       if (processedTransactions.has(t.id)) {
         return false // Skip already processed transactions
       }
-      const similarity = stringSimilarity(template, normalizeSMSTemplate(t.message.body))
+      const otherGroupingTemplate = normalizeSMSTemplate(t.message.body)
+      const similarity = stringSimilarity(groupingTemplate, otherGroupingTemplate)
       return similarity >= 0.8 // 80% similarity threshold
     })
 
@@ -31,14 +33,17 @@ export function findDistinctPatterns(transactions: Transaction[]): DistinctPatte
       // Mark all similar transactions as processed
       similarTransactions.forEach((t) => processedTransactions.add(t.id))
 
+      // Generate extraction template using all similar transactions (alignment-based)
+      const template = generateExtractionTemplate(similarTransactions)
+
       const pattern = {
         id: `pattern_${patterns.length + 1}`,
-        template,
+        template, // Extraction template for data extraction
+        groupingTemplate, // Aggressive template for grouping
         patternType: determinePatternType(rawSms),
         occurrences: similarTransactions.length,
-        confidence: calculatePatternConfidence(similarTransactions),
+        confidence: 0.5, // New patterns start with 50% confidence
         transactions: similarTransactions,
-        sampleSMS: rawSms,
       }
 
       patterns.push(pattern)

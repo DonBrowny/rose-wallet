@@ -5,13 +5,13 @@ import { View } from 'react-native'
 import { useStyles } from './pattern-card.styles'
 
 interface PatternCardProps {
-  sampleSms: string
+  template: string
   similarCount: number
   status: 'approved' | 'action_needed'
   onReview: () => void
 }
 
-export const PatternCard = ({ sampleSms, similarCount, status, onReview }: PatternCardProps) => {
+export const PatternCard = ({ template, similarCount, status, onReview }: PatternCardProps) => {
   const styles = useStyles({ status })
 
   return (
@@ -34,7 +34,7 @@ export const PatternCard = ({ sampleSms, similarCount, status, onReview }: Patte
         <Text variant='pSm'>{similarCount} similar SMS</Text>
       </View>
 
-      <Text variant='pMd'>{sampleSms}</Text>
+      <Text variant='pMd'>{template}</Text>
 
       <View style={styles.footer}>
         <Button

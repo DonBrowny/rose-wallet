@@ -1,6 +1,6 @@
 import type { Transaction, TransactionPattern } from '@/types/sms/transaction'
 import { findDistinctPatterns } from '@/utils/pattern/find-distinct-pattern'
-import { SMSDataExtractorService } from './sms-data-extractor-service'
+import { SMSDataExtractor } from './sms-data-extractor-service'
 import { SMSIntentService } from './sms-intent-service'
 import { PermissionResult, SMSPermissionService } from './sms-permission-service'
 import { SMSReaderService } from './sms-reader-service'
@@ -62,7 +62,7 @@ export class SMSService {
 
       await SMSIntent.init()
 
-      const dataExtractor = SMSDataExtractorService.getInstance()
+      const dataExtractor = SMSDataExtractor
 
       for (const sms of smsReadResult.messages || []) {
         try {
