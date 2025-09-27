@@ -1,13 +1,12 @@
 // Brain-2: Transaction Fields (rule-based)
 
-import type { Channel, Intent } from '@/types/sms/transaction'
+import type { Intent } from '@/types/sms/transaction'
 
 export interface TxnFields {
   isTransaction: boolean
   intent: Intent
   amount?: { value: number; currency: string; confidence: number }
   bank?: { name: string; confidence: number }
-  channel?: { type: Channel; confidence: number }
   merchant?: string // best-effort
   datetimeText?: string
   confidence: number
@@ -17,7 +16,6 @@ export interface TxnFields {
     amounts: { text: string; value: number; start: number; end: number }[]
     balances: { text: string; value: number; start: number; end: number }[]
     refs: string[]
-    channelHints: string[]
   }
 }
 
@@ -43,15 +41,6 @@ export class SMSDataExtractorService {
     'bob',
     'boi',
     'au small finance',
-  ]
-  private CHANNELS: { rx: RegExp; type: Channel }[] = [
-    { rx: /\bupi\b/i, type: 'upi' },
-    { rx: /\bimps\b/i, type: 'imps' },
-    { rx: /\bneft\b/i, type: 'neft' },
-    { rx: /\brtgs\b/i, type: 'rtgs' },
-    { rx: /\bpos\b/i, type: 'pos' },
-    { rx: /\batm\b/i, type: 'atm' },
-    { rx: /\bnet\s?banking|internet\s?banking|ib\b/i, type: 'netbanking' },
   ]
 
   // core regex
@@ -87,34 +76,29 @@ export class SMSDataExtractorService {
         isTransaction: false,
         intent,
         confidence: 0.99,
-        raw: { amounts: [], balances: [], refs: [], channelHints: [] },
+        raw: { amounts: [], balances: [], refs: [] },
       }
     }
-    if (intent === 'future_payments') {
-      const dueAmt = this.findAmounts(raw)[0]
-      const dt = raw.match(this.RX_DATETIME)?.[0]
-      return {
-        isTransaction: false,
-        intent,
-        confidence: 0.9,
-        amount: dueAmt && { value: dueAmt.value, currency: dueAmt.currency, confidence: 0.6 },
-        datetimeText: dt || undefined,
-        raw: { amounts: dueAmt ? [dueAmt] : [], balances: [], refs: [], channelHints: [] },
-      }
-    }
+    // if (intent === 'future_payments') {
+    //   const dueAmt = this.findAmounts(raw)[0]
+    //   const dt = raw.match(this.RX_DATETIME)?.[0]
+    //   return {
+    //     isTransaction: false,
+    //     intent,
+    //     confidence: 0.9,
+    //     amount: dueAmt && { value: dueAmt.value, currency: dueAmt.currency, confidence: 0.6 },
+    //     datetimeText: dt || undefined,
+    //     raw: { amounts: dueAmt ? [dueAmt] : [], balances: [], refs: [], channelHints: [] },
+    //   }
+    // }
 
     // txn intents
     const amounts = this.findAmounts(raw)
     const balances = this.findBalances(raw)
     const refs = Array.from(raw.matchAll(this.RX_UTR_RRN), (m) => m[0]).filter((x) => x.length >= 12)
     const bank = this.BANK_WORDS.find((b) => lower.includes(b))
-    const channelHit = this.CHANNELS.find((h) => h.rx.test(raw))
     const datetime = raw.match(this.RX_DATETIME)?.[0] || undefined
     const merchant = this.neighborName(raw)
-
-    // internal signals (not returned): VPA/last4 can boost channel inference
-    const hasVPA = this.RX_VPA.test(raw)
-    const hasLast4 = !!raw.match(this.RX_LAST4)
 
     // pick transaction amount (verb proximity beats balance cues)
     let bestAmt = amounts[0]
@@ -137,10 +121,6 @@ export class SMSDataExtractorService {
     }
     // const balanceField = balances[0] && { value: balances[0].value, currency: balances[0].currency, confidence: 0.8 }
 
-    // channel confidence: boost if we saw VPA (UPI) or card/account last4 for POS/ATM hints
-    let channelType: Channel = channelHit?.type ?? (hasVPA ? 'upi' : 'unknown')
-    let channelConf = channelHit ? 0.8 : hasVPA ? 0.7 : hasLast4 ? 0.6 : 0.4
-
     // overall confidence
     let conf = amountField ? 0.9 : 0.7
     if (intent === 'income' && this.VERBS_DEBIT.test(raw)) conf -= 0.2
@@ -152,7 +132,6 @@ export class SMSDataExtractorService {
       intent,
       amount: amountField,
       bank: bank ? { name: bank.toUpperCase(), confidence: 0.7 } : undefined,
-      channel: { type: channelType, confidence: channelConf },
       merchant: merchant || undefined,
       datetimeText: datetime,
       confidence: conf,
@@ -160,7 +139,6 @@ export class SMSDataExtractorService {
         amounts,
         balances,
         refs,
-        channelHints: this.CHANNELS.filter((h) => h.rx.test(raw)).map((h) => h.type),
       },
     }
   }
