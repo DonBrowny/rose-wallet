@@ -1,82 +1,107 @@
+import { Loading } from '@/components/loading/loading'
+import { PatternCard } from '@/components/pattern-card/pattern-card'
+import { PatternDetailOverlay } from '@/components/pattern-detail-overlay/pattern-detail-overlay'
 import { Text } from '@/components/ui/text'
-import { View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SMSService } from '@/services/sms-parsing/sms-service'
+import type { DistinctPattern, TransactionPattern } from '@/types/sms/transaction'
+import { useEffect, useState } from 'react'
+import { ScrollView, View } from 'react-native'
 import { useStyles } from './patterns-screen.styles'
 
 export const PatternsScreen = () => {
   const styles = useStyles()
+  const [isLoading, setIsLoading] = useState(true)
+  const [patterns, setPatterns] = useState<DistinctPattern[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [selectedPattern, setSelectedPattern] = useState<DistinctPattern | null>(null)
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false)
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.contentContainer}>
-        <Text
-          variant='h3'
-          style={styles.title}
-        >
-          SMS Patterns
-        </Text>
+  useEffect(() => {
+    const loadPatterns = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
 
+        const result: TransactionPattern = await SMSService.getDistinctSMSMessagesLastNDays(30)
+
+        if (result.success) {
+          setPatterns(result.distinctPatterns)
+        } else {
+          setError(result.errors.join(', ') || 'Failed to load patterns')
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadPatterns()
+  }, [])
+
+  const handleReviewPattern = (patternId: string) => {
+    const pattern = patterns.find((p) => p.id === patternId)
+    if (pattern) {
+      setSelectedPattern(pattern)
+      setIsOverlayVisible(true)
+    }
+  }
+
+  const handleCloseOverlay = () => {
+    setIsOverlayVisible(false)
+    setSelectedPattern(null)
+  }
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Loading
+          title='Learning Patterns'
+          description='Rosie is analyzing your SMS messages to understand patterns...'
+        />
+      </View>
+    )
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text variant='h3'>Error Loading Patterns</Text>
         <Text
           variant='pSm'
           color='muted'
-          style={styles.description}
         >
-          Teach Rosie how to parse your SMS messages by adding patterns for different banks and transaction types.
+          {error}
         </Text>
-
-        <View style={styles.section}>
-          <Text
-            variant='pMd'
-            style={styles.sectionTitle}
-          >
-            How it works
-          </Text>
-          <Text
-            variant='pSm'
-            color='muted'
-            style={styles.sectionContent}
-          >
-            1. Add a sample SMS message{'\n'}
-            2. Rosie will learn the pattern{'\n'}
-            3. Future messages will be parsed automatically{'\n'}
-            4. You can edit or delete patterns anytime
-          </Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text
-            variant='pMd'
-            style={styles.sectionTitle}
-          >
-            Supported Banks
-          </Text>
-          <Text
-            variant='pSm'
-            color='muted'
-            style={styles.sectionContent}
-          >
-            • HDFC Bank{'\n'}• ICICI Bank{'\n'}• SBI{'\n'}• Axis Bank{'\n'}• And many more...
-          </Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text
-            variant='pMd'
-            style={styles.sectionTitle}
-          >
-            Pattern Examples
-          </Text>
-          <Text
-            variant='pSm'
-            color='muted'
-            style={styles.sectionContent}
-          >
-            Debit: "Rs.500 debited from A/c **1234 on 15-Jan-24"{'\n'}
-            Credit: "Rs.1000 credited to A/c **1234 on 15-Jan-24"{'\n'}
-            UPI: "Rs.250 paid to MERCHANT via UPI on 15-Jan-24"
-          </Text>
-        </View>
       </View>
-    </SafeAreaView>
+    )
+  }
+
+  return (
+    <>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.patternsListContent}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+        alwaysBounceVertical={false}
+      >
+        {patterns.map((pattern) => (
+          <PatternCard
+            key={pattern.id}
+            sampleSms={pattern.sampleSMS}
+            similarCount={pattern.occurrences}
+            status={pattern.confidence > 0.8 ? 'approved' : 'action_needed'}
+            onReview={() => handleReviewPattern(pattern.id)}
+          />
+        ))}
+      </ScrollView>
+
+      <PatternDetailOverlay
+        pattern={selectedPattern}
+        isVisible={isOverlayVisible}
+        onClose={handleCloseOverlay}
+      />
+    </>
   )
 }
