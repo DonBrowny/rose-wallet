@@ -1,10 +1,11 @@
 import { Loading } from '@/components/loading/loading'
 import { PatternCard } from '@/components/pattern-card/pattern-card'
+import { PatternDetailOverlay } from '@/components/pattern-detail-overlay/pattern-detail-overlay'
 import { Text } from '@/components/ui/text'
 import { SMSService } from '@/services/sms-parsing/sms-service'
 import type { DistinctPattern, TransactionPattern } from '@/types/sms/transaction'
 import { useEffect, useState } from 'react'
-import { Alert, ScrollView, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { useStyles } from './patterns-screen.styles'
 
 export const PatternsScreen = () => {
@@ -12,6 +13,8 @@ export const PatternsScreen = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [patterns, setPatterns] = useState<DistinctPattern[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [selectedPattern, setSelectedPattern] = useState<DistinctPattern | null>(null)
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false)
 
   useEffect(() => {
     const loadPatterns = async () => {
@@ -37,9 +40,16 @@ export const PatternsScreen = () => {
   }, [])
 
   const handleReviewPattern = (patternId: string) => {
-    Alert.alert('Review Pattern', `Reviewing pattern ${patternId}. This would open the pattern review screen.`, [
-      { text: 'OK' },
-    ])
+    const pattern = patterns.find((p) => p.id === patternId)
+    if (pattern) {
+      setSelectedPattern(pattern)
+      setIsOverlayVisible(true)
+    }
+  }
+
+  const handleCloseOverlay = () => {
+    setIsOverlayVisible(false)
+    setSelectedPattern(null)
   }
 
   if (isLoading) {
@@ -68,22 +78,30 @@ export const PatternsScreen = () => {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.patternsListContent}
-      showsVerticalScrollIndicator={false}
-      bounces={true}
-      alwaysBounceVertical={false}
-    >
-      {patterns.map((pattern) => (
-        <PatternCard
-          key={pattern.id}
-          sampleSms={pattern.sampleSMS}
-          similarCount={pattern.occurrences}
-          status={pattern.confidence > 0.8 ? 'approved' : 'action_needed'}
-          onReview={() => handleReviewPattern(pattern.id)}
-        />
-      ))}
-    </ScrollView>
+    <>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.patternsListContent}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+        alwaysBounceVertical={false}
+      >
+        {patterns.map((pattern) => (
+          <PatternCard
+            key={pattern.id}
+            sampleSms={pattern.sampleSMS}
+            similarCount={pattern.occurrences}
+            status={pattern.confidence > 0.8 ? 'approved' : 'action_needed'}
+            onReview={() => handleReviewPattern(pattern.id)}
+          />
+        ))}
+      </ScrollView>
+
+      <PatternDetailOverlay
+        pattern={selectedPattern}
+        isVisible={isOverlayVisible}
+        onClose={handleCloseOverlay}
+      />
+    </>
   )
 }
