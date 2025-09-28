@@ -2,11 +2,19 @@ import { HeaderBackButton } from '@/components/header-back-button/header-back-bu
 import { TabBarButton } from '@/components/tab-bar-button/tab-bar-button'
 import { useTabBarVisibility } from '@/hooks/use-tab-bar-visibility'
 import { theme } from '@/theme/rne-theme'
+import { DB_NAME } from '@/types/constants'
 import { ThemeProvider } from '@rneui/themed'
+import { drizzle } from 'drizzle-orm/expo-sqlite'
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import { Tabs } from 'expo-router'
+import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite'
 import { BarChart3, Home, Plus, Settings } from 'lucide-react-native'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { Animated } from 'react-native'
+import { Suspense, useCallback, useEffect, useMemo, useRef } from 'react'
+import { ActivityIndicator, Animated, Text, View } from 'react-native'
+import migrations from '../drizzle/migrations'
+
+const expoDb = openDatabaseSync(DB_NAME)
+const db = drizzle(expoDb)
 
 export default function Root() {
   const { shouldHideTabBar } = useTabBarVisibility()
@@ -81,62 +89,86 @@ export default function Root() {
     [fadeAnim, translateY]
   )
 
+  const { success, error } = useMigrations(db, migrations)
+  if (error) {
+    return (
+      <View>
+        <Text>Migration error: {error.message}</Text>
+      </View>
+    )
+  }
+  if (!success) {
+    return (
+      <View>
+        <Text>Migration is in progress...</Text>
+      </View>
+    )
+  }
+
   return (
     <ThemeProvider theme={theme}>
-      <Tabs screenOptions={screenOptions}>
-        <Tabs.Screen
-          name='index'
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Home
-                size={size}
-                color={color}
-              />
-            ),
-            headerShown: false,
-          }}
-        />
-        <Tabs.Screen
-          name='patterns'
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Plus
-                size={size}
-                color={color}
-              />
-            ),
-            headerShown: true,
-            headerTitle: 'Add Expenses',
-            headerTitleAlign: 'center',
-            headerLeft: () => <HeaderBackButton />,
-            animation: 'fade',
-          }}
-        />
-        <Tabs.Screen
-          name='analytics'
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <BarChart3
-                size={size}
-                color={color}
-              />
-            ),
-            headerShown: false,
-          }}
-        />
-        <Tabs.Screen
-          name='settings'
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Settings
-                size={size}
-                color={color}
-              />
-            ),
-            headerShown: false,
-          }}
-        />
-      </Tabs>
+      <Suspense fallback={<ActivityIndicator size='large' />}>
+        <SQLiteProvider
+          databaseName={DB_NAME}
+          options={{ enableChangeListener: true }}
+          useSuspense
+        >
+          <Tabs screenOptions={screenOptions}>
+            <Tabs.Screen
+              name='index'
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Home
+                    size={size}
+                    color={color}
+                  />
+                ),
+                headerShown: false,
+              }}
+            />
+            <Tabs.Screen
+              name='patterns'
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Plus
+                    size={size}
+                    color={color}
+                  />
+                ),
+                headerShown: true,
+                headerTitle: 'Add Expenses',
+                headerTitleAlign: 'center',
+                headerLeft: () => <HeaderBackButton />,
+                animation: 'fade',
+              }}
+            />
+            <Tabs.Screen
+              name='analytics'
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <BarChart3
+                    size={size}
+                    color={color}
+                  />
+                ),
+                headerShown: false,
+              }}
+            />
+            <Tabs.Screen
+              name='settings'
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Settings
+                    size={size}
+                    color={color}
+                  />
+                ),
+                headerShown: false,
+              }}
+            />
+          </Tabs>
+        </SQLiteProvider>
+      </Suspense>
     </ThemeProvider>
   )
 }
