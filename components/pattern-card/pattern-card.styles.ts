@@ -31,10 +31,12 @@ export const useStyles = makeStyles((theme, props: Pick<DistinctPattern, 'status
     color: theme.colors.black,
   },
   footer: {
-    alignItems: 'flex-end',
+    width: '100%',
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'flex-end',
   },
   reviewButton: {
-    backgroundColor: theme.colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },

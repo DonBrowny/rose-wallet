@@ -37,6 +37,16 @@ export const PatternCard = ({ template, similarCount, status, onReview }: Patter
 
       <View style={styles.footer}>
         <Button
+          title='Reject'
+          size='sm'
+          radius='xl'
+          color='error'
+          buttonStyle={styles.reviewButton}
+          titleStyle={styles.reviewButtonText}
+          //TODO: Wire-up the reject action
+          onPress={onReview}
+        />
+        <Button
           title='Review Pattern'
           size='sm'
           radius='xl'
