@@ -36,13 +36,13 @@ export function findDistinctPatterns(transactions: Transaction[]): DistinctPatte
       // Generate extraction template using all similar transactions (alignment-based)
       const template = generateExtractionTemplate(similarTransactions)
 
-      const pattern = {
+      const pattern: DistinctPattern = {
         id: `pattern_${patterns.length + 1}`,
         template, // Extraction template for data extraction
         groupingTemplate, // Aggressive template for grouping
         patternType: determinePatternType(rawSms),
         occurrences: similarTransactions.length,
-        confidence: 0.5, // New patterns start with 50% confidence
+        status: 'action_needed',
         transactions: similarTransactions,
       }
 

@@ -24,7 +24,7 @@ export interface DistinctPattern {
   occurrences: number
   transactions: Transaction[]
   patternType: 'DEBIT' | 'CREDIT'
-  confidence: number
+  status: 'approved' | 'action_needed' | 'rejected'
 }
 
 export interface TransactionPattern {

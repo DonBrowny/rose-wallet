@@ -196,9 +196,6 @@ export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDet
           {/* Extracted Data Section */}
           <View style={styles.sectionHeader}>
             <Text variant='pMdBold'>Extracted Data</Text>
-            <View style={styles.confidenceChip}>
-              <Text variant='pSm'>{(pattern.confidence * 100).toFixed(1)}% confidence</Text>
-            </View>
           </View>
 
           {/* Scrollable Content */}

@@ -1,13 +1,12 @@
 import { Text } from '@/components/ui/text'
+import { type DistinctPattern } from '@/types/sms/transaction'
 import { Button } from '@rneui/themed'
 import { AlertCircle, CheckCircle } from 'lucide-react-native'
 import { View } from 'react-native'
 import { useStyles } from './pattern-card.styles'
 
-interface PatternCardProps {
-  template: string
+interface PatternCardProps extends Pick<DistinctPattern, 'status' | 'template'> {
   similarCount: number
-  status: 'approved' | 'action_needed'
   onReview: () => void
 }
 

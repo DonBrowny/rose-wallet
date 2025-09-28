@@ -91,7 +91,7 @@ export const PatternsScreen = () => {
             key={pattern.id}
             template={pattern.template}
             similarCount={pattern.occurrences}
-            status={pattern.confidence === 1.0 ? 'approved' : 'action_needed'}
+            status={pattern.status}
             onReview={() => handleReviewPattern(pattern.id)}
           />
         ))}

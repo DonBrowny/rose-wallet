@@ -1,10 +1,7 @@
+import { type DistinctPattern } from '@/types/sms/transaction'
 import { makeStyles } from '@rneui/themed'
 
-type PatternCardProps = {
-  status: 'approved' | 'action_needed'
-}
-
-export const useStyles = makeStyles((theme, props: PatternCardProps) => ({
+export const useStyles = makeStyles((theme, props: Pick<DistinctPattern, 'status'>) => ({
   cardContainer: {
     display: 'flex',
     backgroundColor: theme.colors.grey1,

@@ -60,12 +60,6 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     paddingHorizontal: 16,
   },
-  confidenceChip: {
-    backgroundColor: theme.colors.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

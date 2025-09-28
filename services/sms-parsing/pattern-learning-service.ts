@@ -37,7 +37,7 @@ export class PatternLearningService {
 
       // Update pattern template and set confidence to 100% (approved)
       this.updatePatternTemplate(pattern, correction)
-      pattern.confidence = 1.0
+      pattern.status = 'approved'
 
       return {
         success: true,
