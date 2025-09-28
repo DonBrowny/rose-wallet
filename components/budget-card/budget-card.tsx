@@ -1,7 +1,8 @@
 import { Text } from '@/components/ui/text'
+import { useBudgetContext } from '@/contexts/budget-context'
 import { calculateBudgetData } from '@/utils/formatter/calculate-budget-data'
 import { Card } from '@rneui/themed'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { View } from 'react-native'
 import { useStyles } from './budget-card.style'
 import { BudgetInfoRows } from './budget-info-rows/budget-info-rows'
@@ -10,22 +11,18 @@ import { GaugeChart } from './gauge-chart/gauge-chart'
 
 export function BudgetCard() {
   const styles = useStyles()
-  const [budget, setBudget] = useState(65000)
-  const [totalExpense] = useState(55029.75)
+  const { monthlyBudget } = useBudgetContext()
+  const totalExpense = 32768
 
   const { dailyAllowanceMessage, remainingDays, dailyAllowance, spentFormatted, budgetFormatted, isOverBudget } =
-    useMemo(() => calculateBudgetData(budget, totalExpense), [budget, totalExpense])
-
-  const handleBudgetChange = (newBudget: number) => {
-    setBudget(newBudget)
-  }
+    useMemo(() => calculateBudgetData(monthlyBudget, totalExpense), [monthlyBudget, totalExpense])
 
   return (
     <Card>
       <View style={styles.header}>
         <Text variant='h4'>Budget Overview</Text>
         <BudgetStatusIndicator
-          monthlyBudget={budget}
+          monthlyBudget={monthlyBudget}
           totalExpense={totalExpense}
         />
       </View>
@@ -34,7 +31,7 @@ export function BudgetCard() {
         <View style={styles.gaugeChartContainer}>
           <GaugeChart
             minValue={0}
-            maxValue={budget}
+            maxValue={monthlyBudget}
             currentValue={totalExpense}
           />
           <View style={styles.dailyAllowanceContainer}>
@@ -54,8 +51,6 @@ export function BudgetCard() {
           spentFormatted={spentFormatted}
           budgetFormatted={budgetFormatted}
           isOverBudget={isOverBudget}
-          currentBudget={budget}
-          onBudgetChange={handleBudgetChange}
         />
       </View>
     </Card>

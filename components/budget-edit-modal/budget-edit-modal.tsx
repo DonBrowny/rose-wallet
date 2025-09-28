@@ -1,4 +1,5 @@
 import { Text } from '@/components/ui/text'
+import { useBudgetContext } from '@/contexts/budget-context'
 import { Button, Overlay, useTheme } from '@rneui/themed'
 import React, { useState } from 'react'
 import { View } from 'react-native'
@@ -7,26 +8,25 @@ import { useStyles } from './budget-edit-modal.style'
 
 interface BudgetEditModalProps {
   isVisible: boolean
-  currentBudget: number
-  onSave: (newBudget: number) => void
   onCancel: () => void
 }
 
-export function BudgetEditModal({ isVisible, currentBudget, onSave, onCancel }: BudgetEditModalProps) {
+export function BudgetEditModal({ isVisible, onCancel }: BudgetEditModalProps) {
   const styles = useStyles()
   const { theme } = useTheme()
-  const [editBudget, setEditBudget] = useState(currentBudget.toString())
+  const { monthlyBudget, budgetChangeHandler } = useBudgetContext()
+  const [editBudget, setEditBudget] = useState(monthlyBudget.toString())
 
   const handleSave = () => {
     const newBudget = parseFloat(editBudget)
     if (!isNaN(newBudget) && newBudget > 0) {
-      setEditBudget(newBudget.toString())
-      onSave(newBudget)
+      budgetChangeHandler(newBudget)
+      onCancel()
     }
   }
 
   const handleCancel = () => {
-    setEditBudget(currentBudget.toString())
+    setEditBudget(monthlyBudget.toString())
     onCancel()
   }
 

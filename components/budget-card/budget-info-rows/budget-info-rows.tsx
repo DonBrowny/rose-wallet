@@ -11,17 +11,9 @@ interface BudgetInfoRowsProps {
   spentFormatted: string
   budgetFormatted: string
   isOverBudget: boolean
-  currentBudget: number
-  onBudgetChange: (newBudget: number) => void
 }
 
-export function BudgetInfoRows({
-  spentFormatted,
-  budgetFormatted,
-  isOverBudget,
-  currentBudget,
-  onBudgetChange,
-}: BudgetInfoRowsProps) {
+export function BudgetInfoRows({ spentFormatted, budgetFormatted, isOverBudget }: BudgetInfoRowsProps) {
   const styles = useStyles()
   const { theme } = useTheme()
   const router = useRouter()
@@ -33,11 +25,6 @@ export function BudgetInfoRows({
 
   const handleExpensePress = () => {
     router.push('/analytics')
-  }
-
-  const handleSaveBudget = (newBudget: number) => {
-    onBudgetChange(newBudget)
-    setIsModalVisible(false)
   }
 
   const handleCancelEdit = () => {
@@ -81,8 +68,6 @@ export function BudgetInfoRows({
 
       <BudgetEditModal
         isVisible={isModalVisible}
-        currentBudget={currentBudget}
-        onSave={handleSaveBudget}
         onCancel={handleCancelEdit}
       />
     </View>
