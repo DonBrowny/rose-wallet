@@ -52,9 +52,7 @@ export const useStyles = makeStyles((theme) => ({
     color: theme.colors.white,
     fontWeight: '600',
     fontSize: 14,
-  },
-  iconContainer: {
-    marginRight: 8,
+    marginLeft: 8,
   },
   placeholderContainer: {
     padding: 20,

@@ -1,7 +1,9 @@
 export const MMKV_KEYS = {
-  // Budget related keys
   BUDGET: {
     MONTHLY_BUDGET: 'budget.monthly_budget',
+  },
+  PATTERNS: {
+    IS_PATTERN_DISCOVERY_COMPLETED: 'patterns.is_pattern_discovery_completed',
   },
 } as const
 

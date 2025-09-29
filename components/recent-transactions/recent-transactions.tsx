@@ -1,10 +1,12 @@
 import { Text } from '@/components/ui/text'
+import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { Button, useTheme } from '@rneui/themed'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
-import { Plus } from 'lucide-react-native'
+import { Eye, Plus } from 'lucide-react-native'
 import React from 'react'
 import { View } from 'react-native'
+import { useMMKVBoolean } from 'react-native-mmkv'
 import { useStyles } from './recent-transactions.styles'
 
 interface RecentTransactionsProps {
@@ -15,11 +17,16 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
   const styles = useStyles()
   const { theme } = useTheme()
   const router = useRouter()
+  const [isPatternDiscoveryCompleted] = useMMKVBoolean(MMKV_KEYS.PATTERNS.IS_PATTERN_DISCOVERY_COMPLETED)
 
   const hasTransactions = transactions && transactions.length > 0
 
   const handleAddExpense = () => {
     router.push('/patterns')
+  }
+
+  const handleReviewPatterns = () => {
+    router.push('/settings/patterns')
   }
 
   if (!hasTransactions) {
@@ -46,18 +53,24 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
             Plant your first expense to start your money garden
           </Text>
           <Button
-            title='Add Expense'
-            onPress={handleAddExpense}
+            title={isPatternDiscoveryCompleted ? 'Add Expense' : 'Review Patterns'}
+            onPress={isPatternDiscoveryCompleted ? handleAddExpense : handleReviewPatterns}
             buttonStyle={styles.addButton}
             titleStyle={styles.addButtonText}
             icon={
-              <Plus
-                size={20}
-                color={theme.colors.white}
-              />
+              isPatternDiscoveryCompleted ? (
+                <Plus
+                  size={20}
+                  color={theme.colors.white}
+                />
+              ) : (
+                <Eye
+                  size={20}
+                  color={theme.colors.white}
+                />
+              )
             }
             iconPosition='left'
-            iconContainerStyle={styles.iconContainer}
           />
         </View>
       </View>
