@@ -1,5 +1,5 @@
 import { useTheme } from '@rneui/themed'
-import { useRouter, useSegments } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { ArrowLeft } from 'lucide-react-native'
 import React, { useRef } from 'react'
 import { Animated, Pressable } from 'react-native'
@@ -14,7 +14,6 @@ interface HeaderBackButtonProps {
 export function HeaderBackButton({ onPress, size = 24, color }: HeaderBackButtonProps) {
   const { theme } = useTheme()
   const router = useRouter()
-  const segments = useSegments()
   const styles = useStyles()
   const scaleAnim = useRef(new Animated.Value(1)).current
 
@@ -22,17 +21,11 @@ export function HeaderBackButton({ onPress, size = 24, color }: HeaderBackButton
     if (onPress) {
       onPress()
     } else {
-      // Check if we can go back by looking at navigation history
-      // If we're at the root level or only have one segment, go to home
-      if (segments.length <= 1) {
+      try {
+        router.back()
+      } catch {
+        // If back fails, redirect to home
         router.replace('/')
-      } else {
-        try {
-          router.back()
-        } catch {
-          // If back fails, redirect to home
-          router.replace('/')
-        }
       }
     }
   }
