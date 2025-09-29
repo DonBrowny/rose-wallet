@@ -55,6 +55,14 @@ erDiagram
         timestamp updated_at "Last Updated"
     }
     
+    PATTERN_SMS_GROUP {
+        int id PK "Primary Key"
+        int pattern_id FK "Pattern Reference"
+        int sms_id FK "SMS Reference"
+        real confidence "Match Confidence (0.0-1.0, default: 1.0)"
+        timestamp created_at "Creation Time"
+    }
+    
     NOTE_BUDGETS {
         string note "Budgets stored in MMKV for encryption"
     }
@@ -66,6 +74,8 @@ erDiagram
     MERCHANTS ||--o{ MERCHANT_CATEGORY_GROUPS : "grouped_by"
     CATEGORIES ||--o{ MERCHANT_CATEGORY_GROUPS : "groups"
     CATEGORIES ||--o{ CATEGORIES : "parent_child"
+    PATTERNS ||--o{ PATTERN_SMS_GROUP : "groups"
+    SMS_MESSAGES ||--o{ PATTERN_SMS_GROUP : "grouped_by"
     
     %% Note: Budgets are stored in MMKV, not in database
 ```
@@ -80,6 +90,7 @@ erDiagram
 4. **MERCHANT_CATEGORY_GROUPS** - Many-to-many relationship between merchants and categories
 5. **TRANSACTIONS** - Financial transactions (SMS-parsed or manual)
 6. **PATTERNS** - SMS parsing patterns
+7. **PATTERN_SMS_GROUP** - Links SMS messages to patterns (many-to-many relationship)
 
 ### External Storage
 
@@ -92,20 +103,21 @@ erDiagram
 - **Categories → Transactions**: One category can have many transactions
 - **Merchants ↔ Categories**: Many-to-many via MERCHANT_CATEGORY_GROUPS
 - **Categories → Categories**: Self-referencing for hierarchical categories
-- **Patterns**: Independent table for SMS parsing rules
+- **Patterns ↔ SMS**: Many-to-many via PATTERN_SMS_GROUP (one pattern can match multiple SMS, one SMS can match multiple patterns)
 - **Budgets**: Stored in MMKV (not in database)
 
 ### Data Flow
 
 ```
-SMS Message → Pattern Matching → Transaction Creation → Category Assignment → Budget Tracking
+SMS Message → Pattern Discovery → Pattern-SMS Grouping → Transaction Creation → Category Assignment → Budget Tracking
 ```
 
 1. **SMS arrives** → Stored in `sms_messages`
-2. **Pattern matching** → Uses `patterns` table to parse SMS content
-3. **Transaction created** → Stored in `transactions` with reference to SMS
-4. **Category assigned** → Links transaction to categories via `transaction_categories`
-5. **Budget tracking** → Updates `budgets` spent amounts
+2. **Pattern discovery** → Analyzes SMS content and creates patterns
+3. **Pattern-SMS grouping** → Links SMS to patterns via `pattern_sms_group`
+4. **Transaction created** → Stored in `transactions` with reference to SMS
+5. **Category assigned** → Links transaction to categories via `merchant_category_groups`
+6. **Budget tracking** → Updates `budgets` spent amounts
 
 ### Features
 

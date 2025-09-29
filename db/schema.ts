@@ -63,6 +63,20 @@ export const patterns = sqliteTable('patterns', {
     .$defaultFn(() => new Date()),
 })
 
+export const patternSmsGroup = sqliteTable('pattern_sms_group', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  patternId: integer('pattern_id')
+    .references(() => patterns.id)
+    .notNull(),
+  smsId: integer('sms_id')
+    .references(() => smsMessages.id)
+    .notNull(),
+  confidence: real('confidence').notNull().default(1.0),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+})
+
 export type SmsMessage = typeof smsMessages.$inferSelect
 export type NewSmsMessage = typeof smsMessages.$inferInsert
 
@@ -80,3 +94,6 @@ export type NewTransaction = typeof transactions.$inferInsert
 
 export type Pattern = typeof patterns.$inferSelect
 export type NewPattern = typeof patterns.$inferInsert
+
+export type PatternSmsGroup = typeof patternSmsGroup.$inferSelect
+export type NewPatternSmsGroup = typeof patternSmsGroup.$inferInsert
