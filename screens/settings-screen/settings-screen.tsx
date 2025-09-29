@@ -11,13 +11,13 @@ const settingsItems = [
     id: 'patterns',
     header: 'SMS Patterns',
     subHeader: 'Teach Rosie how to parse your SMS messages',
-    href: '/settings/patterns',
+    href: '/(shared)/patterns',
   },
   {
     id: 'about',
     header: 'About',
     subHeader: 'App version and information',
-    href: '/settings/about',
+    href: '/(tabs)/settings/about',
   },
 ]
 

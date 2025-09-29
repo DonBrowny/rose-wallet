@@ -22,11 +22,11 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
   const hasTransactions = transactions && transactions.length > 0
 
   const handleAddExpense = () => {
-    router.push('/patterns')
+    router.push('/(shared)/add-expense')
   }
 
   const handleReviewPatterns = () => {
-    router.push('/settings/patterns')
+    router.push('/(shared)/patterns')
   }
 
   if (!hasTransactions) {
