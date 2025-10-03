@@ -179,7 +179,7 @@ export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDet
             <View style={styles.smsHeader}>
               <Text variant='pMdBold'>SMS</Text>
               <Text variant='pSm'>
-                {firstTransaction.transactionDate.toLocaleDateString('en-IN', {
+                {new Date(firstTransaction.transactionDate).toLocaleDateString('en-IN', {
                   day: '2-digit',
                   month: 'short',
                   year: 'numeric',

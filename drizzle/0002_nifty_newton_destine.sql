@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `unique_patterns_name` ON `patterns` (`name`);

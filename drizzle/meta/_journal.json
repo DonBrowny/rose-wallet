@@ -15,6 +15,13 @@
       "when": 1759085558567,
       "tag": "0001_exotic_skreet",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1759258006771,
+      "tag": "0002_nifty_newton_destine",
+      "breakpoints": true
     }
   ]
 }

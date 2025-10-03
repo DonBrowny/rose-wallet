@@ -1,4 +1,4 @@
-import { AnySQLiteColumn, integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { AnySQLiteColumn, integer, real, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
 export const smsMessages = sqliteTable('sms_messages', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -45,23 +45,29 @@ export const transactions = sqliteTable('transactions', {
     .$defaultFn(() => new Date()),
 })
 
-export const patterns = sqliteTable('patterns', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull(),
-  groupingPattern: text('grouping_pattern').notNull(),
-  extractionPattern: text('extraction_pattern').notNull(),
-  type: text('type').notNull().default('debit'),
-  status: text('status').notNull().default('needs-review'),
-  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
-  usageCount: integer('usage_count').notNull().default(0),
-  lastUsedAt: integer('last_used_at', { mode: 'timestamp' }),
-  createdAt: integer('created_at', { mode: 'timestamp' })
-    .notNull()
-    .$defaultFn(() => new Date()),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .notNull()
-    .$defaultFn(() => new Date()),
-})
+export const patterns = sqliteTable(
+  'patterns',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    name: text('name').notNull(),
+    groupingPattern: text('grouping_pattern').notNull(),
+    extractionPattern: text('extraction_pattern').notNull(),
+    type: text('type').notNull().default('debit'),
+    status: text('status').notNull().default('needs-review'),
+    isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+    usageCount: integer('usage_count').notNull().default(0),
+    lastUsedAt: integer('last_used_at', { mode: 'timestamp' }),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer('updated_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    uniquePatternName: uniqueIndex('unique_patterns_name').on(table.name),
+  })
+)
 
 export const patternSmsGroup = sqliteTable('pattern_sms_group', {
   id: integer('id').primaryKey({ autoIncrement: true }),

@@ -81,7 +81,7 @@ export class SMSService {
               amount: extractedData.amount.value,
               merchant: extractedData.merchant || 'Unknown',
               bankName: extractedData.bank?.name || 'Unknown',
-              transactionDate: new Date(sms.date), // Use SMS timestamp
+              transactionDate: sms.date, // Use SMS timestamp
               message: sms,
             }
 
