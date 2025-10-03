@@ -2,6 +2,7 @@ import { Loading } from '@/components/loading/loading'
 import { PatternCard } from '@/components/pattern-card/pattern-card'
 import { PatternDetailOverlay } from '@/components/pattern-detail-overlay/pattern-detail-overlay'
 import { Text } from '@/components/ui/text'
+import { useLivePatterns } from '@/hooks/use-live-patterns'
 import { upsertPatternsByGrouping } from '@/services/database/patterns-repository'
 import { SMSService } from '@/services/sms-parsing/sms-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
@@ -19,6 +20,7 @@ export const PatternsScreen = () => {
   const [error, setError] = useState<string | null>(null)
   const [selectedPattern, setSelectedPattern] = useState<DistinctPattern | null>(null)
   const [isOverlayVisible, setIsOverlayVisible] = useState(false)
+  const live = useLivePatterns()
 
   const [isPatternDiscoveryCompleted = false, setIsPatternDiscoveryCompleted] = useMMKVBoolean(
     MMKV_KEYS.PATTERNS.IS_PATTERN_DISCOVERY_COMPLETED
@@ -57,14 +59,7 @@ export const PatternsScreen = () => {
 
           return
         }
-
-        // Subsequent loads (temporary: still derive patterns until DB upsert is in place)
-        const result: TransactionPattern = await SMSService.getDistinctSMSMessagesLastNDays(DAYS_TO_ANALYZE)
-        if (result.success) {
-          setPatterns(result.distinctPatterns)
-        } else {
-          setError(result.errors.join(', ') || 'Failed to load patterns')
-        }
+        // Subsequent loads: rely on live query at render
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
@@ -75,8 +70,10 @@ export const PatternsScreen = () => {
     loadOrDiscoverPatterns()
   }, [isPatternDiscoveryCompleted, setIsPatternDiscoveryCompleted, setSamplesByPatternId])
 
+  const displayedPatterns: DistinctPattern[] = isPatternDiscoveryCompleted ? live.data : patterns
+
   const handleReviewPattern = (patternId: string) => {
-    const pattern = patterns.find((p) => p.id === patternId)
+    const pattern = displayedPatterns.find((p) => p.id === patternId)
     if (pattern) {
       setSelectedPattern(pattern)
       setIsOverlayVisible(true)
@@ -122,7 +119,7 @@ export const PatternsScreen = () => {
         bounces={true}
         alwaysBounceVertical={false}
       >
-        {patterns.map((pattern) => (
+        {displayedPatterns.map((pattern) => (
           <PatternCard
             key={pattern.id}
             template={pattern.template}
