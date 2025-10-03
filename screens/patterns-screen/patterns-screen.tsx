@@ -27,6 +27,8 @@ export const PatternsScreen = () => {
     MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1
   )
 
+  const DAYS_TO_ANALYZE = 30
+
   useEffect(() => {
     const loadOrDiscoverPatterns = async () => {
       try {
@@ -35,7 +37,7 @@ export const PatternsScreen = () => {
 
         // First-time discovery flow
         if (!isPatternDiscoveryCompleted) {
-          const result: TransactionPattern = await SMSService.getDistinctSMSMessagesLastNDays(30)
+          const result: TransactionPattern = await SMSService.getDistinctSMSMessagesLastNDays(DAYS_TO_ANALYZE)
 
           if (result.success) {
             await upsertPatternsByGrouping(result.distinctPatterns)
@@ -57,7 +59,7 @@ export const PatternsScreen = () => {
         }
 
         // Subsequent loads (temporary: still derive patterns until DB upsert is in place)
-        const result: TransactionPattern = await SMSService.getDistinctSMSMessagesLastNDays(30)
+        const result: TransactionPattern = await SMSService.getDistinctSMSMessagesLastNDays(DAYS_TO_ANALYZE)
         if (result.success) {
           setPatterns(result.distinctPatterns)
         } else {

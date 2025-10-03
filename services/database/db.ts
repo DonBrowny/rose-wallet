@@ -1,3 +1,4 @@
+import * as schema from '@/db/schema'
 import { DB_NAME } from '@/types/constants'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite'
@@ -12,5 +13,5 @@ export function getSQLite(): SQLiteDatabase {
 }
 
 export function getDrizzleDb() {
-  return drizzle(getSQLite())
+  return drizzle(getSQLite(), { schema })
 }

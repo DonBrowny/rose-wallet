@@ -31,12 +31,13 @@ export async function upsertPatternsByGrouping(distinct: DistinctPattern[]): Pro
     .onConflictDoUpdate({
       target: patterns.name,
       set: {
-        // keep existing name unless null
-        name: sql`coalesce(${patterns.name}, excluded.name)`,
-        extractionPattern: sql`excluded.${patterns.extractionPattern.name}`,
-        type: sql`excluded.${patterns.type.name}`,
-        status: sql`excluded.${patterns.status.name}`,
+        extractionPattern: sql`excluded.extraction_pattern`,
+        type: sql`excluded.type`,
+        status: sql`excluded.status`,
         updatedAt: new Date(),
       },
+    })
+    .catch((error) => {
+      console.error('Error inserting patterns', error)
     })
 }
