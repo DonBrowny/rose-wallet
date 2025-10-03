@@ -1,6 +1,6 @@
+import { PatternStatus, PatternType } from '@/types/patterns/enums'
 import type { DistinctPattern, Transaction } from '@/types/sms/transaction'
 import stringSimilarity from 'string-similarity-js'
-import { determinePatternType } from './determine-pattern-type'
 import { generateExtractionTemplate } from './extraction-template-generator'
 import { normalizeSMSTemplate } from './normalize-sms-template'
 
@@ -13,8 +13,6 @@ export function findDistinctPatterns(transactions: Transaction[]): DistinctPatte
     if (processedTransactions.has(transaction.id)) {
       continue
     }
-
-    const rawSms = transaction.message.body
 
     // First, generate a simple grouping template for fast comparison
     const groupingTemplate = normalizeSMSTemplate(transaction.message.body)
@@ -40,9 +38,9 @@ export function findDistinctPatterns(transactions: Transaction[]): DistinctPatte
         id: `pattern_${patterns.length + 1}`,
         template, // Extraction template for data extraction
         groupingTemplate, // Aggressive template for grouping
-        patternType: determinePatternType(rawSms),
+        patternType: PatternType.Debit, // v1: only debit
         occurrences: similarTransactions.length,
-        status: 'action_needed',
+        status: PatternStatus.NeedsReview,
         transactions: similarTransactions,
       }
 

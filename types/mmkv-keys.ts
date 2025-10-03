@@ -4,6 +4,7 @@ export const MMKV_KEYS = {
   },
   PATTERNS: {
     IS_PATTERN_DISCOVERY_COMPLETED: 'patterns.is_pattern_discovery_completed',
+    DISCOVERY_SAMPLES_V1: 'patterns.discovery_samples_v1',
   },
 } as const
 

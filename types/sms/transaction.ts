@@ -1,3 +1,5 @@
+import type { PatternStatusType, PatternTypeType } from '../patterns/enums'
+
 export type Intent = 'not_txn' | 'expense' | 'income'
 
 export interface Transaction {
@@ -5,7 +7,7 @@ export interface Transaction {
   amount: number
   merchant: string
   bankName: string
-  transactionDate: Date
+  transactionDate: number
   message: SMSMessage
 }
 
@@ -23,8 +25,8 @@ export interface DistinctPattern {
   groupingTemplate: string
   occurrences: number
   transactions: Transaction[]
-  patternType: 'DEBIT' | 'CREDIT'
-  status: 'approved' | 'action_needed' | 'rejected'
+  patternType: PatternTypeType
+  status: PatternStatusType
 }
 
 export interface TransactionPattern {

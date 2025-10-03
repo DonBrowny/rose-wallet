@@ -6,6 +6,7 @@ export default function SharedLayout() {
   const headerOptions = useHeaderOptions()
   const addExpenseOptions = useScreenHeaderOptions({ title: 'Add Expense' })
   const patternsOptions = useScreenHeaderOptions({ title: 'SMS Patterns' })
+  const patternReviewOptions = useScreenHeaderOptions({ title: 'Pattern Review' })
 
   return (
     <Stack screenOptions={headerOptions}>
@@ -16,6 +17,10 @@ export default function SharedLayout() {
       <Stack.Screen
         name='patterns'
         options={patternsOptions}
+      />
+      <Stack.Screen
+        name='pattern-review'
+        options={patternReviewOptions}
       />
     </Stack>
   )

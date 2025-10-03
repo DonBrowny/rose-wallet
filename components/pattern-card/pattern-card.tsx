@@ -6,11 +6,10 @@ import { View } from 'react-native'
 import { useStyles } from './pattern-card.styles'
 
 interface PatternCardProps extends Pick<DistinctPattern, 'status' | 'template'> {
-  similarCount: number
   onReview: () => void
 }
 
-export const PatternCard = ({ template, similarCount, status, onReview }: PatternCardProps) => {
+export const PatternCard = ({ template, status, onReview }: PatternCardProps) => {
   const styles = useStyles({ status })
 
   return (
@@ -30,7 +29,6 @@ export const PatternCard = ({ template, similarCount, status, onReview }: Patter
           )}
           <Text variant='pSm'>{status === 'approved' ? 'Approved' : 'Action Needed'}</Text>
         </View>
-        <Text variant='pSm'>{similarCount} similar SMS</Text>
       </View>
 
       <Text variant='pMd'>{template}</Text>
