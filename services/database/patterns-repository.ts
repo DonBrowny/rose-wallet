@@ -2,7 +2,7 @@ import { patterns } from '@/db/schema'
 import { PatternType } from '@/types/patterns/enums'
 import type { DistinctPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { getDrizzleDb } from './db'
 
 function deriveName(p: DistinctPattern): string {
@@ -40,4 +40,9 @@ export async function upsertPatternsByGrouping(distinct: DistinctPattern[]): Pro
     .catch((error) => {
       console.error('Error inserting patterns', error)
     })
+}
+
+export async function updatePatternStatusById(id: number, status: 'approved' | 'needs-review' | 'rejected') {
+  const db = getDrizzleDb()
+  await db.update(patterns).set({ status, updatedAt: new Date() }).where(eq(patterns.id, id))
 }

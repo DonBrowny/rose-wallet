@@ -12,10 +12,8 @@ export const useStyles = makeStyles((theme, props: Pick<DistinctPattern, 'status
     ...theme.elevation[2],
   },
   statusContainer: {
-    gap: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
   statusPill: {
     flexDirection: 'row',

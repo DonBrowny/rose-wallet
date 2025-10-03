@@ -8,6 +8,7 @@ import { SMSService } from '@/services/sms-parsing/sms-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import type { DistinctPattern, Transaction, TransactionPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
+import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { ScrollView, View } from 'react-native'
 import { useMMKVBoolean, useMMKVObject } from 'react-native-mmkv'
@@ -30,6 +31,7 @@ export const PatternsScreen = () => {
   )
 
   const DAYS_TO_ANALYZE = 30
+  const router = useRouter()
 
   useEffect(() => {
     const loadOrDiscoverPatterns = async () => {
@@ -73,11 +75,7 @@ export const PatternsScreen = () => {
   const displayedPatterns: DistinctPattern[] = isPatternDiscoveryCompleted ? live.data : patterns
 
   const handleReviewPattern = (patternId: string) => {
-    const pattern = displayedPatterns.find((p) => p.id === patternId)
-    if (pattern) {
-      setSelectedPattern(pattern)
-      setIsOverlayVisible(true)
-    }
+    router.push({ pathname: '/(shared)/pattern-review', params: { patternId } })
   }
 
   const handleCloseOverlay = () => {
@@ -123,7 +121,6 @@ export const PatternsScreen = () => {
           <PatternCard
             key={pattern.id}
             template={pattern.template}
-            similarCount={pattern.occurrences}
             status={pattern.status}
             onReview={() => handleReviewPattern(pattern.id)}
           />
