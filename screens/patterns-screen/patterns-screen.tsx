@@ -53,8 +53,8 @@ export const PatternsScreen = () => {
             })
 
             setSamplesByPatternId(samples)
-            setIsPatternDiscoveryCompleted(true)
             setPatterns(result.distinctPatterns)
+            setIsPatternDiscoveryCompleted(true)
           } else {
             setError(result.errors.join(', ') || 'Failed to discover patterns')
           }
@@ -72,7 +72,7 @@ export const PatternsScreen = () => {
     loadOrDiscoverPatterns()
   }, [isPatternDiscoveryCompleted, setIsPatternDiscoveryCompleted, setSamplesByPatternId])
 
-  const displayedPatterns: DistinctPattern[] = isPatternDiscoveryCompleted ? live.data : patterns
+  const displayedPatterns: DistinctPattern[] = live.data.length > 0 ? live.data : patterns
 
   const handleReviewPattern = (patternId: string) => {
     router.push({ pathname: '/(shared)/pattern-review', params: { patternId } })

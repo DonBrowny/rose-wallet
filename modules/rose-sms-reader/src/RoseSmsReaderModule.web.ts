@@ -1,7 +1,7 @@
 import { NativeModule, registerWebModule } from 'expo'
-import { PermissionResult, SMSReadOptions, SMSReadResult } from './ExpoSmsReader.types'
+import { PermissionResult, SMSReadOptions, SMSReadResult } from './RoseSmsReader.types'
 
-class ExpoSmsReaderModule extends NativeModule {
+class RoseSmsReaderModule extends NativeModule {
   async checkSMSPermission(): Promise<PermissionResult> {
     return {
       granted: false,
@@ -18,7 +18,14 @@ class ExpoSmsReaderModule extends NativeModule {
     }
   }
 
-  async readSMS(options: SMSReadOptions = {}): Promise<SMSReadResult> {
+  async readSMS(
+    options: SMSReadOptions = {
+      startTimestamp: 0,
+      endTimestamp: 0,
+      senderNumbers: [],
+      includeRead: true,
+    }
+  ): Promise<SMSReadResult> {
     return {
       messages: [],
     }
@@ -29,4 +36,4 @@ class ExpoSmsReaderModule extends NativeModule {
   }
 }
 
-export default registerWebModule(ExpoSmsReaderModule, 'ExpoSmsReaderModule')
+export default registerWebModule(RoseSmsReaderModule, 'RoseSmsReaderModule')
