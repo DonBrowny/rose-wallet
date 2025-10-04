@@ -1,0 +1,9 @@
+{
+  "platforms": ["android"],
+  "apple": {
+    "modules": ["RoseSmsReaderModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.rosesmsreader.RoseSmsReaderModule"]
+  }
+}

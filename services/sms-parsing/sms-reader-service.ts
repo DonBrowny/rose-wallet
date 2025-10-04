@@ -1,5 +1,5 @@
-import { readSMS as expoReadSMS, isAvailable, type SMSMessage } from 'expo-sms-reader'
 import { Platform } from 'react-native'
+import { readSMS as expoReadSMS, isAvailable, type SMSMessage } from 'rose-sms-reader'
 
 export interface SMSReadOptions {
   startTimestamp: number

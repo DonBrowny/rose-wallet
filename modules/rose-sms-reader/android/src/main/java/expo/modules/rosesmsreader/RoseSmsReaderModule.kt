@@ -1,4 +1,4 @@
-package expo.modules.smsreader
+package expo.modules.rosesmsreader
 
 import android.Manifest
 import android.content.Context
@@ -11,12 +11,17 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.util.*
-
 private const val SMS_PERMISSION_REQUEST_CODE = 1001
 
-class ExpoSmsReaderModule : Module() {
+class RoseSmsReaderModule : Module() {
+  // Each module class must implement the definition function. The definition consists of components
+  // that describes the module's functionality and behavior.
+  // See https://docs.expo.dev/modules/module-api for more details about available components.
   override fun definition() = ModuleDefinition {
-    Name("ExpoSmsReader")
+    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
+    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
+    // The module will be accessible from `requireNativeModule('RoseSmsReader')` in JavaScript.
+    Name("RoseSmsReader")
 
     // Check if SMS reading is available on this device
     AsyncFunction("isAvailable") { promise: Promise ->
@@ -154,23 +159,23 @@ class ExpoSmsReaderModule : Module() {
         }
 
         android.util.Log.d(
-                "ExpoSmsReader",
+                "RoseSmsReader",
                 "Reading SMS messages: startTimestamp=$startTimestamp, endTimestamp=$endTimestamp, senderNumbers=$senderNumbers, includeRead=$includeRead"
         )
 
         val messages = readSMSMessages(context, startTimestamp, endTimestamp, senderNumbers, includeRead)
 
-        android.util.Log.d("ExpoSmsReader", "Found ${messages.size} SMS messages")
+        android.util.Log.d("RoseSmsReader", "Found ${messages.size} SMS messages")
 
         promise.resolve(mapOf("messages" to messages))
       } catch (e: Exception) {
-        android.util.Log.e("ExpoSmsReader", "Error reading SMS messages", e)
+        android.util.Log.e("RoseSmsReader", "Error reading SMS messages", e)
         promise.reject("ERROR", "Failed to read SMS messages: ${e.message}", e)
       }
     }
   }
 
-  private fun readSMSMessages(
+    private fun readSMSMessages(
           context: Context,
           startTimestamp: Long,
           endTimestamp: Long,
@@ -200,7 +205,7 @@ class ExpoSmsReaderModule : Module() {
     val selectionArgs = arrayOf(startTimestamp.toString(), endTimestamp.toString())
 
     android.util.Log.d(
-            "ExpoSmsReader",
+            "RoseSmsReader",
             "Querying SMS with URI: $uri, selection: $selection, args: ${selectionArgs.contentToString()}"
     )
 
@@ -214,20 +219,20 @@ class ExpoSmsReaderModule : Module() {
                       "${Telephony.Sms.DATE} DESC"
               )
             } catch (e: SecurityException) {
-              android.util.Log.e("ExpoSmsReader", "SecurityException: ${e.message}")
+              android.util.Log.e("RoseSmsReader", "SecurityException: ${e.message}")
               null
             } catch (e: Exception) {
-              android.util.Log.e("ExpoSmsReader", "Query exception: ${e.message}")
+              android.util.Log.e("RoseSmsReader", "Query exception: ${e.message}")
               null
             }
 
     android.util.Log.d(
-            "ExpoSmsReader",
+            "RoseSmsReader",
             "Cursor result: ${if (cursor != null) "success" else "null"}"
     )
 
     cursor?.use { c ->
-      android.util.Log.d("ExpoSmsReader", "Cursor has ${c.count} rows")
+      android.util.Log.d("RoseSmsReader", "Cursor has ${c.count} rows")
 
       try {
         val idIndex = c.getColumnIndexOrThrow(Telephony.Sms._ID)
@@ -263,7 +268,7 @@ class ExpoSmsReaderModule : Module() {
           messages.add(message)
         }
       } catch (e: Exception) {
-        android.util.Log.e("ExpoSmsReader", "Error processing cursor", e)
+        android.util.Log.e("RoseSmsReader", "Error processing cursor", e)
       }
     }
 

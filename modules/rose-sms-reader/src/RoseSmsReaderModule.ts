@@ -1,7 +1,7 @@
 import { NativeModule, requireNativeModule } from 'expo'
-import { ExpoSmsReaderModuleEvents, PermissionResult, SMSReadOptions, SMSReadResult } from './ExpoSmsReader.types'
+import { PermissionResult, RoseSmsReaderModuleEvents, SMSReadOptions, SMSReadResult } from './RoseSmsReader.types'
 
-declare class ExpoSmsReaderModule extends NativeModule<ExpoSmsReaderModuleEvents> {
+declare class RoseSmsReaderModule extends NativeModule<RoseSmsReaderModuleEvents> {
   checkSMSPermission(): Promise<PermissionResult>
   requestSMSPermission(): Promise<PermissionResult>
   readSMS(options: SMSReadOptions): Promise<SMSReadResult>
@@ -9,4 +9,4 @@ declare class ExpoSmsReaderModule extends NativeModule<ExpoSmsReaderModuleEvents
 }
 
 // This call loads the native module object from the JSI.
-export default requireNativeModule<ExpoSmsReaderModule>('ExpoSmsReader')
+export default requireNativeModule<RoseSmsReaderModule>('RoseSmsReader')

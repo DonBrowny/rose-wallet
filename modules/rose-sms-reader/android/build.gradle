@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
-group = 'expo.modules.smsreader'
-version = '0.7.2'
+group = 'expo.modules.rosesmsreader'
+version = '0.7.6'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -23,19 +23,19 @@ if (useManagedAndroidSdkVersions) {
     }
   }
   project.android {
-    compileSdkVersion safeExtGet("compileSdkVersion", 34)
+    compileSdkVersion safeExtGet("compileSdkVersion", 36)
     defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 21)
-      targetSdkVersion safeExtGet("targetSdkVersion", 34)
+      minSdkVersion safeExtGet("minSdkVersion", 24)
+      targetSdkVersion safeExtGet("targetSdkVersion", 36)
     }
   }
 }
 
 android {
-  namespace "expo.modules.smsreader"
+  namespace "expo.modules.rosesmsreader"
   defaultConfig {
     versionCode 1
-    versionName "0.7.2"
+    versionName "0.7.6"
   }
   lintOptions {
     abortOnError false

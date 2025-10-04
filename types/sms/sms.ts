@@ -1,4 +1,4 @@
-import type { SMSMessage } from 'expo-sms-reader'
+import type { SMSMessage } from 'rose-sms-reader'
 
 export interface SMSReadOptions {
   startTimestamp: number

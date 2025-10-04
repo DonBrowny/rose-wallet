@@ -1,8 +1,8 @@
+import { Alert, Platform } from 'react-native'
 import {
   checkSMSPermission as expoCheckPermission,
   requestSMSPermission as expoRequestPermission,
-} from 'expo-sms-reader'
-import { Alert, Platform } from 'react-native'
+} from 'rose-sms-reader'
 
 export interface PermissionResult {
   granted: boolean

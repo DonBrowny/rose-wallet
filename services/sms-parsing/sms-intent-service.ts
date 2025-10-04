@@ -4,12 +4,12 @@ import {
   RX_COMPLETED_INCOME,
   RX_FAILURE,
   RX_FUTURE_TENSE,
-  RX_REMINDER,
-  RX_SCHEDULED,
+  // RX_REMINDER,
+  // RX_SCHEDULED,
   TEMPLATES,
 } from '@/utils/pattern/constant'
-import { type SMSMessage } from 'expo-sms-reader'
 import { ALL_MINILM_L6_V2, TextEmbeddingsModule } from 'react-native-executorch'
+import { type SMSMessage } from 'rose-sms-reader'
 import type { SMSReadResult } from './sms-reader-service'
 
 export type ClassifyResult = { label: Intent; prob: number }
@@ -57,9 +57,9 @@ export function preRuleDecision(rawText: string): ClassifyResult | null {
   if (completedIncome) return { label: 'income', prob: 0.9 }
 
   // 2) Future/reminder (no completion verbs)
-  if (RX_SCHEDULED.test(raw) || RX_REMINDER.test(raw)) {
-    return { label: 'future_payments', prob: 0.9 }
-  }
+  // if (RX_SCHEDULED.test(raw) || RX_REMINDER.test(raw)) {
+  //   return { label: 'future_payments', prob: 0.9 }
+  // }
 
   // 3) No strong rule — let embeddings decide
   return null
@@ -82,7 +82,7 @@ export class SMSIntentService {
     not_txn: [],
     expense: [],
     income: [],
-    future_payments: [],
+    // future_payments: [],
   }
 
   // serialize all native forward() calls

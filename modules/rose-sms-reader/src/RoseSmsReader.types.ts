@@ -24,4 +24,4 @@ export interface PermissionResult {
   message: string
 }
 
-export type ExpoSmsReaderModuleEvents = Record<string, never>
+export type RoseSmsReaderModuleEvents = Record<string, never>
