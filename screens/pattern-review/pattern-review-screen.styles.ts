@@ -3,21 +3,15 @@ import { makeStyles } from '@rneui/themed'
 export const useStyles = makeStyles((theme) => ({
   container: {
     flex: 1,
-    padding: 16,
+    gap: 12,
+    backgroundColor: theme.colors.white,
   },
   header: {
     marginBottom: 12,
-  },
-  sampleList: {
-    rowGap: 12,
-    marginBottom: 20,
-  },
-  sampleCard: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: theme.colors.grey2,
+    paddingHorizontal: 16,
   },
   actionsRow: {
+    paddingHorizontal: 16,
     flexDirection: 'row',
     gap: 12,
   },

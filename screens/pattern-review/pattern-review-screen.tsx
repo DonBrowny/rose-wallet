@@ -1,3 +1,4 @@
+import { SmsCarousel } from '@/components/sms-carousel/sms-carousel'
 import { Text } from '@/components/ui/text'
 import { updatePatternStatusById } from '@/services/database/patterns-repository'
 import type { Transaction } from '@/types/sms/transaction'
@@ -5,7 +6,7 @@ import { getPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { Button } from '@rneui/themed'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { ScrollView, View } from 'react-native'
+import { View } from 'react-native'
 import { useStyles } from './pattern-review-screen.styles'
 
 interface PatternReviewScreenProps {
@@ -35,7 +36,7 @@ export function PatternReviewScreen({ id, groupingTemplate, name, template, stat
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text variant='h3'>Pattern review</Text>
         <Text
@@ -46,35 +47,11 @@ export function PatternReviewScreen({ id, groupingTemplate, name, template, stat
         </Text>
       </View>
 
-      <View style={styles.sampleList}>
-        {samples.map((t, idx) => (
-          <View
-            key={`${t.id}-${idx}`}
-            style={styles.sampleCard}
-          >
-            <Text
-              variant='pSm'
-              color='muted'
-            >
-              SMS
-            </Text>
-            <Text
-              variant='pMd'
-              style={{ marginTop: 6 }}
-            >
-              {t.message.body}
-            </Text>
-          </View>
-        ))}
-        {samples.length === 0 && (
-          <Text
-            variant='pSm'
-            color='muted'
-          >
-            No sample messages available.
-          </Text>
-        )}
-      </View>
+      <SmsCarousel
+        data={samples}
+        peek={16}
+        outerPadding={16}
+      />
 
       <View style={styles.actionsRow}>
         <Button
@@ -89,6 +66,6 @@ export function PatternReviewScreen({ id, groupingTemplate, name, template, stat
           onPress={handleApprove}
         />
       </View>
-    </ScrollView>
+    </View>
   )
 }
