@@ -20,13 +20,10 @@ export const useStyles = makeStyles((theme) => ({
   },
   constructionTitle: {
     marginBottom: 8,
-    color: theme.colors.black,
     textAlign: 'center',
   },
   constructionDescription: {
-    color: theme.colors.grey3,
     textAlign: 'center',
-    lineHeight: 20,
     marginBottom: 16,
   },
   comingSoonButton: {

@@ -1,6 +1,6 @@
 import { Loading } from '@/components/loading/loading'
 import { PatternCard } from '@/components/pattern-card/pattern-card'
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { useLivePatterns } from '@/hooks/use-live-patterns'
 import { upsertPatternsByGrouping } from '@/services/database/patterns-repository'
 import { SMSService } from '@/services/sms-parsing/sms-service'

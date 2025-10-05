@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { View } from 'react-native'
 
 export default function AddExpenseScreen() {

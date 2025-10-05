@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { Image } from 'expo-image'
 import LottieView from 'lottie-react-native'
 import { View } from 'react-native'
@@ -30,14 +30,14 @@ export const Loading = ({
 
       <Text
         variant='h4'
-        style={styles.title}
+        style={styles.centerText}
       >
         {title}
       </Text>
       <Text
         variant='pSm'
         color='muted'
-        style={styles.description}
+        style={styles.centerText}
       >
         {description}
       </Text>

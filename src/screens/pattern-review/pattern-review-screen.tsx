@@ -1,6 +1,6 @@
 import { SmsCarousel } from '@/components/sms-carousel/sms-carousel'
 import { Button } from '@/components/ui/button/button'
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { updatePatternStatusById } from '@/services/database/patterns-repository'
 import type { Transaction } from '@/types/sms/transaction'
 import { getPatternSamplesByName } from '@/utils/mmkv/pattern-samples'

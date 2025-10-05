@@ -23,7 +23,4 @@ export const useStyles = makeStyles((theme) => ({
     width: '100%',
     alignItems: 'center',
   },
-  dailyAllowanceDays: {
-    color: theme.colors.grey4,
-  },
 }))

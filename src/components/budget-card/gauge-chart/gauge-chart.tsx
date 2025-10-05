@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { useTheme } from '@rneui/themed'
 import React, { useEffect } from 'react'
 import { View } from 'react-native'

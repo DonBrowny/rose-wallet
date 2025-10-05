@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useStyles } from './about-screen.styles'
@@ -18,7 +18,6 @@ export const AboutScreen = () => {
         <Text
           variant='pSm'
           color='muted'
-          style={styles.sectionContent}
         >
           1.0.0
         </Text>
@@ -34,7 +33,6 @@ export const AboutScreen = () => {
         <Text
           variant='pSm'
           color='muted'
-          style={styles.sectionContent}
         >
           Rose Wallet helps you track your expenses by automatically parsing SMS messages from your bank and
           categorizing your transactions.
@@ -51,7 +49,6 @@ export const AboutScreen = () => {
         <Text
           variant='pSm'
           color='muted'
-          style={styles.sectionContent}
         >
           • Automatic SMS parsing{'\n'}• Expense categorization{'\n'}• Budget tracking{'\n'}• Transaction history
           {'\n'}• Pattern learning
@@ -68,7 +65,6 @@ export const AboutScreen = () => {
         <Text
           variant='pSm'
           color='muted'
-          style={styles.sectionContent}
         >
           Your data stays on your device. We don&apos;t collect or store any personal information.
         </Text>

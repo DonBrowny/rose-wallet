@@ -25,13 +25,10 @@ export const useStyles = makeStyles((theme) => ({
   },
   emptyTitle: {
     marginBottom: 8,
-    color: theme.colors.black,
     textAlign: 'center',
   },
   emptyDescription: {
-    color: theme.colors.grey3,
     textAlign: 'center',
-    lineHeight: 20,
     marginBottom: 16,
   },
   addButton: {

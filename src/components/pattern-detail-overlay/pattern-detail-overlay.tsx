@@ -1,4 +1,4 @@
-// import { Text } from '@/components/ui/text'
+// import { Text } from '@/components/ui/text/text'
 // import { PatternLearningService, type UserCorrection } from '@/services/sms-parsing/pattern-learning-service'
 // import type { DistinctPattern } from '@/types/sms/transaction'
 // import { Button, Input, useTheme } from '@rneui/themed'

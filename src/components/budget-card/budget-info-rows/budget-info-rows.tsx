@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { useTheme } from '@rneui/themed'
 import { useRouter } from 'expo-router'
 import { ArrowRight, Edit3 } from 'lucide-react-native'
@@ -41,7 +41,7 @@ export function BudgetInfoRows({ spentFormatted, budgetFormatted, isOverBudget }
         <View style={styles.valueRow}>
           <Text
             variant='aLg'
-            style={isOverBudget && styles.overBudgetText}
+            color={isOverBudget ? 'danger' : 'default'}
           >
             {spentFormatted}
           </Text>

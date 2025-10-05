@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { Image } from 'expo-image'
 import { View } from 'react-native'
 import { useStyles } from './analytics-screen.styles'
@@ -23,6 +23,7 @@ export const AnalyticsScreen = () => {
         </Text>
         <Text
           variant='pSm'
+          color='muted'
           style={styles.constructionDescription}
         >
           We&apos;re growing powerful analytics features to help you understand your spending patterns

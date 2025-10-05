@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button/button'
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { useBudgetContext } from '@/contexts/budget-context'
 import { Overlay, useTheme } from '@rneui/themed'
 import React, { useState } from 'react'

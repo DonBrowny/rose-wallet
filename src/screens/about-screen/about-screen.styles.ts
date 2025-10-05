@@ -21,11 +21,6 @@ export const useStyles = makeStyles((theme) => ({
     elevation: 2,
   },
   sectionTitle: {
-    fontWeight: '600',
     marginBottom: 8,
-    color: theme.colors.black,
-  },
-  sectionContent: {
-    lineHeight: 20,
   },
 }))

@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import React, { useEffect, useRef } from 'react'
 import { Animated, View } from 'react-native'
 import { useStyles } from './home-header.style'

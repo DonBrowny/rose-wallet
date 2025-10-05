@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button/button'
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { useTheme } from '@rneui/themed'
 import { Image } from 'expo-image'
@@ -49,6 +49,7 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
           </Text>
           <Text
             variant='pSm'
+            color='muted'
             style={styles.emptyDescription}
           >
             Plant your first expense to start your money garden

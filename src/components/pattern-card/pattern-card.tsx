@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button/button'
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { type DistinctPattern } from '@/types/sms/transaction'
 import { AlertCircle, CheckCircle } from 'lucide-react-native'
 import { View } from 'react-native'

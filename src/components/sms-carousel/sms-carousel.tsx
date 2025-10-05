@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import type { Transaction } from '@/types/sms/transaction'
 import { FlashList } from '@shopify/flash-list'
 import { useEffect, useMemo } from 'react'
@@ -82,12 +82,7 @@ export function SmsCarousel({
           >
             SMS
           </Text>
-          <Text
-            variant='pMd'
-            style={{ marginTop: 6 }}
-          >
-            {item.message.body}
-          </Text>
+          <Text variant='pMd'>{item.message.body}</Text>
         </Pressable>
       </Animated.View>
     )

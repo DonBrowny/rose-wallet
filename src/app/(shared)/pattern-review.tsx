@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { patterns } from '@/db/schema'
 import { PatternReviewScreen } from '@/screens/pattern-review/pattern-review-screen'
 import { eq } from 'drizzle-orm'

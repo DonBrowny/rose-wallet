@@ -1,5 +1,5 @@
 import { SettingsItem } from '@/components/settings-item/settings-item'
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { router } from 'expo-router'
 import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'

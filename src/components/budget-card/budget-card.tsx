@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { useBudgetContext } from '@/contexts/budget-context'
 import { calculateBudgetData } from '@/utils/formatter/calculate-budget-data'
 import { Card } from '@rneui/themed'
@@ -39,7 +39,7 @@ export function BudgetCard() {
             {remainingDays > 0 && dailyAllowance > 0 && (
               <Text
                 variant='pSm'
-                style={styles.dailyAllowanceDays}
+                color='muted'
               >
                 {remainingDays} day{remainingDays !== 1 ? 's' : ''} left
               </Text>

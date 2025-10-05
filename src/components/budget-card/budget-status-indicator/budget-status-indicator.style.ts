@@ -9,8 +9,4 @@ export const useStyles = makeStyles((theme) => ({
     borderRadius: 16,
     gap: 4,
   },
-  statusText: {
-    fontSize: 12,
-    fontFamily: 'Manrope_600SemiBold',
-  },
 }))

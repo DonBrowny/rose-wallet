@@ -1,4 +1,4 @@
-import { Text } from '@/components/ui/text'
+import { Text } from '@/components/ui/text/text'
 import { cactus } from '@lucide/lab'
 import { useTheme } from '@rneui/themed'
 import { Flower, Icon, Sprout } from 'lucide-react-native'
@@ -111,7 +111,10 @@ export function BudgetStatusIndicator({
   return (
     <View style={[styles.statusIndicator, { backgroundColor: gardenStatus.bgColor + '60' }]}>
       {gardenStatus.icon}
-      <Text style={[styles.statusText, { color: gardenStatus.color }]}>
+      <Text
+        variant='pSm'
+        style={{ color: gardenStatus.color }}
+      >
         {gardenStatus.text} · {weeklyAmount}
       </Text>
     </View>
