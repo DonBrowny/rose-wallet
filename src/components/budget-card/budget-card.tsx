@@ -1,7 +1,7 @@
+import { Card } from '@/components/ui/card/card'
 import { Text } from '@/components/ui/text/text'
 import { useBudgetContext } from '@/contexts/budget-context'
 import { calculateBudgetData } from '@/utils/formatter/calculate-budget-data'
-import { Card } from '@rneui/themed'
 import React, { useMemo } from 'react'
 import { View } from 'react-native'
 import { useStyles } from './budget-card.style'
@@ -18,7 +18,7 @@ export function BudgetCard() {
     useMemo(() => calculateBudgetData(monthlyBudget, totalExpense), [monthlyBudget, totalExpense])
 
   return (
-    <Card>
+    <Card style={styles.cardContainer}>
       <View style={styles.header}>
         <Text variant='h4'>Budget Overview</Text>
         <BudgetStatusIndicator

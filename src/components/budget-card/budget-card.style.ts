@@ -1,6 +1,9 @@
 import { makeStyles } from '@rneui/themed'
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles(() => ({
+  cardContainer: {
+    margin: 16,
+  },
   header: {
     marginBottom: 8,
     flexDirection: 'row',
