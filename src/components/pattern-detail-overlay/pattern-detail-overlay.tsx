@@ -15,7 +15,7 @@
 
 // export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDetailOverlayProps) => {
 //   const styles = useStyles()
-//   const { theme } = useTheme()
+//   const { theme } = useUnistyles()
 //   const [editableAmount, setEditableAmount] = useState<string>('')
 //   const [editableMerchant, setEditableMerchant] = useState<string>('')
 //   const [isLearning, setIsLearning] = useState(false)

@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
-import { useTheme } from '@rneui/themed'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { Eye, Plus } from 'lucide-react-native'
 import React from 'react'
 import { View } from 'react-native'
 import { useMMKVBoolean } from 'react-native-mmkv'
+import { useUnistyles } from 'react-native-unistyles'
 import { useStyles } from './recent-transactions.styles'
 
 interface RecentTransactionsProps {
@@ -16,7 +16,7 @@ interface RecentTransactionsProps {
 
 export function RecentTransactions({ transactions = [] }: RecentTransactionsProps) {
   const styles = useStyles()
-  const { theme } = useTheme()
+  const { theme } = useUnistyles()
   const router = useRouter()
   const [isPatternDiscoveryCompleted] = useMMKVBoolean(MMKV_KEYS.PATTERNS.IS_PATTERN_DISCOVERY_COMPLETED)
 
@@ -62,12 +62,12 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
               isPatternDiscoveryCompleted ? (
                 <Plus
                   size={20}
-                  color={theme.colors.white}
+                  color={theme.colors.surface}
                 />
               ) : (
                 <Eye
                   size={20}
-                  color={theme.colors.white}
+                  color={theme.colors.surface}
                 />
               )
             }

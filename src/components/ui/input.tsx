@@ -1,8 +1,9 @@
-import { Input, useTheme } from '@rneui/themed'
+import { Input } from '@rneui/themed'
 import React from 'react'
+import { useUnistyles } from 'react-native-unistyles'
 
 export function ThemedInput(props: any) {
-  const { theme } = useTheme()
+  const { theme } = useUnistyles()
   const [focused, setFocused] = React.useState(false)
 
   return (

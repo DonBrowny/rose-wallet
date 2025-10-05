@@ -1,9 +1,10 @@
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
 import { useBudgetContext } from '@/contexts/budget-context'
-import { Overlay, useTheme } from '@rneui/themed'
+import { Overlay } from '@rneui/themed'
 import React, { useState } from 'react'
 import { View } from 'react-native'
+import { useUnistyles } from 'react-native-unistyles'
 import { ThemedInput } from '../ui/input'
 import { useStyles } from './budget-edit-modal.style'
 
@@ -14,7 +15,7 @@ interface BudgetEditModalProps {
 
 export function BudgetEditModal({ isVisible, onCancel }: BudgetEditModalProps) {
   const styles = useStyles()
-  const { theme } = useTheme()
+  const { theme } = useUnistyles()
   const { monthlyBudget, budgetChangeHandler } = useBudgetContext()
   const [editBudget, setEditBudget] = useState(monthlyBudget.toString())
 

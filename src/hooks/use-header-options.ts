@@ -1,21 +1,21 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
-import { useTheme } from '@rneui/themed'
 import { useMemo } from 'react'
+import { useUnistyles } from 'react-native-unistyles'
 
 export function useHeaderOptions() {
-  const { theme } = useTheme()
+  const { theme } = useUnistyles()
 
   const headerOptions = useMemo(
     (): NativeStackNavigationOptions => ({
       headerStyle: {
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.surface,
       },
-      headerTintColor: theme.colors.black,
+      headerTintColor: theme.colors.onSurface,
       headerTitleAlign: 'center',
       headerShown: true,
       headerBackVisible: true,
     }),
-    [theme.colors.white, theme.colors.black]
+    [theme.colors.surface, theme.colors.onSurface]
   )
 
   return headerOptions

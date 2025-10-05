@@ -1,5 +1,4 @@
 import { Text } from '@/components/ui/text/text'
-import { useTheme } from '@rneui/themed'
 import React, { useEffect } from 'react'
 import { View } from 'react-native'
 import Animated, {
@@ -10,6 +9,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import Svg, { Path } from 'react-native-svg'
+import { useUnistyles } from 'react-native-unistyles'
 import { useStyles } from './gauge-chart.style'
 
 const AnimatedPath = Animated.createAnimatedComponent(Path)
@@ -22,7 +22,7 @@ interface GaugeChartProps {
 
 export function GaugeChart({ minValue, maxValue, currentValue }: GaugeChartProps) {
   const styles = useStyles()
-  const { theme } = useTheme()
+  const { theme } = useUnistyles()
 
   const actualPercentage = Math.max(((currentValue - minValue) / (maxValue - minValue)) * 100, 0)
   const targetPercentage = Math.min(actualPercentage, 100)
