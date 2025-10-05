@@ -9,10 +9,10 @@ export const useStyles = makeStyles((theme) => ({
   },
   overlayContent: {
     padding: 20,
+    gap: 16,
   },
   overlayTitle: {
     textAlign: 'center',
-    marginBottom: 16,
   },
   overlayButtons: {
     flexDirection: 'row',

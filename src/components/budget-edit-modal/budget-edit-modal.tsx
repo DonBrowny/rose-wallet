@@ -2,10 +2,11 @@ import { Button } from '@/components/ui/button/button'
 import { Overlay } from '@/components/ui/overlay/overlay'
 import { Text } from '@/components/ui/text/text'
 import { useBudgetContext } from '@/contexts/budget-context'
+import { IndianRupee } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
-import { ThemedInput } from '../ui/input'
+import { Input } from '../ui/input/input'
 import { useStyles } from './budget-edit-modal.style'
 
 interface BudgetEditModalProps {
@@ -46,13 +47,18 @@ export function BudgetEditModal({ isVisible, onCancel }: BudgetEditModalProps) {
           Edit Monthly Budget
         </Text>
 
-        <ThemedInput
+        <Input
           label='Budget Amount'
           placeholder='Enter budget amount'
           value={editBudget}
           onChangeText={setEditBudget}
-          keyboardType='numeric'
-          leftIcon={{ type: 'material', name: 'currency-rupee', color: theme.colors.primary }}
+          keyboardType='decimal-pad'
+          leftContent={
+            <IndianRupee
+              size={16}
+              color={theme.colors.primary}
+            />
+          }
         />
 
         <View style={styles.overlayButtons}>
