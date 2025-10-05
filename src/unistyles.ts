@@ -9,8 +9,8 @@ const lightTheme = {
     warning: palette.utility.warning,
 
     background: palette.ink[7],
-    neutral: palette.ink[7],
-    black: palette.ink[1],
+    surface: palette.ink[7],
+    onSurface: palette.ink[1],
     grey0: palette.ink[6], // muted surface
     grey1: palette.ink[5], // borders/inputs
     grey2: palette.ink[4],
@@ -43,8 +43,8 @@ const otherTheme = {
     warning: palette.utility.warning,
 
     background: palette.ink[7],
-    neutral: palette.ink[7],
-    black: palette.ink[1],
+    surface: palette.ink[7],
+    onSurface: palette.ink[1],
     grey0: palette.ink[6], // muted surface
     grey1: palette.ink[5], // borders/inputs
     grey2: palette.ink[4],

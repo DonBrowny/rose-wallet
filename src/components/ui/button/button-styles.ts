@@ -21,6 +21,6 @@ export const styles = StyleSheet.create((theme) => ({
     fontWeight: '700',
     fontSize: theme.typography.size.pMd,
     lineHeight: theme.typography.line.pMd,
-    color: type === 'outline' ? theme.colors.primary : theme.colors.neutral,
+    color: type === 'outline' ? theme.colors.primary : theme.colors.surface,
   }),
 }))

@@ -29,7 +29,7 @@ export function Button({
 
   const isDisabled = disabled || isLoading
 
-  const contentColor = type === 'outline' ? theme.colors.primary : theme.colors.neutral
+  const contentColor = type === 'outline' ? theme.colors.primary : theme.colors.surface
 
   return (
     <Pressable
