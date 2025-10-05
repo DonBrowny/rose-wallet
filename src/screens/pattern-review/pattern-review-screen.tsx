@@ -1,9 +1,9 @@
 import { SmsCarousel } from '@/components/sms-carousel/sms-carousel'
+import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text'
 import { updatePatternStatusById } from '@/services/database/patterns-repository'
 import type { Transaction } from '@/types/sms/transaction'
 import { getPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
-import { Button } from '@rneui/themed'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { View } from 'react-native'
@@ -57,12 +57,10 @@ export function PatternReviewScreen({ id, groupingTemplate, name, template, stat
         <Button
           title='Needs work'
           type='outline'
-          radius='xl'
           onPress={handleNeedsWork}
         />
         <Button
           title='Approve pattern'
-          radius='xl'
           onPress={handleApprove}
         />
       </View>

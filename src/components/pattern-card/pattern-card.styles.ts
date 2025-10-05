@@ -34,13 +34,4 @@ export const useStyles = makeStyles((theme, props: Pick<DistinctPattern, 'status
     gap: 12,
     justifyContent: 'flex-end',
   },
-  reviewButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  reviewButtonText: {
-    fontFamily: theme.typography.family.semibold,
-    fontSize: theme.typography.size.pMd,
-    fontWeight: '600',
-  },
 }))

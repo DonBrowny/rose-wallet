@@ -35,24 +35,7 @@ export const useStyles = makeStyles((theme) => ({
     marginBottom: 16,
   },
   addButton: {
-    backgroundColor: theme.colors.primary,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 25,
-    shadowColor: theme.colors.primary,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  addButtonText: {
-    color: theme.colors.white,
-    fontWeight: '600',
-    fontSize: 14,
-    marginLeft: 8,
+    ...theme.elevation[2],
   },
   placeholderContainer: {
     padding: 20,

@@ -1,6 +1,5 @@
 import { Loading } from '@/components/loading/loading'
 import { PatternCard } from '@/components/pattern-card/pattern-card'
-import { PatternDetailOverlay } from '@/components/pattern-detail-overlay/pattern-detail-overlay'
 import { Text } from '@/components/ui/text'
 import { useLivePatterns } from '@/hooks/use-live-patterns'
 import { upsertPatternsByGrouping } from '@/services/database/patterns-repository'
@@ -19,8 +18,6 @@ export const PatternsScreen = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [patterns, setPatterns] = useState<DistinctPattern[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [selectedPattern, setSelectedPattern] = useState<DistinctPattern | null>(null)
-  const [isOverlayVisible, setIsOverlayVisible] = useState(false)
   const live = useLivePatterns()
 
   const [isPatternDiscoveryCompleted = false, setIsPatternDiscoveryCompleted] = useMMKVBoolean(
@@ -78,11 +75,6 @@ export const PatternsScreen = () => {
     router.push({ pathname: '/(shared)/pattern-review', params: { patternId } })
   }
 
-  const handleCloseOverlay = () => {
-    setIsOverlayVisible(false)
-    setSelectedPattern(null)
-  }
-
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -126,12 +118,6 @@ export const PatternsScreen = () => {
           />
         ))}
       </ScrollView>
-
-      <PatternDetailOverlay
-        pattern={selectedPattern}
-        isVisible={isOverlayVisible}
-        onClose={handleCloseOverlay}
-      />
     </>
   )
 }

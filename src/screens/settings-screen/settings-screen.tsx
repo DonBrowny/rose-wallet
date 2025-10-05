@@ -1,8 +1,7 @@
 import { SettingsItem } from '@/components/settings-item/settings-item'
 import { Text } from '@/components/ui/text'
-import { Button } from '@rneui/themed'
 import { router } from 'expo-router'
-import { View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useStyles } from './settings-screen.styles'
 
@@ -34,19 +33,17 @@ export const SettingsScreen = () => {
           Settings
         </Text>
         {settingsItems.map((item) => (
-          <Button
+          <Pressable
             key={item.id}
-            type='outline'
-            title={
-              <SettingsItem
-                header={item.header}
-                subHeader={item.subHeader}
-              />
-            }
             onPress={() => {
               router.push(item.href as any)
             }}
-          />
+          >
+            <SettingsItem
+              header={item.header}
+              subHeader={item.subHeader}
+            />
+          </Pressable>
         ))}
       </View>
     </SafeAreaView>

@@ -1,6 +1,7 @@
+import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text'
 import { useBudgetContext } from '@/contexts/budget-context'
-import { Button, Overlay, useTheme } from '@rneui/themed'
+import { Overlay, useTheme } from '@rneui/themed'
 import React, { useState } from 'react'
 import { View } from 'react-native'
 import { ThemedInput } from '../ui/input'

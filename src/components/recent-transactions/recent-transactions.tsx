@@ -1,6 +1,7 @@
+import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
-import { Button, useTheme } from '@rneui/themed'
+import { useTheme } from '@rneui/themed'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { Eye, Plus } from 'lucide-react-native'
@@ -55,9 +56,8 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
           <Button
             title={isPatternDiscoveryCompleted ? 'Add Expense' : 'Review Patterns'}
             onPress={isPatternDiscoveryCompleted ? handleAddExpense : handleReviewPatterns}
-            buttonStyle={styles.addButton}
-            titleStyle={styles.addButtonText}
-            icon={
+            containerStyle={styles.addButton}
+            leftIcon={
               isPatternDiscoveryCompleted ? (
                 <Plus
                   size={20}
@@ -70,7 +70,6 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
                 />
               )
             }
-            iconPosition='left'
           />
         </View>
       </View>

@@ -1,6 +1,6 @@
+import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text'
 import { type DistinctPattern } from '@/types/sms/transaction'
-import { Button } from '@rneui/themed'
 import { AlertCircle, CheckCircle } from 'lucide-react-native'
 import { View } from 'react-native'
 import { useStyles } from './pattern-card.styles'
@@ -36,20 +36,13 @@ export const PatternCard = ({ template, status, onReview }: PatternCardProps) =>
       <View style={styles.footer}>
         <Button
           title='Reject'
-          size='sm'
-          radius='xl'
-          color='error'
-          buttonStyle={styles.reviewButton}
-          titleStyle={styles.reviewButtonText}
+          type='destructive'
           //TODO: Wire-up the reject action
           onPress={onReview}
         />
         <Button
           title='Review Pattern'
-          size='sm'
-          radius='xl'
-          buttonStyle={styles.reviewButton}
-          titleStyle={styles.reviewButtonText}
+          type='outline'
           onPress={onReview}
         />
       </View>
