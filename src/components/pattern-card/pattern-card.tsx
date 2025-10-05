@@ -38,7 +38,6 @@ export const PatternCard = ({ template, status, onReview }: PatternCardProps) =>
           title='Reject'
           type='destructive'
           //TODO: Wire-up the reject action
-          onPress={onReview}
         />
         <Button
           title='Review Pattern'

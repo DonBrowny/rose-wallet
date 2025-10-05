@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button/button'
+import { Overlay } from '@/components/ui/overlay/overlay'
 import { Text } from '@/components/ui/text/text'
 import { useBudgetContext } from '@/contexts/budget-context'
-import { Overlay } from '@rneui/themed'
 import React, { useState } from 'react'
 import { View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
