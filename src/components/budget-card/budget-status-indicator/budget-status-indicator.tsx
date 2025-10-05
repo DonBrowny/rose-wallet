@@ -75,7 +75,7 @@ export function BudgetStatusIndicator({
           />
         ),
         text: 'Over',
-        color: theme.colors.error,
+        color: 'error',
         bgColor: theme.colors.accentRed,
       }
     } else if (weeklyPace.weeklyPaceRatio >= 0.9) {
@@ -87,7 +87,7 @@ export function BudgetStatusIndicator({
           />
         ),
         text: 'Near',
-        color: theme.colors.warning,
+        color: 'warning',
         bgColor: theme.colors.accentYellow,
       }
     } else {
@@ -99,7 +99,7 @@ export function BudgetStatusIndicator({
           />
         ),
         text: 'On',
-        color: theme.colors.success,
+        color: 'success',
         bgColor: theme.colors.accentGreen,
       }
     }
@@ -113,7 +113,7 @@ export function BudgetStatusIndicator({
       {gardenStatus.icon}
       <Text
         variant='pSm'
-        style={{ color: gardenStatus.color }}
+        color={gardenStatus.color}
       >
         {gardenStatus.text} · {weeklyAmount}
       </Text>

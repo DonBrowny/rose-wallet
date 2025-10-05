@@ -13,7 +13,4 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  overBudgetText: {
-    color: theme.colors.error,
-  },
 }))

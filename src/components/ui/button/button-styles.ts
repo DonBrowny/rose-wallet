@@ -17,10 +17,6 @@ export const styles = StyleSheet.create((theme) => ({
     opacity: disabled ? 0.5 : 1,
   }),
   label: (type: 'solid' | 'outline' | 'destructive') => ({
-    fontFamily: theme.typography.family.bold,
-    fontWeight: '700',
-    fontSize: theme.typography.size.pMd,
-    lineHeight: theme.typography.line.pMd,
     color: type === 'outline' ? theme.colors.primary : theme.colors.surface,
   }),
 }))

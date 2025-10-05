@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text as RNText, StyleProp, TextProps, TextStyle } from 'react-native'
+import type { UnistylesThemes } from 'react-native-unistyles'
 import { useUnistyles } from 'react-native-unistyles'
 
 type Variant =
@@ -20,18 +21,17 @@ type Variant =
   | 'aLg'
   | 'aLgBold'
 
+type ThemeColorKey = keyof UnistylesThemes[keyof UnistylesThemes]['colors']
+
 interface Props extends TextProps {
   variant?: Variant
-  color?: keyof typeof colorKeys
+  color?: keyof typeof colorKeys | ThemeColorKey | string
   style?: StyleProp<TextStyle>
 }
 
 const colorKeys = {
   default: 'onSurface',
   muted: 'textMuted',
-  brand: 'primary',
-  danger: 'error',
-  success: 'success',
 } as const
 
 export function Text({ variant = 'pMd', color = 'default', style, children, ...rest }: Props) {
@@ -167,7 +167,10 @@ export function Text({ variant = 'pMd', color = 'default', style, children, ...r
     },
   }
 
-  const colorStyle: TextStyle = { color: c[colorKeys[color] as keyof typeof c] as string }
+  const raw = String(color)
+  const mapped = (colorKeys as any)[raw] ?? raw
+  const themeKey = (mapped in c ? mapped : 'black') as keyof typeof c
+  const colorStyle: TextStyle = { color: c[themeKey] as string }
 
   return (
     <RNText

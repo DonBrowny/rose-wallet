@@ -1,6 +1,7 @@
 import React from 'react'
-import { ActivityIndicator, GestureResponderEvent, Pressable, PressableProps, Text, ViewStyle } from 'react-native'
+import { ActivityIndicator, GestureResponderEvent, Pressable, PressableProps, ViewStyle } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
+import { Text } from '../text/text'
 import { styles } from './button-styles'
 
 interface Props extends Omit<PressableProps, 'style'> {
@@ -49,7 +50,14 @@ export function Button({
       ) : (
         <>
           {leftIcon}
-          {title ? <Text style={styles.label(type)}>{title}</Text> : null}
+          {title ? (
+            <Text
+              variant='pMdBold'
+              color={type === 'outline' ? 'primary' : 'surface'}
+            >
+              {title}
+            </Text>
+          ) : null}
           {rightIcon}
         </>
       )}

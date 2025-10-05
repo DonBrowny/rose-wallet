@@ -87,12 +87,7 @@ export function RecentTransactions({ transactions = [] }: RecentTransactionsProp
       </Text>
       {/* TODO: Add transaction list when we have transaction data */}
       <View style={styles.placeholderContainer}>
-        <Text
-          variant='pSm'
-          style={styles.placeholderText}
-        >
-          Transaction list will be implemented here
-        </Text>
+        <Text variant='pSm'>Transaction list will be implemented here</Text>
       </View>
     </View>
   )

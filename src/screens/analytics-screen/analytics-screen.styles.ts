@@ -40,11 +40,6 @@ export const useStyles = makeStyles((theme) => ({
     shadowRadius: 4,
     elevation: 2,
   },
-  comingSoonButtonText: {
-    color: theme.colors.grey2,
-    fontWeight: '600',
-    fontSize: 14,
-  },
   iconContainer: {
     marginRight: 8,
   },

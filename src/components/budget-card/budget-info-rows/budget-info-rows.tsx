@@ -41,7 +41,7 @@ export function BudgetInfoRows({ spentFormatted, budgetFormatted, isOverBudget }
         <View style={styles.valueRow}>
           <Text
             variant='aLg'
-            color={isOverBudget ? 'danger' : 'default'}
+            color={isOverBudget ? 'error' : 'default'}
           >
             {spentFormatted}
           </Text>

@@ -8,8 +8,6 @@ export const useStyles = makeStyles((theme) => ({
   },
   sectionTitle: {
     marginBottom: 20,
-    color: theme.colors.black,
-    fontWeight: '600',
   },
   emptyStateContainer: {
     flex: 1,
@@ -39,9 +37,5 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.colors.grey5,
     borderRadius: 12,
     alignItems: 'center',
-  },
-  placeholderText: {
-    color: theme.colors.grey3,
-    fontStyle: 'italic',
   },
 }))
