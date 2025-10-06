@@ -2,6 +2,7 @@ import { Text } from '@/components/ui/text/text'
 import { ChevronRight } from 'lucide-react-native'
 import { View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
+import { Card } from '../ui/card/card'
 import { styles } from './settings-item.styles'
 
 interface SettingsItemProps {
@@ -13,7 +14,7 @@ export const SettingsItem = ({ header, subHeader }: SettingsItemProps) => {
   const { theme } = useUnistyles()
 
   return (
-    <View style={styles.container}>
+    <Card style={styles.container}>
       <View style={styles.textContainer}>
         <Text variant='pMdBold'>{header}</Text>
         <Text
@@ -27,6 +28,6 @@ export const SettingsItem = ({ header, subHeader }: SettingsItemProps) => {
         size={24}
         color={theme.colors.grey4}
       />
-    </View>
+    </Card>
   )
 }
