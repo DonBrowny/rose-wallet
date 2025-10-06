@@ -29,12 +29,6 @@ importers:
       '@react-navigation/native':
         specifier: ^7.1.6
         version: 7.1.17(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
-      '@rneui/base':
-        specifier: 4.0.0-rc.8
-        version: 4.0.0-rc.8(react-native-safe-area-context@5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-vector-icons@10.3.0)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
-      '@rneui/themed':
-        specifier: 4.0.0-rc.8
-        version: 4.0.0-rc.8(@rneui/base@4.0.0-rc.8(react-native-safe-area-context@5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-vector-icons@10.3.0)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))
       '@shopify/flash-list':
         specifier: 2.0.2
         version: 2.0.2(@babel/runtime@7.28.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -107,6 +101,9 @@ importers:
       react-native:
         specifier: 0.81.4
         version: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)
+      react-native-edge-to-edge:
+        specifier: ^1.7.0
+        version: 1.7.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       react-native-executorch:
         specifier: ^0.5.8
         version: 0.5.8(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)))(react-native-webview@13.15.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -116,6 +113,9 @@ importers:
       react-native-mmkv:
         specifier: ^3.3.1
         version: 3.3.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      react-native-nitro-modules:
+        specifier: ^0.29.8
+        version: 0.29.8(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       react-native-reanimated:
         specifier: ~4.1.2
         version: 4.1.2(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -128,6 +128,9 @@ importers:
       react-native-svg:
         specifier: 15.12.1
         version: 15.12.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      react-native-unistyles:
+        specifier: ^3.0.13
+        version: 3.0.13(@react-native/normalize-colors@0.81.4)(react-native-edge-to-edge@1.7.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-nitro-modules@0.29.8(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-reanimated@4.1.2(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       react-native-web:
         specifier: ~0.21.1
         version: 0.21.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1681,17 +1684,6 @@ packages:
   '@react-navigation/routers@7.5.1':
     resolution: {integrity: sha512-pxipMW/iEBSUrjxz2cDD7fNwkqR4xoi0E/PcfTQGCcdJwLoaxzab5kSadBLj1MTJyT0YRrOXL9umHpXtp+Dv4w==}
 
-  '@rneui/base@4.0.0-rc.8':
-    resolution: {integrity: sha512-teJ6bUki+TQ+r+abefEWYb2wRUaMgRhp1oxtKa84UfDqTiCF0ItyJ0L8FhMb6AAkTOkWC34301T7j3H4df6ueA==}
-    peerDependencies:
-      react-native-safe-area-context: '>= 3.0.0'
-      react-native-vector-icons: '>7.0.0'
-
-  '@rneui/themed@4.0.0-rc.8':
-    resolution: {integrity: sha512-8L/XOrL9OK/r+/iBLvx63TbIdZOXF8SIjN9eArMYm6kRbMr8m4BitXllDN8nBhBsSPNYvL6EAgjk+i2MfY4sBA==}
-    peerDependencies:
-      '@rneui/base': 4.0.0-rc.7
-
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
@@ -1752,12 +1744,6 @@ packages:
 
   '@types/node@24.3.1':
     resolution: {integrity: sha512-3vXmQDXy+woz+gnrTvuvNrPzekOi+Ds0ReMxw0LzBiK3a+1k0kQn9f2NWk+lgD4rJehFUmYy2gMhJ2ZI+7YP9g==}
-
-  '@types/react-native-vector-icons@6.4.18':
-    resolution: {integrity: sha512-YGlNWb+k5laTBHd7+uZowB9DpIK3SXUneZqAiKQaj1jnJCZM0x71GDim5JCTMi4IFkhc9m8H/Gm28T5BjyivUw==}
-
-  '@types/react-native@0.70.19':
-    resolution: {integrity: sha512-c6WbyCgWTBgKKMESj/8b4w+zWcZSsCforson7UdXtXMecG3MxCinYi6ihhrHVPyUrVzORsvEzK8zg32z4pK6Sg==}
 
   '@types/react@19.1.17':
     resolution: {integrity: sha512-Qec1E3mhALmaspIrhWt9jkQMNdw6bReVu64mjvhbhq2NFPftLPVr+l1SZgmw/66WwBNpDh7ao5AT6gF5v41PFA==}
@@ -2283,9 +2269,6 @@ packages:
   client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
 
-  cliui@7.0.4:
-    resolution: {integrity: sha512-OcRE68cOsVMXp1Yvonl/fzkQOyjLSu/8bhPDfQt0e0/Eb283TKP20Fs2MqoPsr9SwA595rRCA+QMzYc9nBP+JQ==}
-
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
@@ -2309,9 +2292,6 @@ packages:
 
   color-string@1.9.1:
     resolution: {integrity: sha512-shrVawQFojnZv6xM40anx4CkoDP+fZsw/ZerEMsW/pyzsRbElpsL/DBVW7q3ExxwusdNXI3lXpuhEZkzs8p5Eg==}
-
-  color@3.2.1:
-    resolution: {integrity: sha512-aBl7dZI9ENN6fUGC7mWpMTPNHmWUSNan9tuWN6ahh5ZLNk9baLJOnSMlrQkHcrfFgz2/RigjUVAjdx36VcemKA==}
 
   color@4.2.3:
     resolution: {integrity: sha512-1rXeuUUiGGrykh+CeBdu5Ie7OJwinCgQY0bc7GCRxy5xVHy+moaqkpL/jqQq0MtQOeYcrqEz4abc5f0KtU7W4A==}
@@ -3815,9 +3795,6 @@ packages:
   lodash.throttle@4.1.1:
     resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-
   log-symbols@2.2.0:
     resolution: {integrity: sha512-VeIAFslyIerEJLXHziedo2basKbMKtTw3vfn5IzG0XTjhAVEJyNHnL2p7vc+wBDSdQuUpNw3M2u6xb9QsAY5Eg==}
     engines: {node: '>=4'}
@@ -4329,6 +4306,12 @@ packages:
       react: '*'
       react-native: '*'
 
+  react-native-edge-to-edge@1.7.0:
+    resolution: {integrity: sha512-ERegbsq28yoMndn/Uq49i4h6aAhMvTEjOfkFh50yX9H/dMjjCr/Tix/es/9JcPRvC+q7VzCMWfxWDUb6Jrq1OQ==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+
   react-native-executorch@0.5.8:
     resolution: {integrity: sha512-2+i1g3R4Onx3AUHMMpjXhA6ecB8sAGMDYDYVimiczTdJUjMFNIt8u7hOerBS8PWnbXFRQEQEus8ddY/pQyVW4Q==}
     peerDependencies:
@@ -4353,8 +4336,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  react-native-ratings@8.1.0:
-    resolution: {integrity: sha512-+QOJ4G3NjVkI1D+tk4EGx1dCvVfbD2nQdkrj9cXrcAoEiwmbep4z4bZbCKmWMpQ5h2dqbxABU8/eBnbDmvAc3g==}
+  react-native-nitro-modules@0.29.8:
+    resolution: {integrity: sha512-SyKIR+MmAZadqFEPwD+wiHoG5Lem3EMtAyzLOJ+mU0JB+1+vHxxLLhcV0THoXoxbMSbf5zWOQYVb+JPCEhNtXg==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -4379,21 +4362,25 @@ packages:
       react: '*'
       react-native: '*'
 
-  react-native-size-matters@0.4.2:
-    resolution: {integrity: sha512-DKE3f/sdcozd24oASgkP1iGg+YU3HoajRa5k3a4wkRzpiqREq8SGX12Y5zBgAt/8IivLQoTMYkyQu1/Giuy+zQ==}
-    peerDependencies:
-      react-native: '*'
-
   react-native-svg@15.12.1:
     resolution: {integrity: sha512-vCuZJDf8a5aNC2dlMovEv4Z0jjEUET53lm/iILFnFewa15b4atjVxU6Wirm6O9y6dEsdjDZVD7Q3QM4T1wlI8g==}
     peerDependencies:
       react: '*'
       react-native: '*'
 
-  react-native-vector-icons@10.3.0:
-    resolution: {integrity: sha512-IFQ0RE57819hOUdFvgK4FowM5aMXg7C7XKsuGLevqXkkIJatc3QopN0wYrb2IrzUgmdpfP+QVIbI3S6h7M0btw==}
-    deprecated: react-native-vector-icons package has moved to a new model of per-icon-family packages. See the https://github.com/oblador/react-native-vector-icons/blob/master/MIGRATION.md on how to migrate
-    hasBin: true
+  react-native-unistyles@3.0.13:
+    resolution: {integrity: sha512-7MqP3uX80fnsmYMvoL0LwrHQLy2jG0CaYN/nm93An6H4b6W5UeuD0Q0LMbIS+asw/nqMguIKUXSPUW3GjyQJGg==}
+    engines: {node: '>= 18.0.0'}
+    peerDependencies:
+      '@react-native/normalize-colors': '*'
+      react: '*'
+      react-native: '>=0.76.0'
+      react-native-edge-to-edge: '*'
+      react-native-nitro-modules: '*'
+      react-native-reanimated: '*'
+    peerDependenciesMeta:
+      react-native-reanimated:
+        optional: true
 
   react-native-web@0.21.1:
     resolution: {integrity: sha512-BeNsgwwe4AXUFPAoFU+DKjJ+CVQa3h54zYX77p7GVZrXiiNo3vl03WYDYVEy5R2J2HOPInXtQZB5gmj3vuzrKg==}
@@ -5184,17 +5171,9 @@ packages:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
     engines: {node: '>=18'}
 
-  yargs-parser@20.2.9:
-    resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
-    engines: {node: '>=10'}
-
   yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
     engines: {node: '>=12'}
-
-  yargs@16.2.0:
-    resolution: {integrity: sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==}
-    engines: {node: '>=10'}
 
   yargs@17.7.2:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
@@ -7162,24 +7141,6 @@ snapshots:
     dependencies:
       nanoid: 3.3.11
 
-  '@rneui/base@4.0.0-rc.8(react-native-safe-area-context@5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-vector-icons@10.3.0)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
-    dependencies:
-      '@types/react-native-vector-icons': 6.4.18
-      color: 3.2.1
-      deepmerge: 4.3.1
-      hoist-non-react-statics: 3.3.2
-      react-native-ratings: 8.1.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
-      react-native-safe-area-context: 5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
-      react-native-size-matters: 0.4.2(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))
-      react-native-vector-icons: 10.3.0
-    transitivePeerDependencies:
-      - react
-      - react-native
-
-  '@rneui/themed@4.0.0-rc.8(@rneui/base@4.0.0-rc.8(react-native-safe-area-context@5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-vector-icons@10.3.0)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))':
-    dependencies:
-      '@rneui/base': 4.0.0-rc.8(react-native-safe-area-context@5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-vector-icons@10.3.0)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
-
   '@rtsao/scc@1.1.0': {}
 
   '@shopify/flash-list@2.0.2(@babel/runtime@7.28.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
@@ -7250,15 +7211,6 @@ snapshots:
   '@types/node@24.3.1':
     dependencies:
       undici-types: 7.10.0
-
-  '@types/react-native-vector-icons@6.4.18':
-    dependencies:
-      '@types/react': 19.1.17
-      '@types/react-native': 0.70.19
-
-  '@types/react-native@0.70.19':
-    dependencies:
-      '@types/react': 19.1.17
 
   '@types/react@19.1.17':
     dependencies:
@@ -7887,12 +7839,6 @@ snapshots:
 
   client-only@0.0.1: {}
 
-  cliui@7.0.4:
-    dependencies:
-      string-width: 4.2.3
-      strip-ansi: 6.0.1
-      wrap-ansi: 7.0.0
-
   cliui@8.0.1:
     dependencies:
       string-width: 4.2.3
@@ -7917,11 +7863,6 @@ snapshots:
     dependencies:
       color-name: 1.1.4
       simple-swizzle: 0.2.2
-
-  color@3.2.1:
-    dependencies:
-      color-convert: 1.9.3
-      color-string: 1.9.1
 
   color@4.2.3:
     dependencies:
@@ -9560,8 +9501,6 @@ snapshots:
 
   lodash.throttle@4.1.1: {}
 
-  lodash@4.17.21: {}
-
   log-symbols@2.2.0:
     dependencies:
       chalk: 2.4.2
@@ -10136,6 +10075,11 @@ snapshots:
       react: 19.1.0
       react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)
 
+  react-native-edge-to-edge@1.7.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)
+
   react-native-executorch@0.5.8(@babel/core@7.28.4)(@expo/metro-runtime@5.0.4(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)))(react-native-webview@13.15.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
       '@huggingface/jinja': 0.5.1
@@ -10176,9 +10120,8 @@ snapshots:
       react: 19.1.0
       react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)
 
-  react-native-ratings@8.1.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+  react-native-nitro-modules@0.29.8(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
-      lodash: 4.17.21
       react: 19.1.0
       react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)
 
@@ -10204,10 +10147,6 @@ snapshots:
       react-native-is-edge-to-edge: 1.2.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       warn-once: 0.1.1
 
-  react-native-size-matters@0.4.2(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)):
-    dependencies:
-      react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)
-
   react-native-svg@15.12.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
       css-select: 5.2.2
@@ -10216,10 +10155,15 @@ snapshots:
       react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)
       warn-once: 0.1.1
 
-  react-native-vector-icons@10.3.0:
+  react-native-unistyles@3.0.13(@react-native/normalize-colors@0.81.4)(react-native-edge-to-edge@1.7.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-nitro-modules@0.29.8(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-reanimated@4.1.2(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
-      prop-types: 15.8.1
-      yargs: 16.2.0
+      '@react-native/normalize-colors': 0.81.4
+      react: 19.1.0
+      react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0)
+      react-native-edge-to-edge: 1.7.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      react-native-nitro-modules: 0.29.8(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+    optionalDependencies:
+      react-native-reanimated: 4.1.2(@babel/core@7.28.4)(react-native-worklets@0.5.1(@babel/core@7.28.4)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
 
   react-native-web@0.21.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -11114,19 +11058,7 @@ snapshots:
 
   yallist@5.0.0: {}
 
-  yargs-parser@20.2.9: {}
-
   yargs-parser@21.1.1: {}
-
-  yargs@16.2.0:
-    dependencies:
-      cliui: 7.0.4
-      escalade: 3.2.0
-      get-caller-file: 2.0.5
-      require-directory: 2.1.1
-      string-width: 4.2.3
-      y18n: 5.0.8
-      yargs-parser: 20.2.9
 
   yargs@17.7.2:
     dependencies:

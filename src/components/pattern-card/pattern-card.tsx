@@ -1,0 +1,48 @@
+import { Button } from '@/components/ui/button/button'
+import { Text } from '@/components/ui/text/text'
+import { type DistinctPattern } from '@/types/sms/transaction'
+import { AlertCircle, CheckCircle } from 'lucide-react-native'
+import { View } from 'react-native'
+import { styles } from './pattern-card.styles'
+
+interface PatternCardProps extends Pick<DistinctPattern, 'status' | 'template'> {
+  onReview: () => void
+}
+
+export const PatternCard = ({ template, status, onReview }: PatternCardProps) => {
+  return (
+    <View style={styles.cardContainer}>
+      <View style={styles.statusContainer}>
+        <View style={styles.statusPill(status)}>
+          {status === 'approved' ? (
+            <CheckCircle
+              size={14}
+              style={styles.statusIcon}
+            />
+          ) : (
+            <AlertCircle
+              size={14}
+              style={styles.statusIcon}
+            />
+          )}
+          <Text variant='pSm'>{status === 'approved' ? 'Approved' : 'Action Needed'}</Text>
+        </View>
+      </View>
+
+      <Text variant='pMd'>{template}</Text>
+
+      <View style={styles.footer}>
+        <Button
+          title='Reject'
+          type='destructive'
+          //TODO: Wire-up the reject action
+        />
+        <Button
+          title='Review Pattern'
+          type='outline'
+          onPress={onReview}
+        />
+      </View>
+    </View>
+  )
+}
