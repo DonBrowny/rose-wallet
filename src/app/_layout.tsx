@@ -1,6 +1,4 @@
-import { theme } from '@/theme/rne-theme'
 import { DB_NAME } from '@/types/constants'
-import { ThemeProvider } from '@rneui/themed'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import { Stack } from 'expo-router'
@@ -30,25 +28,23 @@ export default function Root() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Suspense fallback={<ActivityIndicator size='large' />}>
-        <SQLiteProvider
-          databaseName={DB_NAME}
-          options={{ enableChangeListener: true }}
-          useSuspense
-        >
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen
-              name='(tabs)'
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name='(shared)'
-              options={{ headerShown: false }}
-            />
-          </Stack>
-        </SQLiteProvider>
-      </Suspense>
-    </ThemeProvider>
+    <Suspense fallback={<ActivityIndicator size='large' />}>
+      <SQLiteProvider
+        databaseName={DB_NAME}
+        options={{ enableChangeListener: true }}
+        useSuspense
+      >
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen
+            name='(tabs)'
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name='(shared)'
+            options={{ headerShown: false }}
+          />
+        </Stack>
+      </SQLiteProvider>
+    </Suspense>
   )
 }

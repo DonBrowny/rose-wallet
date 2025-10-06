@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import { View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
 import { Input } from '../ui/input/input'
-import { useStyles } from './budget-edit-modal.style'
+import { styles } from './budget-edit-modal.style'
 
 interface BudgetEditModalProps {
   isVisible: boolean
@@ -15,7 +15,6 @@ interface BudgetEditModalProps {
 }
 
 export function BudgetEditModal({ isVisible, onCancel }: BudgetEditModalProps) {
-  const styles = useStyles()
   const { theme } = useUnistyles()
   const { monthlyBudget, budgetChangeHandler } = useBudgetContext()
   const [editBudget, setEditBudget] = useState(monthlyBudget.toString())

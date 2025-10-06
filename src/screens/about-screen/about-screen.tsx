@@ -1,11 +1,9 @@
 import { Text } from '@/components/ui/text/text'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useStyles } from './about-screen.styles'
+import { styles } from './about-screen.styles'
 
 export const AboutScreen = () => {
-  const styles = useStyles()
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.section}>

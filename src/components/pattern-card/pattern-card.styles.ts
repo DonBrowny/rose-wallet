@@ -1,7 +1,7 @@
 import { type DistinctPattern } from '@/types/sms/transaction'
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme, props: Pick<DistinctPattern, 'status'>) => ({
+export const styles = StyleSheet.create((theme) => ({
   cardContainer: {
     display: 'flex',
     backgroundColor: theme.colors.grey1,
@@ -15,18 +15,18 @@ export const useStyles = makeStyles((theme, props: Pick<DistinctPattern, 'status
     flexDirection: 'row',
     alignItems: 'center',
   },
-  statusPill: {
+  statusPill: (status: DistinctPattern['status']) => ({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 16,
     gap: 6,
-    backgroundColor: props.status === 'approved' ? theme.colors.accentGreen : theme.colors.accentOrange,
-  },
+    backgroundColor: status === 'approved' ? theme.colors.accentGreen : theme.colors.accentOrange,
+  }),
   statusIcon: {
     marginRight: 2,
-    color: theme.colors.black,
+    color: theme.colors.onSurface,
   },
   footer: {
     width: '100%',

@@ -1,17 +1,17 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    paddingHorizontal: 12,
+    paddingHorizontal: theme.space(3),
   },
   underConstructionContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 40,
-    marginTop: 12,
+    marginHorizontal: theme.space(10),
+    marginTop: theme.space(3),
     marginBottom: 100,
   },
   constructionImage: {
@@ -19,17 +19,17 @@ export const useStyles = makeStyles((theme) => ({
     height: 250,
   },
   constructionTitle: {
-    marginBottom: 8,
+    marginBottom: theme.space(2),
     textAlign: 'center',
   },
   constructionDescription: {
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: theme.space(4),
   },
   comingSoonButton: {
     backgroundColor: theme.colors.grey4,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: theme.space(6),
+    paddingVertical: theme.space(3),
     borderRadius: 25,
     shadowColor: theme.colors.grey3,
     shadowOffset: {
@@ -41,6 +41,6 @@ export const useStyles = makeStyles((theme) => ({
     elevation: 2,
   },
   iconContainer: {
-    marginRight: 8,
+    marginRight: theme.space(2),
   },
 }))

@@ -2,7 +2,7 @@ import { Text } from '@/components/ui/text/text'
 import { Image } from 'expo-image'
 import LottieView from 'lottie-react-native'
 import { View } from 'react-native'
-import { useStyles } from './loading.styles'
+import { styles } from './loading.styles'
 
 interface LoadingProps {
   title?: string
@@ -15,8 +15,6 @@ export const Loading = ({
   description = 'Please wait while we process your request',
   showImage = true,
 }: LoadingProps) => {
-  const styles = useStyles()
-
   return (
     <View style={styles.container}>
       {showImage && (

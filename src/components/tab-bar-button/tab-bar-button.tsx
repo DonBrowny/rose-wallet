@@ -1,12 +1,12 @@
 import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs'
 import React, { forwardRef, useEffect, useMemo, useRef } from 'react'
 import { Animated, Pressable } from 'react-native'
-import { useStyles } from './tab-bar-button.styles'
+import { styles } from './tab-bar-button.styles'
 
 export const TabBarButton = forwardRef<any, BottomTabBarButtonProps>((props, ref) => {
   const { children, style, ...restProps } = props
   const { accessibilityState } = props
-  const styles = useStyles()
+
   const scaleAnim = useRef(new Animated.Value(1)).current
   const activeScaleAnim = useRef(new Animated.Value(1)).current
   const isFocused = accessibilityState?.selected

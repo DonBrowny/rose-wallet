@@ -11,7 +11,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
-import { useStyles } from './sms-carousel.styles'
+import { styles } from './sms-carousel.styles'
 
 interface SmsCarouselProps {
   data: Transaction[]
@@ -27,8 +27,6 @@ export function SmsCarousel({
   peek = 32,
   outerPadding: outerPaddingProp = 16,
 }: SmsCarouselProps) {
-  const styles = useStyles()
-
   const outerPadding = outerPaddingProp
   const viewportWidth = screenWidth - 2 * outerPadding
   const cardWidth = viewportWidth - 2 * peek

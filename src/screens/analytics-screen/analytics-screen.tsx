@@ -1,11 +1,9 @@
 import { Text } from '@/components/ui/text/text'
 import { Image } from 'expo-image'
 import { View } from 'react-native'
-import { useStyles } from './analytics-screen.styles'
+import { styles } from './analytics-screen.styles'
 
 export const AnalyticsScreen = () => {
-  const styles = useStyles()
-
   return (
     <View style={styles.container}>
       <View style={styles.underConstructionContainer}>

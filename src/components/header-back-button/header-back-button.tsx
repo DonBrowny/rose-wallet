@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react-native'
 import React, { useRef } from 'react'
 import { Animated, Pressable } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
-import { useStyles } from './header-back-button.styles'
+import { styles } from './header-back-button.styles'
 
 interface HeaderBackButtonProps {
   onPress?: () => void
@@ -14,7 +14,7 @@ interface HeaderBackButtonProps {
 export function HeaderBackButton({ onPress, size = 24, color }: HeaderBackButtonProps) {
   const { theme } = useUnistyles()
   const router = useRouter()
-  const styles = useStyles()
+
   const scaleAnim = useRef(new Animated.Value(1)).current
 
   const handlePress = () => {

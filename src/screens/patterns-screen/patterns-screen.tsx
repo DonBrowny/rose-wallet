@@ -11,10 +11,9 @@ import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { ScrollView, View } from 'react-native'
 import { useMMKVBoolean, useMMKVObject } from 'react-native-mmkv'
-import { useStyles } from './patterns-screen.styles'
+import { styles } from './patterns-screen.styles'
 
 export const PatternsScreen = () => {
-  const styles = useStyles()
   const [isLoading, setIsLoading] = useState(true)
   const [patterns, setPatterns] = useState<DistinctPattern[]>([])
   const [error, setError] = useState<string | null>(null)

@@ -1,6 +1,6 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   overlay: {
     borderRadius: 16,
     padding: 0,
@@ -8,8 +8,8 @@ export const useStyles = makeStyles((theme) => ({
     maxWidth: 360,
   },
   overlayContent: {
-    padding: 20,
-    gap: 16,
+    padding: theme.space(5),
+    gap: theme.gap(2),
   },
   overlayTitle: {
     textAlign: 'center',

@@ -1,12 +1,12 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 24,
-    paddingHorizontal: 20,
+    gap: theme.gap(3),
+    paddingHorizontal: theme.space(5),
     backgroundColor: theme.colors.background,
   },
   image: {

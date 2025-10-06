@@ -1,12 +1,12 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   rightSection: {
     flex: 1,
-    gap: 8,
+    gap: theme.gap(1),
   },
   infoRow: {
-    paddingVertical: 4,
+    paddingVertical: theme.space(1),
   },
   valueRow: {
     flexDirection: 'row',

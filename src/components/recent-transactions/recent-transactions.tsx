@@ -8,14 +8,13 @@ import React from 'react'
 import { View } from 'react-native'
 import { useMMKVBoolean } from 'react-native-mmkv'
 import { useUnistyles } from 'react-native-unistyles'
-import { useStyles } from './recent-transactions.styles'
+import { styles } from './recent-transactions.styles'
 
 interface RecentTransactionsProps {
   transactions?: any[] // Will be typed properly when we have transaction data
 }
 
 export function RecentTransactions({ transactions = [] }: RecentTransactionsProps) {
-  const styles = useStyles()
   const { theme } = useUnistyles()
   const router = useRouter()
   const [isPatternDiscoveryCompleted] = useMMKVBoolean(MMKV_KEYS.PATTERNS.IS_PATTERN_DISCOVERY_COMPLETED)

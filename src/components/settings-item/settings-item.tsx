@@ -2,7 +2,7 @@ import { Text } from '@/components/ui/text/text'
 import { ChevronRight } from 'lucide-react-native'
 import { View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
-import { useStyles } from './settings-item.styles'
+import { styles } from './settings-item.styles'
 
 interface SettingsItemProps {
   header: string
@@ -10,7 +10,6 @@ interface SettingsItemProps {
 }
 
 export const SettingsItem = ({ header, subHeader }: SettingsItemProps) => {
-  const styles = useStyles()
   const { theme } = useUnistyles()
 
   return (

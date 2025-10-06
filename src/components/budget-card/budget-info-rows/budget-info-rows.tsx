@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
 import { BudgetEditModal } from '../../budget-edit-modal/budget-edit-modal'
-import { useStyles } from './budget-info-rows.style'
+import { styles } from './budget-info-rows.style'
 
 interface BudgetInfoRowsProps {
   spentFormatted: string
@@ -14,7 +14,6 @@ interface BudgetInfoRowsProps {
 }
 
 export function BudgetInfoRows({ spentFormatted, budgetFormatted, isOverBudget }: BudgetInfoRowsProps) {
-  const styles = useStyles()
   const { theme } = useUnistyles()
   const router = useRouter()
   const [isModalVisible, setIsModalVisible] = useState(false)

@@ -1,8 +1,8 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   sampleCard: {
-    padding: 12,
+    padding: theme.space(3),
     borderRadius: 24,
     backgroundColor: theme.colors.accentOrange,
   },

@@ -1,6 +1,6 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   container: {
     position: 'absolute',
     left: 16,
@@ -8,8 +8,8 @@ export const useStyles = makeStyles((theme) => ({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 8,
+    paddingHorizontal: theme.space(2),
+    paddingVertical: theme.space(2),
     zIndex: 1,
   },
   iconContainer: {

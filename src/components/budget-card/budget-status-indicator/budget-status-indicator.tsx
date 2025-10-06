@@ -4,7 +4,7 @@ import { Flower, Icon, Sprout } from 'lucide-react-native'
 import React from 'react'
 import { View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
-import { useStyles } from './budget-status-indicator.style'
+import { styles } from './budget-status-indicator.style'
 
 interface BudgetStatusIndicatorProps {
   monthlyBudget: number
@@ -18,7 +18,6 @@ export function BudgetStatusIndicator({
   currentDate = new Date(),
 }: BudgetStatusIndicatorProps) {
   const { theme } = useUnistyles()
-  const styles = useStyles()
 
   const calculateWeeklyPace = () => {
     const now = currentDate

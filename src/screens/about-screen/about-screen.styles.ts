@@ -1,16 +1,16 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    paddingHorizontal: 12,
+    paddingHorizontal: theme.space(3),
   },
   section: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.surface,
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 8,
+    padding: theme.space(4),
+    marginBottom: theme.space(2),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -21,6 +21,6 @@ export const useStyles = makeStyles((theme) => ({
     elevation: 2,
   },
   sectionTitle: {
-    marginBottom: 8,
+    marginBottom: theme.space(2),
   },
 }))

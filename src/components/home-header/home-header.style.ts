@@ -1,11 +1,11 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   container: {
     backgroundColor: theme.colors.accentGreen,
     height: 120,
-    paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingHorizontal: theme.space(6),
+    paddingVertical: theme.space(4),
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     ...theme.elevation[2],
@@ -18,10 +18,10 @@ export const useStyles = makeStyles((theme) => ({
   greetingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: theme.space(1),
   },
   waveEmoji: {
-    fontSize: 20,
-    marginLeft: 8,
+    fontSize: theme.typography.size.h5,
+    marginLeft: theme.space(2),
   },
 }))

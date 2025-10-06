@@ -1,10 +1,9 @@
 import { Text } from '@/components/ui/text/text'
 import React, { useEffect, useRef } from 'react'
 import { Animated, View } from 'react-native'
-import { useStyles } from './home-header.style'
+import { styles } from './home-header.style'
 
 export function HomeHeader() {
-  const styles = useStyles()
   const waveAnimation = useRef(new Animated.Value(0)).current
 
   useEffect(() => {

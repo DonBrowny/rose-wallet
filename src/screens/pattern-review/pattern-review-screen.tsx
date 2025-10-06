@@ -7,7 +7,7 @@ import { getPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { View } from 'react-native'
-import { useStyles } from './pattern-review-screen.styles'
+import { styles } from './pattern-review-screen.styles'
 
 interface PatternReviewScreenProps {
   id: number
@@ -18,7 +18,6 @@ interface PatternReviewScreenProps {
 }
 
 export function PatternReviewScreen({ id, groupingTemplate, name, template, status }: PatternReviewScreenProps) {
-  const styles = useStyles()
   const router = useRouter()
 
   const samples: Transaction[] = useMemo(() => {

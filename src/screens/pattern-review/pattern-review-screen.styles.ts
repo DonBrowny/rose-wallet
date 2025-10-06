@@ -1,18 +1,18 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     gap: 12,
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.surface,
   },
   header: {
-    marginBottom: 12,
+    marginBottom: theme.space(3),
     paddingHorizontal: 16,
   },
   actionsRow: {
-    paddingHorizontal: 16,
+    paddingHorizontal: theme.space(4),
     flexDirection: 'row',
-    gap: 12,
+    gap: theme.gap(1),
   },
 }))

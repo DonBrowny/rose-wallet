@@ -5,7 +5,7 @@
 // import { Edit3, TrendingUp, X } from 'lucide-react-native'
 // import { useEffect, useState } from 'react'
 // import { Alert, Modal, Pressable, View } from 'react-native'
-// import { useStyles } from './pattern-detail-overlay.styles'
+// import { styles } from './pattern-detail-overlay.styles'
 
 // interface PatternDetailOverlayProps {
 //   pattern: DistinctPattern | null
@@ -14,7 +14,7 @@
 // }
 
 // export const PatternDetailOverlay = ({ pattern, isVisible, onClose }: PatternDetailOverlayProps) => {
-//   const styles = useStyles()
+//
 //   const { theme } = useUnistyles()
 //   const [editableAmount, setEditableAmount] = useState<string>('')
 //   const [editableMerchant, setEditableMerchant] = useState<string>('')

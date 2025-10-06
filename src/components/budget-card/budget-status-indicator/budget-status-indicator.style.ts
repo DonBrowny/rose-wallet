@@ -1,12 +1,12 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   statusIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: theme.space(2),
+    paddingVertical: theme.space(1),
     borderRadius: 16,
-    gap: 4,
+    gap: theme.gap(1),
   },
 }))

@@ -1,6 +1,6 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -9,8 +9,8 @@ export const useStyles = makeStyles((theme) => ({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 12,
+    paddingVertical: theme.space(1),
+    paddingHorizontal: theme.space(3),
     borderRadius: 30,
     overflow: 'hidden',
   },

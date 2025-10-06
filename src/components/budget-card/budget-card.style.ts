@@ -1,11 +1,11 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles(() => ({
+export const styles = StyleSheet.create((theme) => ({
   cardContainer: {
-    margin: 16,
+    margin: theme.space(4),
   },
   header: {
-    marginBottom: 8,
+    marginBottom: theme.space(2),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -13,7 +13,7 @@ export const useStyles = makeStyles(() => ({
   contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: theme.gap(2),
   },
   gaugeChartContainer: {
     flex: 1,
@@ -21,8 +21,8 @@ export const useStyles = makeStyles(() => ({
     maxWidth: '50%',
   },
   dailyAllowanceContainer: {
-    marginTop: 8,
-    paddingHorizontal: 8,
+    marginTop: theme.space(2),
+    paddingHorizontal: theme.space(2),
     width: '100%',
     alignItems: 'center',
   },

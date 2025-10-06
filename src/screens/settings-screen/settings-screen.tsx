@@ -3,7 +3,7 @@ import { Text } from '@/components/ui/text/text'
 import { router } from 'expo-router'
 import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useStyles } from './settings-screen.styles'
+import { styles } from './settings-screen.styles'
 
 const settingsItems = [
   {
@@ -21,8 +21,6 @@ const settingsItems = [
 ]
 
 export const SettingsScreen = () => {
-  const styles = useStyles()
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentContainer}>

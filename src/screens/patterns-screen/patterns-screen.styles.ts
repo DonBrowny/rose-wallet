@@ -1,14 +1,14 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: theme.space(4),
+    paddingVertical: theme.space(4),
   },
   patternsListContent: {
-    rowGap: 12,
-    paddingBottom: 60,
+    rowGap: theme.gap(1),
+    paddingBottom: theme.space(15),
   },
 }))

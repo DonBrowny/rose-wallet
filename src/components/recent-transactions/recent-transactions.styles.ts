@@ -1,20 +1,20 @@
-import { makeStyles } from '@rneui/themed'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
-    paddingHorizontal: 12,
-    marginVertical: 20,
+    paddingHorizontal: theme.space(3),
+    marginVertical: theme.space(5),
   },
   sectionTitle: {
-    marginBottom: 20,
+    marginBottom: theme.space(5),
   },
   emptyStateContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 40,
-    marginTop: 12,
+    marginHorizontal: theme.space(10),
+    marginTop: theme.space(3),
     marginBottom: 100,
   },
   emptyImage: {
@@ -22,18 +22,18 @@ export const useStyles = makeStyles((theme) => ({
     height: 250,
   },
   emptyTitle: {
-    marginBottom: 8,
+    marginBottom: theme.space(2),
     textAlign: 'center',
   },
   emptyDescription: {
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: theme.space(4),
   },
   addButton: {
     ...theme.elevation[2],
   },
   placeholderContainer: {
-    padding: 20,
+    padding: theme.space(5),
     backgroundColor: theme.colors.grey5,
     borderRadius: 12,
     alignItems: 'center',

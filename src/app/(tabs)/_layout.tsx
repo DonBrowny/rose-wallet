@@ -1,16 +1,17 @@
 import { TabBarButton } from '@/components/tab-bar-button/tab-bar-button'
 import { useTabBarVisibility } from '@/hooks/use-tab-bar-visibility'
-import { theme } from '@/theme/rne-theme'
 import { type BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
 import { Tabs } from 'expo-router'
 import { BarChart3, Home, Settings } from 'lucide-react-native'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Animated } from 'react-native'
+import { useUnistyles } from 'react-native-unistyles'
 
 export default function TabsLayout() {
   const { shouldHideTabBar } = useTabBarVisibility()
   const fadeAnim = useRef(new Animated.Value(1)).current
   const translateY = useRef(new Animated.Value(0)).current
+  const { theme } = useUnistyles()
 
   const animateTabBar = useCallback(
     (hide: boolean) => {
@@ -43,7 +44,7 @@ export default function TabsLayout() {
         position: 'absolute' as const,
         bottom: 24,
         height: 60,
-        backgroundColor: theme.lightColors?.white,
+        backgroundColor: theme.colors.surface,
         marginHorizontal: 60,
         borderRadius: 30,
         paddingHorizontal: 24,
@@ -59,8 +60,8 @@ export default function TabsLayout() {
         opacity: fadeAnim,
         transform: [{ translateY }],
       },
-      tabBarActiveTintColor: theme.lightColors?.primary,
-      tabBarInactiveTintColor: theme.lightColors?.grey3,
+      tabBarActiveTintColor: theme.colors.primary,
+      tabBarInactiveTintColor: theme.colors.grey3,
       tabBarItemStyle: {
         marginVertical: 4,
         height: 52,
@@ -78,7 +79,7 @@ export default function TabsLayout() {
       tabBarActiveBackgroundColor: 'transparent',
       headerShown: false,
     }),
-    [fadeAnim, translateY]
+    [fadeAnim, theme.colors.grey3, theme.colors.primary, theme.colors.surface, translateY]
   )
 
   return (
