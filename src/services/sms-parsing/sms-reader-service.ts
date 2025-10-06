@@ -48,7 +48,11 @@ export class SMSReaderService {
       })
 
       // The native module returns { messages: [...] }
-      const messages = result.messages || []
+      const messages =
+        result.messages?.map((message) => ({
+          ...message,
+          body: message.body.trim(),
+        })) || []
 
       return {
         success: true,
