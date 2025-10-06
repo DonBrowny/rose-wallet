@@ -12,4 +12,3 @@ export function getPatternSamplesByName(name: string): Transaction[] {
     return []
   }
 }
-

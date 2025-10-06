@@ -1,17 +1,15 @@
 import { patterns } from '@/db/schema'
+import { getDrizzleDb } from '@/services/database/db'
 import { PatternStatus, PatternType } from '@/types/patterns/enums'
 import type { DistinctPattern } from '@/types/sms/transaction'
-import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite'
-import { useSQLiteContext } from 'expo-sqlite'
-import { useMemo } from 'react'
+import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
 
 export function useLivePatterns(): {
   data: DistinctPattern[]
   isLoading: boolean
   error: unknown
 } {
-  const sqlite = useSQLiteContext()
-  const db = useMemo(() => drizzle(sqlite), [sqlite])
+  const db = getDrizzleDb()
 
   const { data, error } = useLiveQuery(
     db

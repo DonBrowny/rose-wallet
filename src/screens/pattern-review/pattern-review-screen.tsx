@@ -1,11 +1,9 @@
 import { SmsCarousel } from '@/components/sms-carousel/sms-carousel'
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
+import { useAppStore } from '@/hooks/use-store'
 import { updatePatternStatusById } from '@/services/database/patterns-repository'
-import type { Transaction } from '@/types/sms/transaction'
-import { getPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { useRouter } from 'expo-router'
-import { useMemo } from 'react'
 import { View } from 'react-native'
 import { styles } from './pattern-review-screen.styles'
 
@@ -20,9 +18,7 @@ interface PatternReviewScreenProps {
 export function PatternReviewScreen({ id, groupingTemplate, name, template, status }: PatternReviewScreenProps) {
   const router = useRouter()
 
-  const samples: Transaction[] = useMemo(() => {
-    return getPatternSamplesByName(name)
-  }, [name])
+  const samples = useAppStore.use.patternReview().transactions
 
   const handleApprove = async () => {
     await updatePatternStatusById(Number(id), 'approved')

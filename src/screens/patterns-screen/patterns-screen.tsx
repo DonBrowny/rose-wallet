@@ -5,7 +5,7 @@ import { useLivePatterns } from '@/hooks/use-live-patterns'
 import { upsertPatternsByGrouping } from '@/services/database/patterns-repository'
 import { SMSService } from '@/services/sms-parsing/sms-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
-import type { DistinctPattern, Transaction, TransactionPattern } from '@/types/sms/transaction'
+import type { Transaction, TransactionPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -15,9 +15,8 @@ import { styles } from './patterns-screen.styles'
 
 export const PatternsScreen = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [patterns, setPatterns] = useState<DistinctPattern[]>([])
   const [error, setError] = useState<string | null>(null)
-  const live = useLivePatterns()
+  const { data } = useLivePatterns()
 
   const [isPatternDiscoveryCompleted = false, setIsPatternDiscoveryCompleted] = useMMKVBoolean(
     MMKV_KEYS.PATTERNS.IS_PATTERN_DISCOVERY_COMPLETED
@@ -49,7 +48,6 @@ export const PatternsScreen = () => {
             })
 
             setSamplesByPatternId(samples)
-            setPatterns(result.distinctPatterns)
             setIsPatternDiscoveryCompleted(true)
           } else {
             setError(result.errors.join(', ') || 'Failed to discover patterns')
@@ -67,8 +65,6 @@ export const PatternsScreen = () => {
 
     loadOrDiscoverPatterns()
   }, [isPatternDiscoveryCompleted, setIsPatternDiscoveryCompleted, setSamplesByPatternId])
-
-  const displayedPatterns: DistinctPattern[] = live.data.length > 0 ? live.data : patterns
 
   const handleReviewPattern = (patternId: string) => {
     router.push({ pathname: '/(shared)/pattern-review', params: { patternId } })
@@ -108,7 +104,7 @@ export const PatternsScreen = () => {
         bounces={true}
         alwaysBounceVertical={false}
       >
-        {displayedPatterns.map((pattern) => (
+        {data.map((pattern) => (
           <PatternCard
             key={pattern.id}
             template={pattern.template}

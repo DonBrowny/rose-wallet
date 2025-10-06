@@ -7,7 +7,7 @@ let sqliteInstance: SQLiteDatabase | null = null
 
 export function getSQLite(): SQLiteDatabase {
   if (!sqliteInstance) {
-    sqliteInstance = openDatabaseSync(DB_NAME)
+    sqliteInstance = openDatabaseSync(DB_NAME, { enableChangeListener: true })
   }
   return sqliteInstance
 }

@@ -1,11 +1,13 @@
 import { Text } from '@/components/ui/text/text'
 import { patterns } from '@/db/schema'
+import { useAppStore } from '@/hooks/use-store'
 import { PatternReviewScreen } from '@/screens/pattern-review/pattern-review-screen'
+import { getPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { eq } from 'drizzle-orm'
 import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite'
 import { useLocalSearchParams } from 'expo-router'
 import { useSQLiteContext } from 'expo-sqlite'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { View } from 'react-native'
 
 export default function PatternReviewRoute() {
@@ -13,6 +15,8 @@ export default function PatternReviewRoute() {
   const id = params.patternId ? Number(params.patternId) : NaN
 
   const sqlite = useSQLiteContext()
+  const setPatternReview = useAppStore.use.setPatternReview()
+
   const db = useMemo(() => drizzle(sqlite), [sqlite])
 
   const { data, updatedAt, error } = useLiveQuery(
@@ -27,6 +31,12 @@ export default function PatternReviewRoute() {
       .from(patterns)
       .where(eq(patterns.id, id))
   )
+  const patternName = data?.[0]?.name || ''
+  useEffect(() => {
+    if (!patternName) return
+    const samples = getPatternSamplesByName(patternName)
+    setPatternReview(samples)
+  }, [patternName, setPatternReview])
 
   if (error) {
     return (
