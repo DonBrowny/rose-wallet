@@ -3,14 +3,19 @@ import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import { Stack } from 'expo-router'
 import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite'
+import { StatusBar } from 'expo-status-bar'
 import { Suspense } from 'react'
 import { ActivityIndicator, Text, View } from 'react-native'
+import { useUnistyles } from 'react-native-unistyles'
 import migrations from '../drizzle/migrations'
 
 const expoDb = openDatabaseSync(DB_NAME)
 const db = drizzle(expoDb)
 
 export default function Root() {
+  const { theme } = useUnistyles()
+  const background = theme.colors.background
+  const barStyle = 'dark'
   const { success, error } = useMigrations(db, migrations)
   if (error) {
     return (
@@ -44,6 +49,11 @@ export default function Root() {
             options={{ headerShown: false }}
           />
         </Stack>
+        <StatusBar
+          style={barStyle}
+          backgroundColor={background}
+          translucent
+        />
       </SQLiteProvider>
     </Suspense>
   )
