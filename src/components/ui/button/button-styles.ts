@@ -1,10 +1,38 @@
 import { StyleSheet } from 'react-native-unistyles'
+import { ButtonProps } from './button-props'
+
+const iconMd = 36
+const iconSm = 30
+const getIconSize = (size: ButtonProps['size']) => {
+  if (size === 'icon') return iconMd
+  if (size === 'icon-sm') return iconSm
+  return undefined
+}
+
+const getPaddingHorizontal = (size: ButtonProps['size']) => {
+  if (size === 'icon') return 0
+  if (size === 'icon-sm') return 0
+  return 4
+}
+
+const getPaddingVertical = (size: ButtonProps['size']) => {
+  if (size === 'icon') return 0
+  if (size === 'icon-sm') return 0
+  return 2
+}
+
+const getBorderRadius = (size: ButtonProps['size']) => {
+  if (size === 'icon' || size === 'icon-sm') return 999
+  return 20
+}
 
 export const styles = StyleSheet.create((theme) => ({
-  container: (type: 'solid' | 'outline' | 'destructive', disabled: boolean) => ({
-    paddingHorizontal: theme.space(4),
-    paddingVertical: theme.space(2),
-    borderRadius: 20,
+  container: (type: ButtonProps['type'], disabled: boolean, size: ButtonProps['size'] = 'md') => ({
+    paddingHorizontal: theme.space(getPaddingHorizontal(size)),
+    paddingVertical: theme.space(getPaddingVertical(size)),
+    width: getIconSize(size),
+    height: getIconSize(size),
+    borderRadius: getBorderRadius(size),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

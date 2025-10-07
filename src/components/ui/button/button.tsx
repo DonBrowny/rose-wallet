@@ -1,23 +1,14 @@
 import React from 'react'
-import { ActivityIndicator, GestureResponderEvent, Pressable, PressableProps, ViewStyle } from 'react-native'
+import { ActivityIndicator, Pressable } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
 import { Text } from '../text/text'
+import { ButtonProps } from './button-props'
 import { styles } from './button-styles'
-
-interface Props extends Omit<PressableProps, 'style'> {
-  title?: string
-  type?: 'solid' | 'outline' | 'destructive'
-  isLoading?: boolean
-  disabled?: boolean
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
-  containerStyle?: ViewStyle | ViewStyle[]
-  onPress?: (event: GestureResponderEvent) => void
-}
 
 export function Button({
   title,
   type = 'solid',
+  size = 'md',
   isLoading = false,
   disabled = false,
   leftIcon,
@@ -25,7 +16,7 @@ export function Button({
   containerStyle,
   onPress,
   ...rest
-}: Props) {
+}: ButtonProps) {
   const { theme } = useUnistyles()
 
   const isDisabled = disabled || isLoading
@@ -42,7 +33,7 @@ export function Button({
         borderless: false,
         foreground: true,
       }}
-      style={[styles.container(type, isDisabled), containerStyle]}
+      style={[styles.container(type, isDisabled, size), containerStyle]}
       {...rest}
     >
       {isLoading ? (
@@ -50,7 +41,7 @@ export function Button({
       ) : (
         <>
           {leftIcon}
-          {title ? (
+          {size !== 'icon' && title ? (
             <Text
               variant='pMdBold'
               color={type === 'outline' ? 'primary' : 'surface'}
