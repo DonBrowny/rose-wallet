@@ -2,7 +2,7 @@ import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
 import { useMemo } from 'react'
 import { useUnistyles } from 'react-native-unistyles'
 
-export function useHeaderOptions() {
+export function useHeaderOptions(headerShown: boolean = true) {
   const { theme } = useUnistyles()
 
   const headerOptions = useMemo(
@@ -12,10 +12,10 @@ export function useHeaderOptions() {
       },
       headerTintColor: theme.colors.onSurface,
       headerTitleAlign: 'center',
-      headerShown: true,
+      headerShown,
       headerBackVisible: true,
     }),
-    [theme.colors.surface, theme.colors.onSurface]
+    [theme.colors.surface, theme.colors.onSurface, headerShown]
   )
 
   return headerOptions

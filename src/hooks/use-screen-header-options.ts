@@ -5,24 +5,21 @@ import { useHeaderOptions } from './use-header-options'
 
 interface UseScreenHeaderOptionsProps {
   title: string
+  headerShown?: boolean
   showBackButton?: boolean
   customBackButton?: () => React.ReactNode
 }
 
-export function useScreenHeaderOptions({
-  title,
-  showBackButton = true,
-  customBackButton,
-}: UseScreenHeaderOptionsProps) {
-  const baseHeaderOptions = useHeaderOptions()
+export function useScreenHeaderOptions({ title, headerShown, showBackButton = true }: UseScreenHeaderOptionsProps) {
+  const baseHeaderOptions = useHeaderOptions(headerShown)
 
   const screenOptions = useMemo(
     (): NativeStackNavigationOptions => ({
       ...baseHeaderOptions,
       headerTitle: title,
-      headerLeft: showBackButton ? customBackButton || (() => React.createElement(HeaderBackButton)) : undefined,
+      headerLeft: showBackButton ? () => React.createElement(HeaderBackButton) : undefined,
     }),
-    [baseHeaderOptions, title, showBackButton, customBackButton]
+    [baseHeaderOptions, title, showBackButton]
   )
 
   return screenOptions

@@ -6,7 +6,7 @@ export default function SharedLayout() {
   const headerOptions = useHeaderOptions()
   const addExpenseOptions = useScreenHeaderOptions({ title: 'Add Expense' })
   const patternsOptions = useScreenHeaderOptions({ title: 'SMS Patterns' })
-  const patternReviewOptions = useScreenHeaderOptions({ title: 'Pattern Review' })
+  const patternReviewOptions = useScreenHeaderOptions({ title: 'Pattern Review', headerShown: false })
 
   return (
     <Stack screenOptions={headerOptions}>
