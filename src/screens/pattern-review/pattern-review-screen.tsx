@@ -1,12 +1,11 @@
+import { PatternReviewPane } from '@/components/pattern-review/pattern-review-pane/pattern-review-pane'
 import { Button } from '@/components/ui/button/button'
-import { Card } from '@/components/ui/card/card'
 import { ProgressStepper } from '@/components/ui/progress-stepper/progress-stepper'
-import { SmsReviewItem } from '@/components/ui/sms-review-item/sms-review-item'
 import { Text } from '@/components/ui/text/text'
-import { useAppStore } from '@/hooks/use-store'
+import { reviewReset, useAppStore } from '@/hooks/use-store'
 import { useRouter } from 'expo-router'
-import { Check, ChevronLeft, ChevronRight, X } from 'lucide-react-native'
-import { useCallback, useState } from 'react'
+import { X } from 'lucide-react-native'
+import { useCallback } from 'react'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useUnistyles } from 'react-native-unistyles'
@@ -26,34 +25,14 @@ export function PatternReviewScreen({ id, groupingTemplate, name, template, stat
 
   const samples = useAppStore.use.patternReview().transactions
 
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const currentIndex = useAppStore.use.patternReview().currentIndex
   const total = samples.length
-  const isFirst = currentIndex === 0
-  const isLast = total > 0 ? currentIndex === total - 1 : true
   const current = samples[currentIndex]
 
-  const handleApprove = useCallback(async () => {
-    console.log('approve')
-    // await updatePatternStatusById(Number(id), 'approved')
-    // router.back()
-  }, [id, router])
-
   const handleClose = useCallback(() => {
+    reviewReset()
     router.back()
   }, [router])
-
-  const handlePrev = useCallback(() => {
-    if (isFirst) return
-    setCurrentIndex((i) => Math.max(0, i - 1))
-  }, [isFirst])
-
-  const handleNextOrApprove = useCallback(() => {
-    if (isLast) {
-      handleApprove()
-      return
-    }
-    setCurrentIndex((i) => Math.min(total - 1, i + 1))
-  }, [isLast, total, handleApprove])
 
   if (total === 0) {
     return (
@@ -96,49 +75,11 @@ export function PatternReviewScreen({ id, groupingTemplate, name, template, stat
         />
       ) : null}
 
-      <Card style={styles.content}>
-        <SmsReviewItem
-          id={current.message.id}
-          bankName={current.bankName}
-          date={current.message.date}
-          messageBody={current.message.body}
-          merchant={current.merchant}
-          amount={current.amount}
-        />
-      </Card>
-
-      <View style={styles.footer}>
-        <Button
-          type='outline'
-          onPress={handlePrev}
-          disabled={isFirst || total === 0}
-          leftIcon={
-            <ChevronLeft
-              color={theme.colors.primary}
-              size={20}
-            />
-          }
-          title='Back'
-        />
-        <Button
-          onPress={handleNextOrApprove}
-          disabled={total === 0}
-          rightIcon={
-            isLast ? (
-              <Check
-                color={theme.colors.surface}
-                size={20}
-              />
-            ) : (
-              <ChevronRight
-                color={theme.colors.surface}
-                size={20}
-              />
-            )
-          }
-          title={isLast ? 'Approve' : 'Next'}
-        />
-      </View>
+      <PatternReviewPane
+        sample={current}
+        index={currentIndex}
+        total={total}
+      />
     </SafeAreaView>
   )
 }

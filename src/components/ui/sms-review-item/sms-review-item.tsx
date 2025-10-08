@@ -13,9 +13,24 @@ interface SmsReviewItemProps {
   messageBody: string
   merchant: string
   amount: number
+  amountValue: string
+  merchantValue: string
+  onChangeAmount: (text: string) => void
+  onChangeMerchant: (text: string) => void
 }
 
-export function SmsReviewItem({ id, bankName, date, messageBody, merchant, amount }: SmsReviewItemProps) {
+export function SmsReviewItem({
+  id,
+  bankName,
+  date,
+  messageBody,
+  merchant,
+  amount,
+  amountValue,
+  merchantValue,
+  onChangeAmount,
+  onChangeMerchant,
+}: SmsReviewItemProps) {
   return (
     <Animated.View
       key={id}
@@ -53,13 +68,15 @@ export function SmsReviewItem({ id, bankName, date, messageBody, merchant, amoun
       />
       <Input
         label='Amount'
-        defaultValue={String(amount)}
+        value={amountValue}
+        onChangeText={onChangeAmount}
         keyboardType='numeric'
         inputMode='numeric'
       />
       <Input
         label='Merchant'
-        defaultValue={merchant}
+        value={merchantValue}
+        onChangeText={onChangeMerchant}
       />
     </Animated.View>
   )

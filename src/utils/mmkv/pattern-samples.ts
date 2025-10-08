@@ -12,3 +12,20 @@ export function getPatternSamplesByName(name: string): Transaction[] {
     return []
   }
 }
+
+export function setPatternSamplesByName(name: string, samples: Transaction[]) {
+  const json = storage.getString(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1)
+  if (!json) {
+    const map = { [name]: samples }
+    storage.set(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1, JSON.stringify(map))
+    return
+  }
+  try {
+    const map = JSON.parse(json) as Record<string, Transaction[]>
+    const newMap = { ...map, [name]: samples }
+    storage.set(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1, JSON.stringify(newMap))
+  } catch {
+    const map = { [name]: samples }
+    storage.set(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1, JSON.stringify(map))
+  }
+}

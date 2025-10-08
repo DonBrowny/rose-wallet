@@ -35,7 +35,7 @@ export default function PatternReviewRoute() {
   useEffect(() => {
     if (!patternName) return
     const samples = getPatternSamplesByName(patternName)
-    setPatternReview(samples)
+    setPatternReview(samples, patternName)
   }, [patternName, setPatternReview])
 
   if (error) {

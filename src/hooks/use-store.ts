@@ -1,4 +1,6 @@
 import type { Transaction } from '@/types/sms/transaction'
+import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
+import { buildExtractionFromUser } from '@/utils/pattern/extraction-template-builder'
 import { create, type StoreApi, type UseBoundStore } from 'zustand'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
@@ -16,15 +18,47 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_store: S) =
 interface AppState {
   patternReview: {
     transactions: Transaction[]
+    name: string
+    currentIndex: number
   }
-  setPatternReview: (transactions: Transaction[]) => void
+  setPatternReview: (transactions: Transaction[], name: string) => void
 }
 
 const useAppStoreBase = create<AppState>()((set) => ({
   patternReview: {
     transactions: [],
+    name: '',
+    currentIndex: 0,
   },
-  setPatternReview: (transactions: Transaction[]) => set({ patternReview: { transactions } }),
+  setPatternReview: (transactions: Transaction[], name: string) =>
+    set((state) => ({ patternReview: { transactions, name, currentIndex: 0 } })),
 }))
+
+export const reviewNext = () =>
+  useAppStoreBase.setState((state) => ({
+    patternReview: {
+      ...state.patternReview,
+      currentIndex: state.patternReview.currentIndex + 1,
+    },
+  }))
+export const reviewPrev = () =>
+  useAppStoreBase.setState((state) => ({
+    patternReview: { ...state.patternReview, currentIndex: Math.max(0, state.patternReview.currentIndex - 1) },
+  }))
+
+export const reviewReset = () =>
+  useAppStoreBase.setState((state) => ({ patternReview: { ...state.patternReview, currentIndex: 0 } }))
+
+export const reviewUpdateItem = (index: number, patch: Partial<Transaction>, isLast: boolean = false) =>
+  useAppStoreBase.setState((state) => {
+    const { transactions, name } = state.patternReview
+    const next = transactions.map((t, i) => (i === index ? { ...t, ...patch } : t))
+    if (isLast) {
+      setPatternSamplesByName(name, next)
+      const { template } = buildExtractionFromUser(next)
+      console.log('New Template', template)
+    }
+    return { patternReview: { ...state.patternReview, transactions: next } }
+  })
 
 export const useAppStore = createSelectors(useAppStoreBase)
