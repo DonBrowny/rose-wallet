@@ -1,3 +1,4 @@
+import { updatePatternTemplateByName } from '@/services/database/patterns-repository'
 import type { Transaction } from '@/types/sms/transaction'
 import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { buildExtractionFromUser } from '@/utils/pattern/extraction-template-builder'
@@ -56,7 +57,8 @@ export const reviewUpdateItem = (index: number, patch: Partial<Transaction>, isL
     if (isLast) {
       setPatternSamplesByName(name, next)
       const { template } = buildExtractionFromUser(next)
-      console.log('New Template', template)
+      // best-effort async update; no await to avoid blocking state update
+      updatePatternTemplateByName(name, template).catch((err) => console.warn('Failed to update template', err))
     }
     return { patternReview: { ...state.patternReview, transactions: next } }
   })
