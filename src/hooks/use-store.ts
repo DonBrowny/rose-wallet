@@ -23,6 +23,8 @@ interface AppState {
     currentIndex: number
   }
   setPatternReview: (transactions: Transaction[], name: string) => void
+  isSaving: boolean
+  error?: string
 }
 
 const useAppStoreBase = create<AppState>()((set) => ({
@@ -33,6 +35,8 @@ const useAppStoreBase = create<AppState>()((set) => ({
   },
   setPatternReview: (transactions: Transaction[], name: string) =>
     set((state) => ({ patternReview: { transactions, name, currentIndex: 0 } })),
+  isSaving: false,
+  error: undefined,
 }))
 
 export const reviewNext = () =>
@@ -50,17 +54,26 @@ export const reviewPrev = () =>
 export const reviewReset = () =>
   useAppStoreBase.setState((state) => ({ patternReview: { ...state.patternReview, currentIndex: 0 } }))
 
-export const reviewUpdateItem = (index: number, patch: Partial<Transaction>, isLast: boolean = false) =>
+export const reviewUpdateItem = (index: number, patch: Partial<Transaction>) =>
   useAppStoreBase.setState((state) => {
-    const { transactions, name } = state.patternReview
+    const { transactions } = state.patternReview
     const next = transactions.map((t, i) => (i === index ? { ...t, ...patch } : t))
-    if (isLast) {
-      setPatternSamplesByName(name, next)
-      const { template } = buildExtractionFromUser(next)
-      // best-effort async update; no await to avoid blocking state update
-      updatePatternTemplateByName(name, template).catch((err) => console.warn('Failed to update template', err))
-    }
     return { patternReview: { ...state.patternReview, transactions: next } }
   })
+
+export const finalizeReview = async (): Promise<void> => {
+  useAppStoreBase.setState({ isSaving: true, error: undefined })
+  try {
+    const { patternReview } = useAppStoreBase.getState()
+    const { transactions, name } = patternReview
+    setPatternSamplesByName(name, transactions)
+    const { template } = buildExtractionFromUser(transactions)
+    await updatePatternTemplateByName(name, template)
+    useAppStoreBase.setState({ isSaving: false })
+  } catch (err: any) {
+    console.warn('finalizeReview failed', err)
+    useAppStoreBase.setState({ isSaving: false, error: String(err?.message || err) })
+  }
+}
 
 export const useAppStore = createSelectors(useAppStoreBase)

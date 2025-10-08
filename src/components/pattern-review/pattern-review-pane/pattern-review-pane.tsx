@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button/button'
 import { Card } from '@/components/ui/card/card'
 import { SmsReviewItem } from '@/components/ui/sms-review-item/sms-review-item'
-import { reviewNext, reviewPrev, reviewReset, reviewUpdateItem } from '@/hooks/use-store'
+import { finalizeReview, reviewNext, reviewPrev, reviewReset, reviewUpdateItem } from '@/hooks/use-store'
 import type { Transaction } from '@/types/sms/transaction'
 import { useRouter } from 'expo-router'
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react-native'
@@ -34,10 +34,10 @@ export function PatternReviewPane({ sample, index, total }: Props) {
 
   if (!sample) return null
 
-  const persist = (isLast: boolean = false) => {
+  const persist = () => {
     const parsed = parseFloat(amountValue)
     const amount = isNaN(parsed) ? sample.amount : parsed
-    reviewUpdateItem(index, { amount, merchant: merchantValue }, isLast)
+    reviewUpdateItem(index, { amount, merchant: merchantValue })
   }
 
   const handleNextOrApprove = () => {
@@ -54,9 +54,11 @@ export function PatternReviewPane({ sample, index, total }: Props) {
   }
 
   const handleApprove = () => {
-    persist(true)
-    reviewReset()
-    router.back()
+    persist()
+    finalizeReview().finally(() => {
+      reviewReset()
+      router.back()
+    })
   }
 
   return (

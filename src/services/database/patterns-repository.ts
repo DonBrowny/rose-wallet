@@ -49,5 +49,8 @@ export async function updatePatternStatusById(id: number, status: 'approved' | '
 
 export async function updatePatternTemplateByName(name: string, extractionPattern: string) {
   const db = getDrizzleDb()
-  await db.update(patterns).set({ extractionPattern, updatedAt: new Date() }).where(eq(patterns.name, name))
+  await db
+    .update(patterns)
+    .set({ extractionPattern, updatedAt: new Date(), status: 'approved' })
+    .where(eq(patterns.name, name))
 }
