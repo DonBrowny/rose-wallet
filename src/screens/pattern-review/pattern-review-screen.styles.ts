@@ -3,16 +3,29 @@ import { StyleSheet } from 'react-native-unistyles'
 export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
-    gap: 12,
-    backgroundColor: theme.colors.surface,
+    gap: theme.gap(3),
+    backgroundColor: theme.colors.background,
+    padding: theme.space(4),
   },
-  header: {
-    marginBottom: theme.space(3),
-    paddingHorizontal: 16,
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  actionsRow: {
-    paddingHorizontal: theme.space(4),
+  messageHeader: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  content: {
+    height: 400,
+    alignItems: 'center',
+  },
+  footer: {
     flexDirection: 'row',
     gap: theme.gap(1),
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 }))
