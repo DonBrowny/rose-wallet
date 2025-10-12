@@ -16,23 +16,17 @@ export interface BudgetData {
 }
 
 export function calculateBudgetData(budget: number, spent: number): BudgetData {
-  // Calculate basic metrics
   const isOverBudget = spent > budget
   const remainingBudget = budget - spent
 
-  // Calculate remaining days in current month
   const now = new Date()
   const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
   const remainingDays = Math.max(0, lastDayOfMonth - now.getDate())
-
-  // Calculate daily spending allowance
   const dailyAllowance = remainingDays > 0 ? remainingBudget / remainingDays : 0
 
-  // Format values
   const budgetFormatted = formatLargeCurrency(budget)
   const spentFormatted = formatLargeCurrency(spent)
 
-  // Generate contextual daily allowance message
   let dailyAllowanceMessage = ''
   if (isOverBudget) {
     dailyAllowanceMessage = 'Budget exceeded'

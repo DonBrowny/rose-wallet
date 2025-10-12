@@ -9,8 +9,6 @@ import {
   TEMPLATES,
 } from '@/utils/pattern/constant'
 import { ALL_MINILM_L6_V2, TextEmbeddingsModule } from 'react-native-executorch'
-import { type SMSMessage } from 'rose-sms-reader'
-import type { SMSReadResult } from './sms-reader-service'
 
 export type ClassifyResult = { label: Intent; prob: number }
 
@@ -97,14 +95,6 @@ export class SMSIntentService {
   }
   private safeForward = (text: string) => this.enqueue(() => this.mod.forward(text))
 
-  // API
-  isReady() {
-    return this.ready
-  }
-  setThreshold(v: number) {
-    this.threshold = Math.max(0, Math.min(1, v))
-  }
-
   /**
    * Initialize once (loads model + precomputes template embeddings)
    * Optionally switch to a custom source if you side-load later.
@@ -112,7 +102,7 @@ export class SMSIntentService {
   async init() {
     if (this.ready) return
     await this.mod.load(ALL_MINILM_L6_V2)
-    await this.safeForward('hello') // probe
+    await this.safeForward('hello')
 
     for (const key of Object.keys(TEMPLATES) as Intent[]) {
       for (const t of TEMPLATES[key]) {
@@ -123,9 +113,6 @@ export class SMSIntentService {
     this.ready = true
   }
 
-  /**
-   * Classify a single SMS.
-   */
   async classify(text: string): Promise<ClassifyResult> {
     if (!this.ready) throw new Error('SMSIntentService not initialized. Call init() first.')
 
@@ -148,18 +135,6 @@ export class SMSIntentService {
 
     if (score < this.threshold) return { label: 'not_txn', prob: 1 - Math.max(0, score) }
     return { label: best, prob: Math.min(0.99, Math.max(0.5, score)) }
-  }
-
-  /**
-   * Classify many messages safely (serialized).
-   */
-  async classifyMany({ messages }: SMSReadResult) {
-    const out: (SMSMessage & ClassifyResult)[] = []
-    for (const t of messages) {
-      const result = await this.classify(String(t.body))
-      out.push({ ...t, ...result })
-    }
-    return out
   }
 }
 

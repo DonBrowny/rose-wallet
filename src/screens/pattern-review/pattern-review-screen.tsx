@@ -1,4 +1,4 @@
-import { PatternReviewPane } from '@/components/pattern-review/pattern-review-pane/pattern-review-pane'
+import { PatternReviewPane } from '@/components/pattern-review-pane/pattern-review-pane'
 import { Button } from '@/components/ui/button/button'
 import { ProgressStepper } from '@/components/ui/progress-stepper/progress-stepper'
 import { Text } from '@/components/ui/text/text'
@@ -11,15 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './pattern-review-screen.styles'
 
-interface PatternReviewScreenProps {
-  id: number
-  groupingTemplate: string
-  name: string
-  template: string
-  status: string
-}
-
-export function PatternReviewScreen({ id, groupingTemplate, name, template, status }: PatternReviewScreenProps) {
+export function PatternReviewScreen() {
   const router = useRouter()
   const { theme } = useUnistyles()
 
@@ -55,6 +47,7 @@ export function PatternReviewScreen({ id, groupingTemplate, name, template, stat
           </Text>
         </View>
         <Button
+          testID='close-btn'
           accessibilityRole='button'
           onPress={handleClose}
           type='outline'

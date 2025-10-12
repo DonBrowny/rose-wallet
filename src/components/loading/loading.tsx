@@ -19,6 +19,7 @@ export const Loading = ({
     <View style={styles.container}>
       {showImage && (
         <Image
+          testID='loading-image'
           source={require('@/assets/images/read.png')}
           style={styles.image}
           contentFit='contain'

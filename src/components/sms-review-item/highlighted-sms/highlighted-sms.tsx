@@ -28,6 +28,7 @@ export function HighlightedSMS({ text, merchant, amount }: HighlightedSMSProps) 
       if (pos.index > cursor) parts.push(smsText.slice(cursor, pos.index))
       parts.push(
         <Text
+          testID='highlight'
           key={`${pos.key}-${i}`}
           variant='pMdBold'
           color='primary'
@@ -42,5 +43,12 @@ export function HighlightedSMS({ text, merchant, amount }: HighlightedSMSProps) 
     return parts.length > 0 ? parts : smsText
   }, [text, merchant, amount])
 
-  return <Text variant='pMd'>{content}</Text>
+  return (
+    <Text
+      testID='highlighted-sms'
+      variant='pMd'
+    >
+      {content}
+    </Text>
+  )
 }

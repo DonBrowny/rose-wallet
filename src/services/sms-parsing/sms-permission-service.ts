@@ -2,18 +2,10 @@ import { Alert, Platform } from 'react-native'
 import {
   checkSMSPermission as expoCheckPermission,
   requestSMSPermission as expoRequestPermission,
+  type PermissionResult,
 } from 'rose-sms-reader'
 
-export interface PermissionResult {
-  granted: boolean
-  canAskAgain: boolean
-  message: string
-}
-
 export class SMSPermissionService {
-  /**
-   * Check if SMS permission is granted
-   */
   static async checkPermission(): Promise<PermissionResult> {
     if (Platform.OS !== 'android') {
       return {
@@ -39,9 +31,6 @@ export class SMSPermissionService {
     }
   }
 
-  /**
-   * Request SMS permission from user
-   */
   static async requestPermission(): Promise<PermissionResult> {
     if (Platform.OS !== 'android') {
       return {
@@ -67,14 +56,11 @@ export class SMSPermissionService {
     }
   }
 
-  /**
-   * Show permission explanation dialog
-   */
   static showPermissionExplanation(): Promise<boolean> {
     return new Promise((resolve) => {
       Alert.alert(
         'SMS Permission Required',
-        'This app needs SMS permission to automatically track your expenses from bank messages. We only read transaction-related SMS and never share your data.',
+        'This app needs SMS permission to automatically track your expenses from bank messages. We never share your data.',
         [
           {
             text: 'Cancel',
@@ -90,9 +76,6 @@ export class SMSPermissionService {
     })
   }
 
-  /**
-   * Show permission denied dialog with settings option
-   */
   static showPermissionDeniedDialog(): void {
     Alert.alert(
       'Permission Required',
@@ -106,11 +89,7 @@ export class SMSPermissionService {
     )
   }
 
-  /**
-   * Complete permission flow with user interaction
-   */
   static async requestPermissionWithExplanation(): Promise<PermissionResult> {
-    // First check current status
     const currentStatus = await this.checkPermission()
 
     if (currentStatus.granted) {
@@ -122,7 +101,6 @@ export class SMSPermissionService {
       return currentStatus
     }
 
-    // Show explanation and request permission
     const userWantsToGrant = await this.showPermissionExplanation()
 
     if (!userWantsToGrant) {
@@ -133,15 +111,10 @@ export class SMSPermissionService {
       }
     }
 
-    // Request permission
     const result = await this.requestPermission()
-
-    // After requesting, check again to see if permission was actually granted
     if (!result.granted) {
-      // Wait a moment for the permission dialog to complete
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Check permission status again
       const recheckResult = await this.checkPermission()
 
       if (recheckResult.granted) {

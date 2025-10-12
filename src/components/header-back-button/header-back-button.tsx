@@ -54,6 +54,7 @@ export function HeaderBackButton({ onPress, size = 24, color }: HeaderBackButton
       onPress={handlePress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
+      testID='header-back-button'
     >
       <Animated.View
         style={[
@@ -64,6 +65,7 @@ export function HeaderBackButton({ onPress, size = 24, color }: HeaderBackButton
         ]}
       >
         <ArrowLeft
+          testID='header-back-icon'
           size={size}
           color={color || theme.colors.grey4}
         />

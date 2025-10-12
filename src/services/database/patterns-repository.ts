@@ -5,16 +5,10 @@ import { murmurHash32 } from '@/utils/hash/murmur32'
 import { eq, sql } from 'drizzle-orm'
 import { getDrizzleDb } from './db'
 
-function deriveName(p: DistinctPattern): string {
-  // Stable compact name from grouping template
-  return murmurHash32(p.groupingTemplate)
-}
-
 export async function upsertPatternsByGrouping(distinct: DistinctPattern[]): Promise<void> {
   const db = getDrizzleDb()
-  // Prepare rows
   const rows = distinct.map((p) => ({
-    name: deriveName(p),
+    name: murmurHash32(p.groupingTemplate),
     groupingPattern: p.groupingTemplate,
     extractionPattern: p.template,
     type: PatternType.Debit,

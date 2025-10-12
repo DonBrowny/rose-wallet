@@ -25,7 +25,7 @@ export const PatternsScreen = () => {
     MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1
   )
 
-  const DAYS_TO_ANALYZE = 30
+  const DAYS_TO_ANALYZE = 60
   const router = useRouter()
 
   useEffect(() => {

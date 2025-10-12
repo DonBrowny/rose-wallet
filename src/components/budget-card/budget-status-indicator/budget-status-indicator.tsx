@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui/text/text'
 import { cactus } from '@lucide/lab'
 import { Flower, Icon, Sprout } from 'lucide-react-native'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './budget-status-indicator.style'
@@ -10,6 +10,18 @@ interface BudgetStatusIndicatorProps {
   monthlyBudget: number
   totalExpense: number
   currentDate?: Date
+}
+
+const formatWeeklyCurrency = (amount: number) => {
+  if (amount >= 10000000) {
+    return `₹${(amount / 10000000).toFixed(1)}Cr/w`
+  } else if (amount >= 100000) {
+    return `₹${(amount / 100000).toFixed(1)}L/w`
+  } else if (amount >= 1000) {
+    return `₹${(amount / 1000).toFixed(1)}k/w`
+  } else {
+    return `₹${Math.round(amount)}/w`
+  }
 }
 
 export function BudgetStatusIndicator({
@@ -47,23 +59,7 @@ export function BudgetStatusIndicator({
 
   const weeklyPace = calculateWeeklyPace()
 
-  const formatWeeklyCurrency = (amount: number) => {
-    if (amount >= 10000000) {
-      // 1 crore
-      return `₹${(amount / 10000000).toFixed(1)}Cr/w`
-    } else if (amount >= 100000) {
-      // 1 lakh
-      return `₹${(amount / 100000).toFixed(1)}L/w`
-    } else if (amount >= 1000) {
-      // 1 thousand
-      return `₹${(amount / 1000).toFixed(1)}k/w`
-    } else {
-      return `₹${Math.round(amount)}/w`
-    }
-  }
-
-  // Get garden-themed status based on weekly pace ratio
-  const getGardenStatus = () => {
+  const gardenStatus = useMemo(() => {
     if (weeklyPace.weeklyPaceRatio > 1.05) {
       return {
         icon: (
@@ -102,9 +98,8 @@ export function BudgetStatusIndicator({
         bgColor: theme.colors.accentGreen,
       }
     }
-  }
+  }, [weeklyPace.weeklyPaceRatio, theme])
 
-  const gardenStatus = getGardenStatus()
   const weeklyAmount = formatWeeklyCurrency(weeklyPace.spentThisWeek)
 
   return (

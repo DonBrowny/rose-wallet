@@ -1,7 +1,13 @@
 import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs'
-import React, { forwardRef, useEffect, useMemo, useRef } from 'react'
+import React, { forwardRef, useEffect, useRef } from 'react'
 import { Animated, Pressable } from 'react-native'
 import { styles } from './tab-bar-button.styles'
+
+const rippleConfig = {
+  color: 'rgba(111, 108, 217, 0.2)',
+  borderless: false,
+  radius: 26,
+}
 
 export const TabBarButton = forwardRef<any, BottomTabBarButtonProps>((props, ref) => {
   const { children, style, ...restProps } = props
@@ -37,15 +43,6 @@ export const TabBarButton = forwardRef<any, BottomTabBarButtonProps>((props, ref
       friction: 10,
     }).start()
   }
-
-  const rippleConfig = useMemo(
-    () => ({
-      color: 'rgba(111, 108, 217, 0.2)',
-      borderless: false,
-      radius: 26,
-    }),
-    []
-  )
 
   return (
     <Pressable

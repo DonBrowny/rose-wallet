@@ -1,6 +1,6 @@
+import { SmsReviewItem } from '@/components/sms-review-item/sms-review-item'
 import { Button } from '@/components/ui/button/button'
 import { Card } from '@/components/ui/card/card'
-import { SmsReviewItem } from '@/components/ui/sms-review-item/sms-review-item'
 import { finalizeReview, reviewNext, reviewPrev, reviewReset, reviewUpdateItem } from '@/hooks/use-store'
 import type { Transaction } from '@/types/sms/transaction'
 import { useRouter } from 'expo-router'

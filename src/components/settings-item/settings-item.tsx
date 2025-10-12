@@ -25,6 +25,7 @@ export const SettingsItem = ({ header, subHeader }: SettingsItemProps) => {
         </Text>
       </View>
       <ChevronRight
+        testID='chevron-right'
         size={24}
         color={theme.colors.grey4}
       />

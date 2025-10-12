@@ -4,6 +4,7 @@ import { styles } from './overlay-styles'
 
 interface Props {
   isVisible: boolean
+  testID?: string
   onBackdropPress?: () => void
   overlayStyle?: StyleProp<ViewStyle>
   children?: React.ReactNode
@@ -13,6 +14,7 @@ interface Props {
 
 export function Overlay({
   isVisible,
+  testID,
   onBackdropPress,
   overlayStyle,
   children,
@@ -21,6 +23,7 @@ export function Overlay({
 }: Props) {
   return (
     <Modal
+      testID={testID}
       visible={isVisible}
       transparent={!fullScreen}
       animationType={animationType}

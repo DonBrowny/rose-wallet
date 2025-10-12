@@ -1,8 +1,9 @@
 import type { Transaction, TransactionPattern } from '@/types/sms/transaction'
+import { removeDuplicates } from '@/utils/formatter/remove-duplicated'
 import { findDistinctPatterns } from '@/utils/pattern/find-distinct-pattern'
 import { SMSDataExtractor } from './sms-data-extractor-service'
 import { SMSIntentService } from './sms-intent-service'
-import { PermissionResult, SMSPermissionService } from './sms-permission-service'
+import { SMSPermissionService } from './sms-permission-service'
 import { SMSReaderService } from './sms-reader-service'
 
 export interface TransactionResult {
@@ -13,15 +14,11 @@ export interface TransactionResult {
   errors: string[]
 }
 
-export interface SMSProcessingOptions {
-  startTimestamp: number
-  endTimestamp: number
-  includeDuplicates?: boolean
-  patterns?: any[]
-}
-
 export class SMSService {
-  static async getTransactionsFromSMS(options: SMSProcessingOptions): Promise<TransactionResult> {
+  static async getTransactionsFromSMS(options: {
+    startTimestamp: number
+    endTimestamp: number
+  }): Promise<TransactionResult> {
     const { startTimestamp, endTimestamp } = options
 
     try {
@@ -81,7 +78,7 @@ export class SMSService {
               amount: extractedData.amount.value,
               merchant: extractedData.merchant || 'Unknown',
               bankName: extractedData.bank?.name || 'Unknown',
-              transactionDate: sms.date, // Use SMS timestamp
+              transactionDate: sms.date,
               message: sms,
             }
 
@@ -140,14 +137,10 @@ export class SMSService {
     }
   }
 
-  static async processSMSMessagesLastNDays(
-    days: number,
-    options: Omit<SMSProcessingOptions, 'startTimestamp' | 'endTimestamp'> = {}
-  ): Promise<TransactionResult> {
+  static async processSMSMessagesLastNDays(days: number): Promise<TransactionResult> {
     const timestampRange = SMSReaderService.createLastNDaysRange(days)
 
     return await this.getTransactionsFromSMS({
-      ...options,
       startTimestamp: timestampRange.startTimestamp,
       endTimestamp: timestampRange.endTimestamp,
     })
@@ -162,26 +155,4 @@ export class SMSService {
 
     return transactionPatterns
   }
-
-  /**
-   * Check SMS permission status without requesting
-   */
-  static async checkPermissionStatus(): Promise<PermissionResult> {
-    return await SMSPermissionService.checkPermission()
-  }
-}
-
-// Helper functions
-
-function removeDuplicates(transactions: Transaction[]): Transaction[] {
-  const seen = new Set<string>()
-  return transactions.filter((transaction) => {
-    // Use raw SMS as the primary key for deduplication
-    const key = transaction.message.body
-    if (seen.has(key)) {
-      return false
-    }
-    seen.add(key)
-    return true
-  })
 }

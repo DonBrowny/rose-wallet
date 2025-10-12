@@ -23,19 +23,22 @@ export function buildExtractionFromUser(samples: Transaction[]): {
 }
 
 // Create a template from a transaction based on the amount and merchant
-function generateTemplate(transaction: Transaction): string {
+export function generateTemplate(transaction: Transaction): string {
   const modifiedSms = replaceText(transaction.message.body, '<AMT>', transaction.amount.toString())
   const template = replaceText(modifiedSms, '<MERCHANT>', transaction.merchant)
   return template
 }
 
-function replaceText(sms: string, text: string, matcher: string): string {
+export function replaceText(sms: string, text: string, matcher: string): string {
   let matcherIdx = sms.indexOf(matcher)
+  if (matcherIdx === -1) {
+    return sms
+  }
   let matcherLen = matcher.length
   return sms.slice(0, matcherIdx) + text + sms.slice(matcherIdx + matcherLen)
 }
 
-function templateRanking(template: string, samples: Transaction[]): number {
+export function templateRanking(template: string, samples: Transaction[]): number {
   const correctSamples = samples.filter((sample) => {
     const { amount, merchant } = extractAmountAndMerchant(template, sample.message.body)
     return amount === sample.amount.toString() && merchant === sample.merchant

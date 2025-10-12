@@ -62,14 +62,5 @@ export default function PatternReviewRoute() {
     )
   }
 
-  const row = data?.[0]
-  return (
-    <PatternReviewScreen
-      id={Number(row.id)}
-      name={row.name}
-      groupingTemplate={row.groupingTemplate}
-      template={row.template}
-      status={row.status}
-    />
-  )
+  return <PatternReviewScreen />
 }

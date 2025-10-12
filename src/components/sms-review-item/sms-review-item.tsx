@@ -1,4 +1,4 @@
-import { HighlightedSMS } from '@/components/ui/highlighted-sms/highlighted-sms'
+import { HighlightedSMS } from '@/components/sms-review-item/highlighted-sms/highlighted-sms'
 import { Input } from '@/components/ui/input/input'
 import { Text } from '@/components/ui/text/text'
 import React from 'react'
@@ -67,6 +67,7 @@ export function SmsReviewItem({
         amount={amount}
       />
       <Input
+        testID='amount-input'
         label='Amount'
         value={amountValue}
         onChangeText={onChangeAmount}
@@ -74,6 +75,7 @@ export function SmsReviewItem({
         inputMode='numeric'
       />
       <Input
+        testID='merchant-input'
         label='Merchant'
         value={merchantValue}
         onChangeText={onChangeMerchant}

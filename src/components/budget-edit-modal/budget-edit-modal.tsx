@@ -34,6 +34,7 @@ export function BudgetEditModal({ isVisible, onCancel }: BudgetEditModalProps) {
 
   return (
     <Overlay
+      testID='budget-edit-modal'
       isVisible={isVisible}
       onBackdropPress={handleCancel}
       overlayStyle={styles.overlay}
@@ -47,6 +48,7 @@ export function BudgetEditModal({ isVisible, onCancel }: BudgetEditModalProps) {
         </Text>
 
         <Input
+          testID='budget-input'
           label='Budget Amount'
           placeholder='Enter budget amount'
           value={editBudget}

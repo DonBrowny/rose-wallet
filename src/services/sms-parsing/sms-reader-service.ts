@@ -1,12 +1,5 @@
 import { Platform } from 'react-native'
-import { readSMS as expoReadSMS, isAvailable, type SMSMessage } from 'rose-sms-reader'
-
-export interface SMSReadOptions {
-  startTimestamp: number
-  endTimestamp: number
-  senderNumbers?: string[]
-  includeRead?: boolean
-}
+import { readSMS as expoReadSMS, isAvailable, type SMSMessage, type SMSReadOptions } from 'rose-sms-reader'
 
 export interface SMSReadResult {
   success: boolean
@@ -16,17 +9,11 @@ export interface SMSReadResult {
 }
 
 export class SMSReaderService {
-  /**
-   * Check if SMS reading is available on this platform
-   */
   static async isReaderAvailable(): Promise<boolean> {
     if (Platform.OS !== 'android') return false
     return await isAvailable()
   }
 
-  /**
-   * Read SMS messages from device using our custom Expo module
-   */
   static async readSMS(options: SMSReadOptions): Promise<SMSReadResult> {
     const { startTimestamp, endTimestamp, senderNumbers = [] } = options
 
@@ -70,20 +57,6 @@ export class SMSReaderService {
     }
   }
 
-  /**
-   * Get all unique sender numbers from messages
-   */
-  static getUniqueSenders(messages: SMSMessage[]): string[] {
-    const senders = new Set<string>()
-    messages.forEach((message) => {
-      senders.add(message.address)
-    })
-    return Array.from(senders)
-  }
-
-  /**
-   * Create timestamp range for the last N days
-   */
   static createLastNDaysRange(days: number): { startTimestamp: number; endTimestamp: number } {
     const endDate = new Date()
     const startDate = new Date()
