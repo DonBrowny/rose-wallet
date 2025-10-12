@@ -1,50 +1,138 @@
-# Welcome to your Expo app 👋
+<p align="center">
+  <img src="./src/assets/images/icon.png" alt="Rose Wallet Icon" width="120" height="120" />
+</p>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# Rose Wallet
 
-## Get started
+[![Platform](https://img.shields.io/badge/platform-Android-green)](https://developer.android.com)
+[![Expo](https://img.shields.io/badge/Expo-Managed%20Workflow-000?logo=expo&logoColor=white)](https://expo.dev)
+[![Package Manager](https://img.shields.io/badge/pnpm-8%2B-ffca28?logo=pnpm&logoColor=white)](https://pnpm.io)
+[![License](https://img.shields.io/badge/license-See%20LICENSE-informational)](./LICENSE)
 
-1. Install dependencies
+Privacy-first personal finance app that parses transaction SMS, discovers patterns, and helps you budget and analyze your spending. Built with Expo and SQLite for reliable offline-first use on Android.
 
-   ```bash
-   npm install
-   ```
+> Note: Google Play link will be added here when available.
 
-2. Start the app
+## Table of Contents
 
-   ```bash
-   npx expo start
-   ```
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Installation and Quick Start](#installation-and-quick-start)
+- [Platform Notes](#platform-notes)
+- [Project Structure](#project-structure)
+- [Tech Stack](#tech-stack)
+- [Development Scripts](#development-scripts)
+- [Troubleshooting / FAQ](#troubleshooting--faq)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
-In the output, you'll find options to open the app in a
+## Features
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **SMS parsing**: Extract transaction details from bank and card SMS locally on-device.
+- **Pattern discovery**: Identify merchant and spending patterns for categorization.
+- **Budgeting**: Create budgets and track progress by category.
+- **Analytics**: Understand spending with summaries and trend insights.
+- **Offline-first**: All data stored locally using SQLite; works without internet.
+- **Categories**: Flexible, user-manageable categories for expenses and income.
+- (Planned) **Budget alerts**: Notify when approaching or exceeding budget thresholds.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Screenshots
 
-## Get a fresh project
+Screenshots and demo GIFs will be added here.
 
-When you're ready, run:
+## Installation and Quick Start
+
+Ensure you have [pnpm](https://pnpm.io) and the Expo tooling installed.
 
 ```bash
-npm run reset-project
+pnpm install
+pnpm start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Common Android flows:
 
-## Learn more
+```bash
+# Start Metro and choose Android from the menu
+pnpm start
 
-To learn more about developing your project with Expo, look at the following resources:
+# Or build and run a development build on Android directly
+pnpm android
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Platform Notes
 
-## Join the community
+### Android
 
-Join our community of developers creating universal apps.
+- This app targets Android. SMS read permissions are required for parsing transaction messages.
+- Tested with modern Android SDKs via Expo. Device-specific OEM restrictions may affect background behavior.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project Structure
+
+- `src/app`: Screens and routing (Expo Router).
+- `src/components`: Reusable UI components.
+- `src/services`: Local services (e.g., database, SMS parsing).
+- `src/db`: Schema and migrations (SQLite via Drizzle ORM).
+- `src/hooks`: Reusable hooks and state utilities (Zustand).
+- `src/theme`: Theming and styles.
+- `modules/rose-sms-reader`: Native Android SMS reading module used by the app.
+
+## Tech Stack
+
+- **Runtime**: React Native (Expo)
+- **Database**: SQLite (`expo-sqlite`) with Drizzle ORM
+- **Navigation**: Expo Router, React Navigation
+- **State**: Zustand
+- **UI**: React Native + custom components
+
+## Development Scripts
+
+```bash
+# Start the dev server (Metro)
+pnpm start
+
+# Run on Android (development build)
+pnpm android
+
+# Lint and format
+pnpm lint
+pnpm lint:fix
+pnpm format
+pnpm format:check
+
+# Tests
+pnpm test
+pnpm test:coverage
+
+# DB codegen (Drizzle)
+pnpm db:generate
+```
+
+## Troubleshooting / FAQ
+
+- If Android build fails to install, ensure an emulator or device is connected and authorized.
+- If SMS parsing does not work, verify SMS read permissions are granted in system settings.
+- Clear Metro cache when encountering bundling issues:
+
+```bash
+rm -rf node_modules .expo .cache
+pnpm install
+pnpm start -- --clear
+```
+
+## Roadmap
+
+- Budget alerts for threshold notifications
+- Release on Google Play (stable channel)
+- Extended analytics (cashflow, merchant insights)
+- Data backup/restore and CSV export/import
+- Evaluate iOS support feasibility (permissions and platform constraints)
+
+## License
+
+Licensed under the same terms as the upstream reference project. See [LICENSE](./LICENSE) for details.
+
+## Acknowledgements
+
+- Built with Expo, React Native, and SQLite.
+- Inspired by the structure and clarity of the `namida` README. See: https://github.com/namidaco/namida/blob/main/README.md

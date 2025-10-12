@@ -19,7 +19,7 @@
 
 ### Purpose
 
-Rose Expense Tracker is a React Native Android application that automatically tracks user spending by reading SMS messages from banks and financial services. The app provides detailed spending analysis, budget management, and financial insights to help users understand and control their expenses.
+Rose Expense Tracker is a React Native Android application that automatically tracks user spending by reading SMS messages from banks. The app provides detailed spending analysis, budget management, and financial insights to help users understand and control their expenses.
 
 ### Target Audience
 
