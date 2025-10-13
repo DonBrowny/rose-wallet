@@ -29,11 +29,13 @@ jest.mock('@/services/database/patterns-repository', () => ({
 describe('useAppStore', () => {
   beforeEach(() => {
     // Reset store before each test
-    useAppStore.setState({
-      patternReview: { transactions: [], name: '', currentIndex: 0 },
-      isSaving: false,
-      error: undefined,
-    } as any)
+    act(() => {
+      useAppStore.setState({
+        patternReview: { transactions: [], name: '', currentIndex: 0 },
+        isSaving: false,
+        error: undefined,
+      } as any)
+    })
   })
 
   it('initializes and updates pattern review state', () => {
@@ -69,7 +71,9 @@ describe('useAppStore', () => {
     act(() => {
       useAppStore.getState().setPatternReview(sampleTxns, 'N')
     })
-    await finalizeReview()
+    await act(async () => {
+      await finalizeReview()
+    })
     expect(useAppStore.getState().isSaving).toBe(false)
     expect(useAppStore.getState().error).toBeUndefined()
   })

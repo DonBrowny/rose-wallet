@@ -3,6 +3,7 @@ import type { Transaction } from '@/types/sms/transaction'
 import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { buildExtractionFromUser } from '@/utils/pattern/extraction-template-builder'
 import { create, type StoreApi, type UseBoundStore } from 'zustand'
+import { immer } from 'zustand/middleware/immer'
 
 type WithSelectors<S> = S extends { getState: () => infer T } ? S & { use: { [K in keyof T]: () => T[K] } } : never
 
@@ -27,17 +28,23 @@ interface AppState {
   error?: string
 }
 
-const useAppStoreBase = create<AppState>()((set) => ({
-  patternReview: {
-    transactions: [],
-    name: '',
-    currentIndex: 0,
-  },
-  setPatternReview: (transactions: Transaction[], name: string) =>
-    set((state) => ({ patternReview: { transactions, name, currentIndex: 0 } })),
-  isSaving: false,
-  error: undefined,
-}))
+const useAppStoreBase = create<AppState>()(
+  immer((set) => ({
+    patternReview: {
+      transactions: [],
+      name: '',
+      currentIndex: 0,
+    },
+    setPatternReview: (transactions: Transaction[], name: string) =>
+      set((state) => {
+        state.patternReview.transactions = transactions
+        state.patternReview.name = name
+        state.patternReview.currentIndex = 0
+      }),
+    isSaving: false,
+    error: undefined,
+  }))
+)
 
 export const reviewNext = () =>
   useAppStoreBase.setState((state) => ({

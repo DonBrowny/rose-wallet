@@ -59,12 +59,11 @@ describe('PatternReviewScreen', () => {
     const backMock = jest.fn()
     ;(useRouter as unknown as jest.Mock).mockReturnValue({ back: backMock })
 
-    const { getByText, getByRole } = render(<PatternReviewScreen />)
+    const { getByText, getByTestId } = render(<PatternReviewScreen />)
     expect(getByText('Pattern review')).toBeTruthy()
     expect(getByText('Review sample SMS for this pattern.')).toBeTruthy()
 
-    // The close button has accessibilityRole='button' and title='close-btn'
-    const closeBtn = getByRole('button', { name: 'close-btn' })
+    const closeBtn = getByTestId('close-btn')
     fireEvent.press(closeBtn)
 
     expect(reviewReset as unknown as jest.Mock).toHaveBeenCalled()
