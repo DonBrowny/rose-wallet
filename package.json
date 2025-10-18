@@ -14,7 +14,8 @@
     "format:check": "prettier --check .",
     "format:staged": "prettier --write --list-different",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@expo-google-fonts/ibm-plex-mono": "^0.4.0",

@@ -1,0 +1,24 @@
+name: Lint & Format (ESLint + Prettier)
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout project repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup Node + PNPM + install deps
+        uses: ./.github/actions/setup-node-pnpm-install
+
+      - name: 🧹 Run ESLint
+        run: pnpm lint
+
+      - name: 🧼 Run Prettier check
+        run: pnpm format:check
