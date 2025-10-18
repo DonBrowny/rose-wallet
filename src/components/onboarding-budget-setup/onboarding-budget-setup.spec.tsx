@@ -1,6 +1,6 @@
-import { fireEvent, render } from '@testing-library/react-native'
+import { act, fireEvent, render } from '@testing-library/react-native'
 import React from 'react'
-import { OnboardingBudgetSetup } from './onboarding-budget-setup'
+import { OnboardingBudgetSetup, OnboardingBudgetSetupRef } from './onboarding-budget-setup'
 
 jest.mock('@/contexts/budget-context', () => ({
   useBudgetContext: () => ({ monthlyBudget: 2000, budgetChangeHandler: jest.fn() }),
@@ -15,10 +15,18 @@ describe('OnboardingBudgetSetup', () => {
 
   it('calls onSaved when saving valid budget', () => {
     const onSaved = jest.fn()
-    const { getByLabelText, getByText } = render(<OnboardingBudgetSetup onSaved={onSaved} />)
+    const ref = React.createRef<OnboardingBudgetSetupRef>()
+    const { getByLabelText } = render(
+      <OnboardingBudgetSetup
+        ref={ref}
+        onSaved={onSaved}
+      />
+    )
     const input = getByLabelText('Monthly Budget')
     fireEvent.changeText(input, '3500')
-    fireEvent.press(getByText('Save Budget'))
+    act(() => {
+      ref.current?.save()
+    })
     expect(onSaved).toHaveBeenCalledWith(3500)
   })
 })
