@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router'
 import { ArrowLeft, ArrowRight } from 'lucide-react-native'
 import React, { useRef, useState } from 'react'
 import { View } from 'react-native'
+import Animated, { FadeInLeft, FadeInRight, FadeOutLeft, FadeOutRight } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './onboarding-screen.styles'
@@ -22,14 +23,32 @@ export function OnboardingScreen() {
   const router = useRouter()
   const { theme } = useUnistyles()
   const [step, setStep] = useState(0)
+  const [direction, setDirection] = useState<'next' | 'back'>('next')
   const budgetRef = useRef<OnboardingBudgetSetupRef>(null)
 
-  const goNext = () => setStep((s) => Math.min(2, s + 1))
-  const goBack = () => setStep((s) => Math.max(0, s - 1))
+  const goNext = () => {
+    setStep((s) => {
+      const target = Math.min(2, s + 1)
+      setDirection('next')
+      return target
+    })
+  }
+
+  const goBack = () => {
+    setStep((s) => {
+      const target = Math.max(0, s - 1)
+      setDirection('back')
+      return target
+    })
+  }
 
   const handlePermissionRequest = async () => {
     await SMSPermissionService.requestPermissionWithExplanation()
-    goNext()
+    setStep((s) => {
+      const target = Math.min(2, s + 1)
+      setDirection('next')
+      return target
+    })
   }
 
   const handleFinish = () => {
@@ -50,11 +69,16 @@ export function OnboardingScreen() {
           style={styles.stepper}
         />
 
-        <View style={styles.content}>
+        <Animated.View
+          key={step}
+          entering={(direction === 'next' ? FadeInRight : FadeInLeft).duration(200)}
+          exiting={(direction === 'next' ? FadeOutLeft : FadeOutRight).duration(200)}
+          style={styles.content}
+        >
           {step === 0 && <OnboardingIntro />}
           {step === 1 && <OnboardingPrivacy />}
           {step === 2 && <OnboardingBudgetSetup ref={budgetRef} />}
-        </View>
+        </Animated.View>
 
         {step === 0 ? (
           <View style={styles.buttonContainer}>
