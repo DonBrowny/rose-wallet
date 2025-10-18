@@ -7,7 +7,7 @@
 [![Platform](https://img.shields.io/badge/platform-Android-green)](https://developer.android.com)
 [![Expo](https://img.shields.io/badge/Expo-Managed%20Workflow-000?logo=expo&logoColor=white)](https://expo.dev)
 [![Package Manager](https://img.shields.io/badge/pnpm-8%2B-ffca28?logo=pnpm&logoColor=white)](https://pnpm.io)
-[![License](https://img.shields.io/badge/license-See%20LICENSE-informational)](./LICENSE)
+[![License](https://img.shields.io/badge/license-See%20LICENSE-informational)](./LICENSE.MD)
 
 Privacy-first personal finance app that parses transaction SMS, discovers patterns, and helps you budget and analyze your spending. Built with Expo and SQLite for reliable offline-first use on Android.
 
@@ -130,7 +130,7 @@ pnpm start -- --clear
 
 ## License
 
-Licensed under the same terms as the upstream reference project. See [LICENSE](./LICENSE) for details.
+Licensed under the same terms as the upstream reference project. See [LICENSE](./LICENSE.MD) for details.
 
 ## Acknowledgements
 

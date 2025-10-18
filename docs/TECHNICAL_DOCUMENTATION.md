@@ -15,7 +15,7 @@
 11. [Testing Strategy](#testing-strategy)
 12. [Deployment](#deployment)
 
-> **Note**: This document focuses on technical specifications and architecture decisions. For implementation details and code examples, see the `/docs/implementation/` directory.
+> **Note**: This document focuses on technical specifications and architecture decisions.
 
 ## Project Overview
 
