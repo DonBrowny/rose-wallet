@@ -1,4 +1,7 @@
 export const MMKV_KEYS = {
+  APP: {
+    ONBOARDING_COMPLETED: 'app.onboarding_completed',
+  },
   BUDGET: {
     MONTHLY_BUDGET: 'budget.monthly_budget',
   },
