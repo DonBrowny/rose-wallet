@@ -2,6 +2,7 @@
   "name": "rose-wallet",
   "main": "index.ts",
   "version": "1.0.0",
+  "packageManager": "pnpm@9",
   "scripts": {
     "db:generate": "drizzle-kit generate",
     "start": "expo start",
