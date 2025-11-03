@@ -1,0 +1,31 @@
+name: 'EAS Submit (latest artifact)'
+
+description: 'Submit the latest build artifact to the store using a submit profile.'
+
+inputs:
+  platform:
+    description: 'Platform to submit (android | ios)'
+    required: true
+  profile:
+    description: 'EAS submit profile (e.g., beta, production)'
+    required: true
+  extra-args:
+    description: 'Extra args to append to the EAS submit command'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: '📤 EAS submit latest'
+      shell: bash
+      env:
+        EXPO_TOKEN: ${{ env.EXPO_TOKEN }}
+      run: |
+        set -euo pipefail
+        CMD="npx --yes eas-cli@latest submit --platform ${{ inputs.platform }} --profile ${{ inputs.profile }} --latest --non-interactive"
+        if [ -n "${{ inputs.extra-args }}" ]; then
+          CMD="$CMD ${{ inputs.extra-args }}"
+        fi
+        echo "Running: $CMD"
+        eval "$CMD"

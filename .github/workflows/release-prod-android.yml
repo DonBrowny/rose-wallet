@@ -34,9 +34,22 @@ jobs:
       - name: Setup Node + PNPM + Install
         uses: ./.github/actions/setup-node-pnpm-install
 
+      - name: Write Google Play service account key
+        shell: bash
+        env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+        run: |
+          mkdir -p .github/keys
+          echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > .github/keys/play.json
+
       - name: Promote latest QA artifact to Production (no rebuild)
         if: inputs.mode == 'promote'
-        run: npx --yes eas-cli@latest submit --platform android --latest --non-interactive --profile production
+        uses: ./.github/actions/eas-submit
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        with:
+          platform: android
+          profile: production
 
       - name: EAS build & auto-submit (Android Production)
         if: inputs.mode == 'build'

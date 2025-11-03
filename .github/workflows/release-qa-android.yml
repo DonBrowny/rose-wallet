@@ -19,6 +19,14 @@ jobs:
       - name: Setup Node + PNPM + Install
         uses: ./.github/actions/setup-node-pnpm-install
 
+      - name: Write Google Play service account key
+        shell: bash
+        env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+        run: |
+          mkdir -p .github/keys
+          echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > .github/keys/play.json
+
       - name: EAS build & auto-submit (Android Beta track)
         uses: ./.github/actions/eas-build
         with:

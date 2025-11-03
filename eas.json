@@ -33,12 +33,14 @@
   "submit": {
     "beta": {
       "android": {
-        "track": "beta"
+        "track": "beta",
+        "serviceAccountKeyPath": ".github/keys/play.json"
       }
     },
     "production": {
       "android": {
-        "track": "production"
+        "track": "production",
+        "serviceAccountKeyPath": ".github/keys/play.json"
       }
     }
   }
