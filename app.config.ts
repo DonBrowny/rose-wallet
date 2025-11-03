@@ -1,0 +1,68 @@
+import type { ExpoConfig } from 'expo/config'
+import pkg from './package.json'
+
+const config: ExpoConfig = {
+  name: 'Rose Wallet',
+  slug: 'rose-wallet',
+  version: pkg.version,
+  orientation: 'portrait',
+  icon: './src/assets/images/icon.png',
+  scheme: 'rosewallet',
+  userInterfaceStyle: 'automatic',
+  newArchEnabled: true,
+  ios: {
+    supportsTablet: true,
+    bundleIdentifier: 'com.rosewallet.app',
+  },
+  android: {
+    adaptiveIcon: {
+      foregroundImage: './src/assets/images/icon.png',
+      backgroundColor: '#ffffff',
+    },
+    edgeToEdgeEnabled: true,
+    package: 'com.rosewallet.app',
+  },
+  web: {
+    bundler: 'metro',
+    output: 'static',
+    favicon: './src/assets/images/favicon.png',
+  },
+  plugins: [
+    'expo-router',
+    [
+      'expo-splash-screen',
+      {
+        image: './src/assets/images/splash-icon.png',
+        imageWidth: 200,
+        resizeMode: 'contain',
+        backgroundColor: '#ffffff',
+      },
+    ],
+    [
+      'expo-font',
+      {
+        fonts: [
+          'node_modules/@expo-google-fonts/manrope/400Regular/Manrope_400Regular.ttf',
+          'node_modules/@expo-google-fonts/manrope/600SemiBold/Manrope_600SemiBold.ttf',
+          'node_modules/@expo-google-fonts/manrope/700Bold/Manrope_700Bold.ttf',
+          'node_modules/@expo-google-fonts/manrope/800ExtraBold/Manrope_800ExtraBold.ttf',
+          'node_modules/@expo-google-fonts/ibm-plex-mono/500Medium/IBMPlexMono_500Medium.ttf',
+          'node_modules/@expo-google-fonts/ibm-plex-mono/700Bold/IBMPlexMono_700Bold.ttf',
+        ],
+      },
+    ],
+    'expo-sqlite',
+  ],
+  experiments: {
+    typedRoutes: true,
+  },
+  extra: {
+    router: {},
+    eas: {
+      projectId: 'c2824237-9f61-452b-b61b-243e51fdbd3d',
+    },
+  },
+  owner: 'donbrowny',
+}
+
+export default config
