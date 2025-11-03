@@ -165,6 +165,7 @@ This project uses EAS (Expo Application Services) with GitHub Actions for Androi
 
 - App versionName equals `package.json` version via `app.config.ts`:
   - Update and tag using:
+
   ```bash
   pnpm run app-release
   ```
