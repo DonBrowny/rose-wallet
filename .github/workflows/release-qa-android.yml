@@ -32,4 +32,3 @@ jobs:
 
       - name: EAS build & auto-submit (Android Beta track)
         run: npx --yes eas-cli@latest build --platform android --profile beta --non-interactive --auto-submit --submit-profile beta
-
