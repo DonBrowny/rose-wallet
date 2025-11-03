@@ -46,4 +46,3 @@ jobs:
           profile: production
           auto-submit: 'true'
           submit-profile: production
-

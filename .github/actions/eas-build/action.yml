@@ -33,15 +33,14 @@ runs:
       run: |
         set -euo pipefail
         CMD="npx --yes eas-cli@latest build --platform ${{ inputs.platform }} --profile ${{ inputs.profile }} --non-interactive"
-        if [ "${{ inputs.auto-submit }}" = "true" ]; then
+        # Prefer --auto-submit-with-profile when a submit profile is provided.
+        if [ -n "${{ inputs.submit-profile }}" ]; then
+          CMD="$CMD --auto-submit-with-profile ${{ inputs.submit-profile }}"
+        elif [ "${{ inputs.auto-submit }}" = "true" ]; then
           CMD="$CMD --auto-submit"
-          if [ -n "${{ inputs.submit-profile }}" ]; then
-            CMD="$CMD --auto-submit-with-profile ${{ inputs.submit-profile }}"
-          fi
         fi
         if [ -n "${{ inputs.extra-args }}" ]; then
           CMD="$CMD ${{ inputs.extra-args }}"
         fi
         echo "Running: $CMD"
         eval "$CMD"
-

@@ -26,4 +26,3 @@ jobs:
           profile: beta
           auto-submit: 'true'
           submit-profile: beta
-
