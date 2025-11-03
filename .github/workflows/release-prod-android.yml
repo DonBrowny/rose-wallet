@@ -31,19 +31,8 @@ jobs:
         with:
           ref: ${{ inputs.git_ref || github.ref }}
 
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup Node + PNPM + Install
+        uses: ./.github/actions/setup-node-pnpm-install
 
       - name: Promote latest QA artifact to Production (no rebuild)
         if: inputs.mode == 'promote'
@@ -51,4 +40,10 @@ jobs:
 
       - name: EAS build & auto-submit (Android Production)
         if: inputs.mode == 'build'
-        run: npx --yes eas-cli@latest build --platform android --profile production --non-interactive --auto-submit --submit-profile production
+        uses: ./.github/actions/eas-build
+        with:
+          platform: android
+          profile: production
+          auto-submit: 'true'
+          submit-profile: production
+

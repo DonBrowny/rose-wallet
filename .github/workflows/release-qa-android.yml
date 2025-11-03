@@ -16,19 +16,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup Node + PNPM + Install
+        uses: ./.github/actions/setup-node-pnpm-install
 
       - name: EAS build & auto-submit (Android Beta track)
-        run: npx --yes eas-cli@latest build --platform android --profile beta --non-interactive --auto-submit --submit-profile beta
+        uses: ./.github/actions/eas-build
+        with:
+          platform: android
+          profile: beta
+          auto-submit: 'true'
+          submit-profile: beta
+

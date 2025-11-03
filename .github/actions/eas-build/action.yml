@@ -1,0 +1,47 @@
+name: 'EAS Build (with optional auto-submit)'
+
+description: 'Run EAS build for a given platform/profile with optional auto-submit and submit profile.'
+
+inputs:
+  platform:
+    description: 'Platform to build (android | ios)'
+    required: true
+  profile:
+    description: 'EAS build profile to use (e.g., beta, production)'
+    required: true
+  auto-submit:
+    description: 'Whether to auto-submit after build (true|false)'
+    required: false
+    default: 'false'
+  submit-profile:
+    description: 'Submit profile to use when auto-submit is enabled (e.g., beta, production)'
+    required: false
+    default: ''
+  extra-args:
+    description: 'Extra args to append to the EAS build command'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: '🏗️ EAS build'
+      shell: bash
+      env:
+        EXPO_TOKEN: ${{ env.EXPO_TOKEN }}
+        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ env.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      run: |
+        set -euo pipefail
+        CMD="npx --yes eas-cli@latest build --platform ${{ inputs.platform }} --profile ${{ inputs.profile }} --non-interactive"
+        if [ "${{ inputs.auto-submit }}" = "true" ]; then
+          CMD="$CMD --auto-submit"
+          if [ -n "${{ inputs.submit-profile }}" ]; then
+            CMD="$CMD --auto-submit-with-profile ${{ inputs.submit-profile }}"
+          fi
+        fi
+        if [ -n "${{ inputs.extra-args }}" ]; then
+          CMD="$CMD ${{ inputs.extra-args }}"
+        fi
+        echo "Running: $CMD"
+        eval "$CMD"
+
