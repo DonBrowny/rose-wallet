@@ -1,0 +1,55 @@
+name: Production Android Release (EAS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_ref:
+        description: 'Git ref (tag/branch/SHA) to build'
+        required: false
+        default: ''
+      mode:
+        description: 'promote (submit latest QA artifact) or build (new prod build)'
+        required: true
+        default: 'promote'
+        type: choice
+        options:
+          - promote
+          - build
+
+jobs:
+  build-android-prod:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      # Provide Google Play Service Account JSON as a secret
+      GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_ref || github.ref }}
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Promote latest QA artifact to Production (no rebuild)
+        if: inputs.mode == 'promote'
+        run: npx --yes eas-cli@latest submit --platform android --latest --non-interactive --profile production
+
+      - name: EAS build & auto-submit (Android Production)
+        if: inputs.mode == 'build'
+        run: npx --yes eas-cli@latest build --platform android --profile production --non-interactive --auto-submit --submit-profile production
+
