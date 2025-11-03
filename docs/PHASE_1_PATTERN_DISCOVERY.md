@@ -16,19 +16,24 @@ We are building a **two-phase pattern discovery system**:
 ### Key Components
 
 #### 1. **SMS Processing Pipeline**
+
 ```
 User's SMS Messages → Brain 1 (Intent Classification) → Brain 2 (Data Extraction) → Pattern Generation → User Validation → Confirmed Patterns
 ```
 
 #### 2. **Simple Data Extraction**
+
 For the first pass, we extract only essential fields:
+
 - **Amount** - Transaction value (Rs. 500, ₹1,200)
 - **Merchant** - Business name (SWIGGY, UBER, AMAZON)
 - **Bank** - Bank name (from SMS sender)
 - **Date** - Transaction date (from SMS timestamp)
 
 #### 3. **User Validation Interface**
+
 Show users exactly what we extracted and let them confirm/correct:
+
 - Display original SMS
 - Show detected pattern
 - Show extracted data with validation status
@@ -36,13 +41,16 @@ Show users exactly what we extracted and let them confirm/correct:
 - Provide smart suggestions for invalid data (TODO)
 
 #### 4. **Hierarchical Pattern Matching**
+
 Smart matching system that handles SMS header changes:
+
 - **Sender Normalization** - Handles VM-HDFC, AD-HDFC, HDFC variations
 - **Issuer Key Extraction** - Groups patterns by bank (HDFC, ICICI, SBI)
 - **Skeleton Generation** - Normalizes SMS structure for consistent matching
 - **Hierarchical Fallback** - Tries best match first, then falls back gracefully
 
 **IssuerKey Concept:**
+
 - **Purpose**: Standardized bank identifier for organizing patterns
 - **Examples**: HDFC, ICICI, SBI, AXIS, KOTAK
 - **Normalization**: Maps bank variations to canonical names

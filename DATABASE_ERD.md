@@ -10,24 +10,24 @@ erDiagram
         string body "Encrypted SMS Content"
         timestamp date_time "Encrypted Timestamp"
     }
-    
+
     MERCHANTS {
         int id PK "Primary Key"
         string name "Merchant Name"
     }
-    
+
     CATEGORIES {
         int id PK "Primary Key"
         string name "Category Name"
         int parent_id FK "Parent Category (nullable)"
     }
-    
+
     MERCHANT_CATEGORY_GROUPS {
         int id PK "Primary Key"
         int merchant_id FK "Merchant Reference"
         int category_id FK "Category Reference"
     }
-    
+
     TRANSACTIONS {
         int id PK "Primary Key"
         int sms_id FK "SMS Reference (nullable)"
@@ -40,7 +40,7 @@ erDiagram
         timestamp created_at "Creation Time"
         timestamp updated_at "Last Updated"
     }
-    
+
     PATTERNS {
         int id PK "Primary Key"
         string name "Pattern Name"
@@ -54,7 +54,7 @@ erDiagram
         timestamp created_at "Creation Time"
         timestamp updated_at "Last Updated"
     }
-    
+
     PATTERN_SMS_GROUP {
         int id PK "Primary Key"
         int pattern_id FK "Pattern Reference"
@@ -62,11 +62,11 @@ erDiagram
         real confidence "Match Confidence (0.0-1.0, default: 1.0)"
         timestamp created_at "Creation Time"
     }
-    
+
     NOTE_BUDGETS {
         string note "Budgets stored in MMKV for encryption"
     }
-    
+
     %% Relationships
     SMS_MESSAGES ||--o{ TRANSACTIONS : "contains"
     MERCHANTS ||--o{ TRANSACTIONS : "has"
@@ -76,7 +76,7 @@ erDiagram
     CATEGORIES ||--o{ CATEGORIES : "parent_child"
     PATTERNS ||--o{ PATTERN_SMS_GROUP : "groups"
     SMS_MESSAGES ||--o{ PATTERN_SMS_GROUP : "grouped_by"
-    
+
     %% Note: Budgets are stored in MMKV, not in database
 ```
 

@@ -115,32 +115,34 @@ This project uses EAS (Expo Application Services) with GitHub Actions for Androi
 
 ### End-to-end Release Steps
 
-1) Prepare version and tag
+1. Prepare version and tag
    - Ensure your working tree is clean.
    - Bump version and create a tag:
+
    ```bash
    pnpm run app-release
    ```
+
    - This updates `package.json` version, commits, and pushes the tag.
 
-2) Publish GitHub Release (triggers QA to Play Beta)
+2. Publish GitHub Release (triggers QA to Play Beta)
    - GitHub → Releases → “Draft new release” → select the new tag → Publish.
    - This triggers the workflow to build an AAB and auto-submit to Play Beta.
 
-3) Monitor QA build and submission
+3. Monitor QA build and submission
    - Actions → QA Android Release (EAS) → view logs.
    - You can also track the build on Expo: `eas build:list` or the EAS dashboard.
 
-4) Test on device from Play Beta
+4. Test on device from Play Beta
    - Ensure your tester account is added to the Beta track in Play Console.
    - Install/update the app from Google Play (Beta) and verify functionality.
 
-5) Promote to Production (version parity)
+5. Promote to Production (version parity)
    - GitHub → Actions → “Production Android Release (EAS)” → Run workflow.
    - Keep `mode=promote` (default) to submit the latest QA artifact directly to Production.
    - Alternatively set `mode=build` to create a fresh Production build and auto-submit.
 
-6) Complete rollout in Play Console
+6. Complete rollout in Play Console
    - Review the Production release in Google Play Console and roll out to users per your policy.
 
 ### Prerequisites
@@ -166,16 +168,17 @@ This project uses EAS (Expo Application Services) with GitHub Actions for Androi
   ```bash
   pnpm run app-release
   ```
+
   - This bumps `package.json` version, commits, and creates a Git tag.
   - We do not run `expo prebuild` in the version hook.
 
 ### QA (Play Beta) flow
 
-1) Create a Git tag and publish a GitHub Release for it.
-2) Workflow `QA Android Release (EAS)` runs automatically and:
+1. Create a Git tag and publish a GitHub Release for it.
+2. Workflow `QA Android Release (EAS)` runs automatically and:
    - Builds Android AAB with profile `beta`
    - Auto-submits to Google Play Beta track
-3) Install from Play Beta on device and test.
+3. Install from Play Beta on device and test.
 
 ### Production flow
 

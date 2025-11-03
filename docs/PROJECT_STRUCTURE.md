@@ -9,7 +9,7 @@ This document outlines the complete file and folder structure for the Rose Expen
 ```
 rose-wallet/
 ├── 📁 app/                          # Expo Router app directory
-├── 📁 assets/                       
+├── 📁 assets/
 ├── 📁 components/                   # Reusable UI components
 ├── 📁 docs/                         # Documentation
 ├── 📁 hooks/                        # Custom React hooks

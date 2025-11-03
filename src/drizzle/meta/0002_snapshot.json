@@ -35,12 +35,8 @@
           "name": "categories_parent_id_categories_id_fk",
           "tableFrom": "categories",
           "tableTo": "categories",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -80,12 +76,8 @@
           "name": "merchant_category_groups_merchant_id_merchants_id_fk",
           "tableFrom": "merchant_category_groups",
           "tableTo": "merchants",
-          "columnsFrom": [
-            "merchant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["merchant_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -93,12 +85,8 @@
           "name": "merchant_category_groups_category_id_categories_id_fk",
           "tableFrom": "merchant_category_groups",
           "tableTo": "categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -177,12 +165,8 @@
           "name": "pattern_sms_group_pattern_id_patterns_id_fk",
           "tableFrom": "pattern_sms_group",
           "tableTo": "patterns",
-          "columnsFrom": [
-            "pattern_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pattern_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -190,12 +174,8 @@
           "name": "pattern_sms_group_sms_id_sms_messages_id_fk",
           "tableFrom": "pattern_sms_group",
           "tableTo": "sms_messages",
-          "columnsFrom": [
-            "sms_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sms_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -292,9 +272,7 @@
       "indexes": {
         "unique_patterns_name": {
           "name": "unique_patterns_name",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },
@@ -422,12 +400,8 @@
           "name": "transactions_sms_id_sms_messages_id_fk",
           "tableFrom": "transactions",
           "tableTo": "sms_messages",
-          "columnsFrom": [
-            "sms_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sms_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -435,12 +409,8 @@
           "name": "transactions_category_id_categories_id_fk",
           "tableFrom": "transactions",
           "tableTo": "categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -448,12 +418,8 @@
           "name": "transactions_merchant_id_merchants_id_fk",
           "tableFrom": "transactions",
           "tableTo": "merchants",
-          "columnsFrom": [
-            "merchant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["merchant_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

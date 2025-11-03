@@ -3,7 +3,7 @@
 **App Name:** Rose Wallet  
 **Company:** Roja Systems  
 **Effective Date:** 05 Oct, 2023  
-**Developer Type:** Individual  
+**Developer Type:** Individual
 
 ---
 
@@ -15,7 +15,7 @@ By installing, accessing, or using Rose Wallet (the “Software”), you agree t
 
 ## 2. License Grant
 
-Roja Systems grants you a personal, non-exclusive, non-transferable license to use Rose Wallet  on supported platforms (ex. Android/Windows) for personal use only.
+Roja Systems grants you a personal, non-exclusive, non-transferable license to use Rose Wallet on supported platforms (ex. Android/Windows) for personal use only.
 
 The main project is open source; however, it includes certain proprietary or private components that are not covered by the open source license and remain the intellectual property of Roja Systems.
 
@@ -25,10 +25,10 @@ The main project is open source; however, it includes certain proprietary or pri
 
 You may **not**:
 
-- Use the Software for any commercial purposes without explicit written permission from Roja Systems.  
-- Redistribute, sublicense, or resell the Software, whether modified or unmodified.  
-- Rebrand or repackage the Software under a different name, company, or license.  
-- Reverse engineer, decompile, or disassemble the Software **except for personal use only**.  
+- Use the Software for any commercial purposes without explicit written permission from Roja Systems.
+- Redistribute, sublicense, or resell the Software, whether modified or unmodified.
+- Rebrand or repackage the Software under a different name, company, or license.
+- Reverse engineer, decompile, or disassemble the Software **except for personal use only**.
 - Use parts of the codebase for purposes other than personal learning or contributing to Rose Wallet .
 
 ---
@@ -42,18 +42,17 @@ The Software and all associated intellectual property rights are owned by Roja S
 - Redistribution of the Software under a different name, license, or as part of a commercial product without permission is strictly prohibited.
 - Parts of the Software are released under an open source license and may be used according to the terms of that license. However, specific components, packages, or assets may remain proprietary and are not open source. These are clearly marked in the source repository and are subject to additional restrictions as outlined in this Agreement.
 
-
 ---
 
 ## 5. Membership and Payments
 
-Rose Wallet  may offer an optional membership system that provides access to additional features or benefits. These memberships are voluntary and do not affect the primary functionality of the Software. If any payments are made, they are handled mainly through "Patreon" and are subject to their terms and refund policies.
+Rose Wallet may offer an optional membership system that provides access to additional features or benefits. These memberships are voluntary and do not affect the primary functionality of the Software. If any payments are made, they are handled mainly through "Patreon" and are subject to their terms and refund policies.
 
 ---
 
 ## 6. Data and Privacy
 
-- Rose Wallet  does **not** collect any personal data, usage analytics, crashlytics, or background tracking. Your privacy is respected and protected.
+- Rose Wallet does **not** collect any personal data, usage analytics, crashlytics, or background tracking. Your privacy is respected and protected.
 - Error Logs are saved locally and can only be shared manually as separate file/s.
 
 ---
