@@ -5,6 +5,9 @@ export const MMKV_KEYS = {
   BUDGET: {
     MONTHLY_BUDGET: 'budget.monthly_budget',
   },
+  SMS: {
+    LAST_READ_AT: 'sms.last_read_at',
+  },
   PATTERNS: {
     IS_PATTERN_DISCOVERY_COMPLETED: 'patterns.is_pattern_discovery_completed',
     DISCOVERY_SAMPLES_V1: 'patterns.discovery_samples_v1',

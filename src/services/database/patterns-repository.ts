@@ -1,8 +1,8 @@
-import { patterns } from '@/db/schema'
+import { patterns, patternSmsGroup } from '@/db/schema'
 import { PatternType } from '@/types/patterns/enums'
 import type { DistinctPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { getDrizzleDb } from './db'
 
 export async function upsertPatternsByGrouping(distinct: DistinctPattern[]): Promise<void> {
@@ -47,4 +47,21 @@ export async function updatePatternTemplateByName(name: string, extractionPatter
     .update(patterns)
     .set({ extractionPattern, updatedAt: new Date(), status: 'approved' })
     .where(eq(patterns.name, name))
+}
+
+export async function getPatternByName(name: string) {
+  const db = getDrizzleDb()
+  const rows = await db.select().from(patterns).where(eq(patterns.name, name))
+  return rows[0]
+}
+
+export async function ensurePatternSmsGroupLink(patternId: number, smsId: number, confidence: number = 1.0) {
+  const db = getDrizzleDb()
+  const existing = await db
+    .select()
+    .from(patternSmsGroup)
+    .where(and(eq(patternSmsGroup.patternId, patternId), eq(patternSmsGroup.smsId, smsId)))
+  if (!existing[0]) {
+    await db.insert(patternSmsGroup).values({ patternId, smsId, confidence })
+  }
 }
