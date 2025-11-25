@@ -3,13 +3,16 @@ import { Text } from '@/components/ui/text/text'
 import { type DistinctPattern } from '@/types/sms/transaction'
 import { AlertCircle, CheckCircle } from 'lucide-react-native'
 import { View } from 'react-native'
+import { AttachStep } from 'react-native-spotlight-tour'
 import { styles } from './pattern-card.styles'
 
 interface PatternCardProps extends Pick<DistinctPattern, 'status' | 'template'> {
   onReview: () => void
+  attachInfoIndex?: number
+  attachButtonIndex?: number
 }
 
-export const PatternCard = ({ template, status, onReview }: PatternCardProps) => {
+export const PatternCard = ({ template, status, onReview, attachInfoIndex, attachButtonIndex }: PatternCardProps) => {
   return (
     <View style={styles.cardContainer}>
       <View style={styles.statusContainer}>
@@ -29,7 +32,18 @@ export const PatternCard = ({ template, status, onReview }: PatternCardProps) =>
         </View>
       </View>
 
-      <Text variant='pMd'>{template}</Text>
+      {typeof attachInfoIndex === 'number' ? (
+        <AttachStep index={attachInfoIndex}>
+          <View
+            collapsable={false}
+            style={{ alignSelf: 'flex-start' }}
+          >
+            <Text variant='pMd'>{template}</Text>
+          </View>
+        </AttachStep>
+      ) : (
+        <Text variant='pMd'>{template}</Text>
+      )}
 
       <View style={styles.footer}>
         <Button
@@ -37,11 +51,26 @@ export const PatternCard = ({ template, status, onReview }: PatternCardProps) =>
           type='destructive'
           //TODO: Wire-up the reject action
         />
-        <Button
-          title='Review Pattern'
-          type='outline'
-          onPress={onReview}
-        />
+        {typeof attachButtonIndex === 'number' ? (
+          <AttachStep index={attachButtonIndex}>
+            <View
+              collapsable={false}
+              style={{ alignSelf: 'flex-start' }}
+            >
+              <Button
+                title='Review Pattern'
+                type='outline'
+                onPress={onReview}
+              />
+            </View>
+          </AttachStep>
+        ) : (
+          <Button
+            title='Review Pattern'
+            type='outline'
+            onPress={onReview}
+          />
+        )}
       </View>
     </View>
   )

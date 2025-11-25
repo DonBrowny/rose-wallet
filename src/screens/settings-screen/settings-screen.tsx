@@ -7,6 +7,12 @@ import { styles } from './settings-screen.styles'
 
 const settingsItems = [
   {
+    id: 'getting-started',
+    header: 'Getting Started',
+    subHeader: 'Checklist to set up Rosie and learn navigation',
+    href: '/(shared)/getting-started',
+  },
+  {
     id: 'patterns',
     header: 'SMS Patterns',
     subHeader: 'Teach Rosie how to parse your SMS messages',
