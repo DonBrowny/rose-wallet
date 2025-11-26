@@ -1,4 +1,5 @@
 import { DB_NAME } from '@/types/constants'
+import { TourGuideOverlay, TourGuideProvider } from '@wrack/react-native-tour-guide'
 import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import { Stack } from 'expo-router'
@@ -39,29 +40,32 @@ export default function Root() {
         options={{ enableChangeListener: true }}
         useSuspense
       >
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen
-            name='index'
-            options={{ headerShown: false }}
+        <TourGuideProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name='index'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='(tabs)'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='(shared)'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='onboarding'
+              options={{ headerShown: false }}
+            />
+          </Stack>
+          <StatusBar
+            style={barStyle}
+            backgroundColor={background}
+            translucent
           />
-          <Stack.Screen
-            name='(tabs)'
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name='(shared)'
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name='onboarding'
-            options={{ headerShown: false }}
-          />
-        </Stack>
-        <StatusBar
-          style={barStyle}
-          backgroundColor={background}
-          translucent
-        />
+          <TourGuideOverlay />
+        </TourGuideProvider>
       </SQLiteProvider>
     </Suspense>
   )

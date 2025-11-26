@@ -1,7 +1,6 @@
 import { Loading } from '@/components/loading/loading'
 import { PatternCard } from '@/components/pattern-card/pattern-card'
 import { Text } from '@/components/ui/text/text'
-import { TourTooltip } from '@/components/ui/tour-tooltip/tour-tooltip'
 import { useLivePatterns } from '@/hooks/use-live-patterns'
 import { upsertPatternsByGrouping } from '@/services/database/patterns-repository'
 import { SMSService } from '@/services/sms-parsing/sms-service'
@@ -12,7 +11,6 @@ import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { ScrollView, View } from 'react-native'
 import { useMMKVBoolean, useMMKVObject } from 'react-native-mmkv'
-import { SpotlightTourProvider, type TourStep } from 'react-native-spotlight-tour'
 import { styles } from './patterns-screen.styles'
 
 export const PatternsScreen = () => {
@@ -97,73 +95,6 @@ export const PatternsScreen = () => {
     )
   }
 
-  const steps: TourStep[] = [
-    {
-      render: ({ next }) => (
-        <TourTooltip onNext={next}>
-          <Text
-            variant='pSm'
-            color='surface'
-          >
-            A Pattern card groups similar bank SMS formats.
-          </Text>
-          <Text
-            variant='pSm'
-            color='surface'
-          >{`You can refine parsing by reviewing patterns.`}</Text>
-          <Text
-            variant='pSm'
-            color='surface'
-          >{`Visit this screen via Settings → Patterns.`}</Text>
-        </TourTooltip>
-      ),
-    },
-    {
-      render: ({ previous, stop }) => (
-        <TourTooltip
-          onPrevious={previous}
-          onDone={stop}
-        >
-          <Text
-            variant='pSm'
-            color='surface'
-          >
-            Tap “Review Pattern” to start the review flow.
-          </Text>
-        </TourTooltip>
-      ),
-    },
-  ]
-
-  return (
-    <SpotlightTourProvider
-      steps={steps}
-      overlayOpacity={0.28}
-      overlayColor='rgba(0,0,0,0.9)'
-    >
-      {({ start }) => (
-        <PatternsSpotlightContent
-          data={data}
-          onReview={handleReviewPattern}
-          startTour={start}
-        />
-      )}
-    </SpotlightTourProvider>
-  )
-}
-
-interface PatternsSpotlightContentProps {
-  data: ReturnType<typeof useLivePatterns>['data']
-  onReview: (id: string) => void
-  startTour: () => void
-}
-
-function PatternsSpotlightContent({ data, onReview, startTour }: PatternsSpotlightContentProps) {
-  useEffect(() => {
-    const id = setTimeout(() => startTour(), 250)
-    return () => clearTimeout(id)
-  }, [startTour])
-
   return (
     <ScrollView
       style={styles.container}
@@ -177,9 +108,8 @@ function PatternsSpotlightContent({ data, onReview, startTour }: PatternsSpotlig
           key={pattern.id}
           template={pattern.template}
           status={pattern.status}
-          onReview={() => onReview(pattern.id)}
-          attachInfoIndex={idx === 0 ? 0 : undefined}
-          attachButtonIndex={idx === 0 ? 1 : undefined}
+          onReview={() => handleReviewPattern(pattern.id)}
+          showTour={idx === 0}
         />
       ))}
     </ScrollView>

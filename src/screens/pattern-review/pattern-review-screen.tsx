@@ -72,6 +72,7 @@ export function PatternReviewScreen() {
         sample={current}
         index={currentIndex}
         total={total}
+        showTour={true}
       />
     </SafeAreaView>
   )
