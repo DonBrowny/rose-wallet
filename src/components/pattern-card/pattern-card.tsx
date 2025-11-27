@@ -1,21 +1,25 @@
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
+import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { type DistinctPattern } from '@/types/sms/transaction'
 import { useTourGuide } from '@wrack/react-native-tour-guide'
 import { AlertCircle, CheckCircle } from 'lucide-react-native'
 import { useEffect, useRef } from 'react'
 import { View } from 'react-native'
+import { useMMKVBoolean } from 'react-native-mmkv'
 import { styles } from './pattern-card.styles'
 
 interface PatternCardProps extends Pick<DistinctPattern, 'status' | 'template'> {
   onReview: () => void
-  showTour?: boolean
+  isFirstCard?: boolean
 }
 
-export const PatternCard = ({ template, status, onReview, showTour }: PatternCardProps) => {
+export const PatternCard = ({ template, status, onReview, isFirstCard }: PatternCardProps) => {
   const buttonRef = useRef(null)
   const viewRef = useRef(null)
   const { startTour } = useTourGuide()
+  const [patternGuideSeen = false, setPatternGuideSeen] = useMMKVBoolean(MMKV_KEYS.PATTERNS.PATTERN_GUIDE_SEEN)
+  const showTour = !patternGuideSeen && isFirstCard
 
   useEffect(() => {
     if (!showTour) return
@@ -24,24 +28,29 @@ export const PatternCard = ({ template, status, onReview, showTour }: PatternCar
         {
           id: 'step1',
           targetRef: viewRef,
-          title: 'Edit Patterm',
-          description: 'Correct the amount and merchant to correct the pattern.',
+          title: 'About this pattern',
+          description:
+            'This card groups SMS with a similar format. Use it to teach Rosie how to read them. You can visit this screen from Settings > Patterns.',
           tooltipPosition: 'bottom',
           spotlightShape: 'rectangle',
         },
         {
           id: 'step2',
           targetRef: buttonRef,
-          title: 'Next',
-          description: 'Tap to view the next SMS with the same pattern.',
+          title: 'Review Pattern',
+          description: 'Tap “Review Pattern” to check a few examples and improve recognition.',
           tooltipPosition: 'bottom',
           spotlightShape: 'rectangle',
+          onNext: () => {
+            setPatternGuideSeen(true)
+          },
         },
       ])
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on first render
+  }, [showTour])
 
   return (
     <View

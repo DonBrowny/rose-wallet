@@ -109,7 +109,7 @@ export const PatternsScreen = () => {
           template={pattern.template}
           status={pattern.status}
           onReview={() => handleReviewPattern(pattern.id)}
-          showTour={idx === 0}
+          isFirstCard={idx === 0}
         />
       ))}
     </ScrollView>
