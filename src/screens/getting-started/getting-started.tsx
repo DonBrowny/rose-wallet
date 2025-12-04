@@ -1,109 +1,112 @@
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
-import { MMKV_KEYS } from '@/types/mmkv-keys'
-import { storage } from '@/utils/mmkv/storage'
-import { router } from 'expo-router'
-import { CheckCircle2, CircleAlert, Sparkles } from 'lucide-react-native'
+import { useLivePatterns } from '@/hooks/use-live-patterns'
+import { PatternStatus } from '@/types/patterns/enums'
+import { useRouter } from 'expo-router'
+import { CheckCircle2, Clock, Lock } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './getting-started.style'
 
 export function GettingStartedScreen() {
-  const isPatternDiscoveryDone = storage.getBoolean(MMKV_KEYS.PATTERNS.IS_PATTERN_DISCOVERY_COMPLETED) === true
-  const hasScannedSms = typeof storage.getNumber(MMKV_KEYS.SMS.LAST_READ_AT) === 'number'
+  const router = useRouter()
+  const { theme } = useUnistyles()
 
-  const completion = useMemo(() => {
-    const steps = [isPatternDiscoveryDone, hasScannedSms]
-    const done = steps.filter(Boolean).length
-    return { done, total: steps.length }
-  }, [hasScannedSms, isPatternDiscoveryDone])
+  const { data: patterns, isLoading } = useLivePatterns()
+
+  const reviewedCount = useMemo(() => {
+    if (!patterns) return 0
+    return patterns.filter((p) => p.status !== PatternStatus.NeedsReview).length
+  }, [patterns])
+  const patternTourDone = reviewedCount >= 2
+
+  const canStartExpenseTour = patternTourDone
 
   return (
-    <View style={styles.container}>
-      <View style={styles.contentContainer}>
-        <View style={styles.row}>
-          <Sparkles
-            size={24}
-            color='#8E8E93'
-          />
-          <Text variant='h3'>Getting Started</Text>
-        </View>
-        <Text
-          variant='pSm'
-          color='muted'
-          style={styles.subtitle}
-        >
-          Follow these steps to set up Rosie. {completion.done}/{completion.total} completed.
-        </Text>
+    <SafeAreaView style={styles.container}>
+      <Text variant='h3'>Getting Started</Text>
+      <Text
+        variant='pMd'
+        color='muted'
+      >
+        Two short tours to master your finances.
+      </Text>
 
-        <View style={styles.card}>
-          <View style={styles.row}>
-            {isPatternDiscoveryDone ? (
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text variant='pLgBold'>Learn to review a pattern</Text>
+          <View style={[styles.pill, patternTourDone ? styles.pillDone : styles.pillPending]}>
+            {patternTourDone ? (
               <CheckCircle2
-                size={20}
-                color='#34C759'
+                size={14}
+                color={theme.colors.background}
               />
             ) : (
-              <CircleAlert
-                size={20}
-                color='#FF9F0A'
+              <Clock
+                size={14}
+                color={theme.colors.background}
               />
             )}
-            <View style={styles.rowMain}>
-              <Text variant='aMdBold'>Review SMS patterns</Text>
-              <Text
-                variant='pSm'
-                color='muted'
-              >
-                Teach Rosie to understand your bank SMS formats.
-              </Text>
-            </View>
-            <View style={styles.pill}>
-              <Text variant='pMd'>{isPatternDiscoveryDone ? 'Completed' : 'Pending'}</Text>
-            </View>
-          </View>
-          <View style={styles.actionsRow}>
-            <Button
-              title='Open SMS Patterns'
-              onPress={() => router.push('/(shared)/patterns' as any)}
-            />
+            <Text
+              variant='pMd'
+              style={styles.pillText}
+            >
+              {patternTourDone ? 'Completed' : 'Not started'}
+            </Text>
           </View>
         </View>
-
-        <View style={styles.card}>
-          <View style={styles.row}>
-            {hasScannedSms ? (
-              <CheckCircle2
-                size={20}
-                color='#34C759'
-              />
-            ) : (
-              <CircleAlert
-                size={20}
-                color='#FF9F0A'
-              />
-            )}
-            <View style={styles.rowMain}>
-              <Text variant='aMdBold'>Scan recent SMS</Text>
-              <Text
-                variant='pSm'
-                color='muted'
-              >
-                Import transactions from your SMS inbox.
-              </Text>
-            </View>
-            <View style={styles.pill}>
-              <Text variant='pMd'>{hasScannedSms ? 'Completed' : 'Pending'}</Text>
-            </View>
-          </View>
-          <View style={styles.actionsRow}>
-            <Button
-              title='Add Expense from SMS'
-              onPress={() => router.push('/(shared)/add-expense' as any)}
-            />
-          </View>
-        </View>
+        <Text variant='pMd'>Approve and categorize bank SMS quickly.</Text>
+        <Button
+          title={patternTourDone ? 'View again' : 'Start tour'}
+          onPress={() => router.push('/(shared)/patterns')}
+          containerStyle={styles.button}
+        />
+        {!isLoading && reviewedCount < 2 ? (
+          <Text
+            variant='pSm'
+            color='muted'
+          >
+            Review at-least 2 patterns: Currently you have {reviewedCount}/2 reviewed.
+          </Text>
+        ) : null}
       </View>
-    </View>
+
+      <View style={[styles.card, !canStartExpenseTour && styles.cardLocked]}>
+        <View style={styles.cardHeader}>
+          <Text variant='pLgBold'>Learn to add an expense</Text>
+          <View style={[styles.pill, canStartExpenseTour ? styles.pillPending : styles.pillLocked]}>
+            {canStartExpenseTour ? (
+              <Clock
+                size={14}
+                color={theme.colors.background}
+              />
+            ) : (
+              <Lock
+                size={14}
+                color={theme.colors.background}
+              />
+            )}
+            <Text style={styles.pillText}>{canStartExpenseTour ? 'Not started' : 'Locked'}</Text>
+          </View>
+        </View>
+        <Text variant='pMd'>Add a manual expense in a few taps.</Text>
+        {!canStartExpenseTour && (
+          <Text
+            variant='pSm'
+            color='muted'
+          >
+            Finish the pattern review tour to unlock.
+          </Text>
+        )}
+        <Button
+          containerStyle={styles.button}
+          title='Start tour'
+          onPress={() => router.push('/(shared)/add-expense')}
+          disabled={!canStartExpenseTour}
+        />
+      </View>
+    </SafeAreaView>
   )
 }

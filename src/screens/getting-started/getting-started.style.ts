@@ -3,41 +3,45 @@ import { StyleSheet } from 'react-native-unistyles'
 export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
-  },
-  contentContainer: {
     paddingHorizontal: theme.space(4),
-    paddingTop: theme.space(4),
-    paddingBottom: theme.space(6),
-    gap: theme.gap(3),
-  },
-  title: {
-    marginBottom: theme.space(1),
-  },
-  subtitle: {
-    marginBottom: theme.space(2),
+    gap: theme.gap(2),
   },
   card: {
     backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    padding: theme.space(3),
-    gap: theme.gap(2),
-    ...theme.elevation[1],
+    borderRadius: 24,
+    padding: theme.space(4),
+    gap: theme.gap(1),
+    ...theme.elevation[2],
   },
-  row: {
+  cardLocked: {
+    opacity: 0.7,
+  },
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.gap(2),
-  },
-  rowMain: {
-    flex: 1,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    gap: theme.gap(2),
+    justifyContent: 'space-between',
   },
   pill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 999,
-    paddingHorizontal: theme.space(1.5),
-    paddingVertical: theme.space(0.5),
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  button: {
+    width: 150,
+  },
+  pillText: {
+    color: '#FFFFFF',
+  },
+  pillPending: {
+    backgroundColor: theme.colors.warning,
+  },
+  pillDone: {
+    backgroundColor: theme.colors.success,
+  },
+  pillLocked: {
+    backgroundColor: theme.colors.grey3,
   },
 }))
