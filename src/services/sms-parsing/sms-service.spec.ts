@@ -22,7 +22,7 @@ jest.mock('./sms-reader-service', () => ({
 
 jest.mock('./sms-intent-service', () => ({
   SMSIntentService: {
-    getInstance: jest.fn().mockResolvedValue({
+    getInstance: jest.fn().mockReturnValue({
       init: jest.fn().mockResolvedValue(undefined),
       classify: jest.fn(),
     }),
@@ -101,13 +101,13 @@ describe('SMSService', () => {
         success: true,
         totalCount: 3,
         messages: [
-          { id: '1', body: 'no txn', address: 'a', date: 1, read: true, type: 0 },
-          { id: '2', body: 'expense 100', address: 'a', date: 2, read: true, type: 0 },
-          { id: '3', body: 'bad parse', address: 'a', date: 3, read: true, type: 0 },
+          { id: '1', body: 'no txn', address: 'HDFCBK-T', date: 1, read: true, type: 0 },
+          { id: '2', body: 'expense 100', address: 'SBIINB-T', date: 2, read: true, type: 0 },
+          { id: '3', body: 'bad parse', address: 'ICICIB-S', date: 3, read: true, type: 0 },
         ],
       })
 
-      const instance = await intentSvc.getInstance()
+      const instance = intentSvc.getInstance()
       ;(instance.init as jest.Mock).mockResolvedValue(undefined)
       ;(instance.classify as jest.Mock)
         .mockResolvedValueOnce({ label: 'not_txn' })
@@ -129,7 +129,7 @@ describe('SMSService', () => {
           merchant: 'SHOP',
           bankName: 'SBI',
           transactionDate: 2,
-          message: { id: '2', body: 'expense 100', address: 'a', date: 2, read: true, type: 0 },
+          message: { id: '2', body: 'expense 100', address: 'SBIINB-T', date: 2, read: true, type: 0 },
         },
       ])
       expect(res.totalTransactions).toBe(1)
