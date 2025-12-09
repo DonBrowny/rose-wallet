@@ -2,7 +2,9 @@ import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
 import { useLivePatterns } from '@/hooks/use-live-patterns'
 import { useLiveTransactionCount } from '@/hooks/use-live-transaction-count'
+import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { PatternStatus } from '@/types/patterns/enums'
+import { storage } from '@/utils/mmkv/storage'
 import { useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
 import { CheckCircle2, Clock, Lock } from 'lucide-react-native'
@@ -11,6 +13,9 @@ import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './getting-started.style'
+
+const PATTERN_TOUR_THRESHOLD = 2
+const EXPENSE_TOUR_THRESHOLD = 2
 
 export function GettingStartedScreen() {
   const router = useRouter()
@@ -23,10 +28,10 @@ export function GettingStartedScreen() {
     if (!patterns) return 0
     return patterns.filter((p) => p.status !== PatternStatus.NeedsReview).length
   }, [patterns])
-  const patternTourDone = reviewedCount >= 2
+  const patternTourDone = reviewedCount >= PATTERN_TOUR_THRESHOLD
 
   const canStartExpenseTour = patternTourDone
-  const expenseTourDone = transactionCount >= 2
+  const expenseTourDone = transactionCount >= EXPENSE_TOUR_THRESHOLD
   const allTasksCompleted = patternTourDone && expenseTourDone
 
   const [showCongratulations, setShowCongratulations] = useState(false)
@@ -40,6 +45,7 @@ export function GettingStartedScreen() {
   }, [allTasksCompleted])
 
   function handleAnimationFinish() {
+    storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN, 'true')
     router.replace('/(tabs)')
   }
 
@@ -110,12 +116,13 @@ export function GettingStartedScreen() {
           onPress={() => router.push('/(shared)/patterns')}
           containerStyle={styles.button}
         />
-        {!isPatternsLoading && reviewedCount < 2 ? (
+        {!isPatternsLoading && reviewedCount < PATTERN_TOUR_THRESHOLD ? (
           <Text
             variant='pSm'
             color='muted'
           >
-            Review at-least 2 patterns: Currently you have {reviewedCount}/2 reviewed.
+            Review at least {PATTERN_TOUR_THRESHOLD} patterns: Currently you have {reviewedCount}/
+            {PATTERN_TOUR_THRESHOLD} reviewed.
           </Text>
         ) : null}
       </View>
@@ -159,12 +166,13 @@ export function GettingStartedScreen() {
             Finish the pattern review tour to unlock.
           </Text>
         )}
-        {canStartExpenseTour && !isTransactionsLoading && transactionCount < 2 ? (
+        {canStartExpenseTour && !isTransactionsLoading && transactionCount < EXPENSE_TOUR_THRESHOLD ? (
           <Text
             variant='pSm'
             color='muted'
           >
-            Add at-least 2 transactions: Currently you have {transactionCount}/2 added.
+            Add at least {EXPENSE_TOUR_THRESHOLD} transactions: Currently you have {transactionCount}/
+            {EXPENSE_TOUR_THRESHOLD} added.
           </Text>
         ) : null}
         <Button
