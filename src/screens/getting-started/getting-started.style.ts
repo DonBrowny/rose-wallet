@@ -44,4 +44,17 @@ export const styles = StyleSheet.create((theme) => ({
   pillLocked: {
     backgroundColor: theme.colors.grey3,
   },
+  congratulationsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: theme.space(4),
+  },
+  lottieAnimation: {
+    width: 300,
+    height: 300,
+  },
+  congratulationsText: {
+    textAlign: 'center',
+  },
 }))
