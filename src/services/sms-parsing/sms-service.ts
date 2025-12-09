@@ -1,6 +1,7 @@
-import type { Transaction, TransactionPattern } from '@/types/sms/transaction'
+import type { SMSMessage, Transaction, TransactionPattern } from '@/types/sms/transaction'
 import { removeDuplicates } from '@/utils/formatter/remove-duplicated'
 import { findDistinctPatterns } from '@/utils/pattern/find-distinct-pattern'
+import { isTransactionalSender } from '@/utils/sms/is-transactional-sender'
 import { SMSDataExtractor } from './sms-data-extractor-service'
 import { SMSIntentService } from './sms-intent-service'
 import { SMSPermissionService } from './sms-permission-service'
@@ -13,12 +14,19 @@ export interface TransactionResult {
   totalTransactions: number
   errors: string[]
 }
+export interface TransactionSMSResult {
+  success: boolean
+  sms: SMSMessage[]
+  totalSMSRead: number
+  filteredSMSCount: number
+  errors: string[]
+}
 
 export class SMSService {
-  static async getTransactionsFromSMS(options: {
+  static async getTransactionalSMS(options: {
     startTimestamp: number
     endTimestamp: number
-  }): Promise<TransactionResult> {
+  }): Promise<TransactionSMSResult> {
     const { startTimestamp, endTimestamp } = options
 
     try {
@@ -28,9 +36,9 @@ export class SMSService {
       if (!permissionResult.granted) {
         return {
           success: false,
-          transactions: [],
+          sms: [],
           totalSMSRead: 0,
-          totalTransactions: 0,
+          filteredSMSCount: 0,
           errors: [permissionResult.message],
         }
       }
@@ -45,23 +53,61 @@ export class SMSService {
       if (!smsReadResult.success) {
         return {
           success: false,
-          transactions: [],
+          sms: [],
           totalSMSRead: 0,
-          totalTransactions: 0,
+          filteredSMSCount: 0,
           errors: [smsReadResult.error || 'Failed to read SMS messages'],
         }
       }
 
-      // Step 3: Process SMS messages using data extractor
+      // Step 3: Pre-filter to transactional/service SMS (format: XXXXXX-[TS])
+      const transactionalMessages = (smsReadResult.messages || []).filter((sms) => isTransactionalSender(sms.address))
+      return {
+        success: true,
+        sms: transactionalMessages,
+        totalSMSRead: smsReadResult.totalCount,
+        filteredSMSCount: transactionalMessages.length,
+        errors: [],
+      }
+    } catch (error) {
+      return {
+        success: false,
+        sms: [],
+        totalSMSRead: 0,
+        filteredSMSCount: 0,
+        errors: [`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`],
+      }
+    }
+  }
+  static async getTransactionsFromSMS(options: {
+    startTimestamp: number
+    endTimestamp: number
+  }): Promise<TransactionResult> {
+    const { startTimestamp, endTimestamp } = options
+
+    try {
+      const smsReadResult = await this.getTransactionalSMS({ startTimestamp, endTimestamp })
+
+      if (!smsReadResult.success) {
+        return {
+          success: false,
+          transactions: [],
+          totalSMSRead: 0,
+          totalTransactions: 0,
+          errors: smsReadResult.errors,
+        }
+      }
+
+      // Process SMS messages using data extractor
       const transactions: Transaction[] = []
       const errors: string[] = []
-      const SMSIntent = await SMSIntentService.getInstance()
+      const SMSIntent = SMSIntentService.getInstance()
 
       await SMSIntent.init()
 
       const dataExtractor = SMSDataExtractor
 
-      for (const sms of smsReadResult.messages || []) {
+      for (const sms of smsReadResult.sms || []) {
         try {
           const intentResult = await SMSIntent.classify(sms.body)
 
@@ -92,7 +138,7 @@ export class SMSService {
       return {
         success: true,
         transactions,
-        totalSMSRead: smsReadResult.totalCount,
+        totalSMSRead: smsReadResult.filteredSMSCount,
         totalTransactions: transactions.length,
         errors,
       }
