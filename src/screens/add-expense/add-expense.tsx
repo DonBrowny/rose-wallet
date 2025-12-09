@@ -7,7 +7,10 @@ import { SMSService } from '@/services/sms-parsing/sms-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import type { Transaction } from '@/types/sms/transaction'
 import { storage } from '@/utils/mmkv/storage'
-import { getActivePatternsCache, matchPatternAndExtractFromDB } from '@/utils/pattern/match-pattern-from-mmkv'
+import { getActivePatterns } from '@/utils/pattern/get-active-patterns'
+import { getRejectedPatterns } from '@/utils/pattern/get-rejected-patterns'
+import { matchPatternAndExtract } from '@/utils/pattern/match-pattern-and-extract'
+import { matchesRejectedPattern } from '@/utils/pattern/matches-rejected-pattern'
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { styles } from './add-expense.style'
@@ -30,11 +33,11 @@ export default function AddExpenseScreen() {
 
   async function enrichTransactionsWithPatterns(list: Transaction[]): Promise<Transaction[]> {
     try {
-      const patterns = await getActivePatternsCache()
+      const patterns = await getActivePatterns()
       const enriched = await Promise.all(
         list.map(async (tx) => {
           try {
-            const result = await matchPatternAndExtractFromDB(tx.message.body, patterns)
+            const result = await matchPatternAndExtract(tx.message.body, patterns)
             return {
               ...tx,
               amount: typeof result.amount === 'number' && !Number.isNaN(result.amount) ? result.amount : tx.amount,
@@ -73,7 +76,13 @@ export default function AddExpenseScreen() {
           return
         }
 
-        const enriched = await enrichTransactionsWithPatterns(result.transactions)
+        // Filter out SMS that match rejected patterns
+        const rejectedPatterns = await getRejectedPatterns()
+        const filteredTransactions = result.transactions.filter(
+          (tx) => !matchesRejectedPattern(tx.message.body, rejectedPatterns)
+        )
+
+        const enriched = await enrichTransactionsWithPatterns(filteredTransactions)
         if (!mounted) return
         setTransactions(enriched)
       } catch (err) {
@@ -178,8 +187,8 @@ export default function AddExpenseScreen() {
                 setIsSaving(true)
                 try {
                   const tx = transactions[currentIndex]
-                  const patterns = await getActivePatternsCache()
-                  const match = await matchPatternAndExtractFromDB(tx.message.body, patterns)
+                  const patterns = await getActivePatterns()
+                  const match = await matchPatternAndExtract(tx.message.body, patterns)
                   await saveExpense({
                     smsBody: tx.message.body,
                     smsSender: tx.message.address,

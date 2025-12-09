@@ -2,9 +2,10 @@ import { Loading } from '@/components/loading/loading'
 import { PatternCard } from '@/components/pattern-card/pattern-card'
 import { Text } from '@/components/ui/text/text'
 import { useLivePatterns } from '@/hooks/use-live-patterns'
-import { upsertPatternsByGrouping } from '@/services/database/patterns-repository'
+import { updatePatternStatusById, upsertPatternsByGrouping } from '@/services/database/patterns-repository'
 import { SMSService } from '@/services/sms-parsing/sms-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
+import { PatternStatus } from '@/types/patterns/enums'
 import type { Transaction, TransactionPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
 import { useRouter } from 'expo-router'
@@ -70,6 +71,10 @@ export const PatternsScreen = () => {
     router.push({ pathname: '/(shared)/pattern-review', params: { patternId } })
   }
 
+  const handleRejectPattern = async (patternId: string) => {
+    await updatePatternStatusById(Number(patternId), PatternStatus.Rejected)
+  }
+
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -109,6 +114,7 @@ export const PatternsScreen = () => {
           template={pattern.template}
           status={pattern.status}
           onReview={() => handleReviewPattern(pattern.id)}
+          onReject={() => handleRejectPattern(pattern.id)}
           isFirstCard={idx === 0}
         />
       ))}

@@ -22,7 +22,12 @@ export const styles = StyleSheet.create((theme) => ({
     paddingVertical: 4,
     borderRadius: 16,
     gap: 6,
-    backgroundColor: status === 'approved' ? theme.colors.accentGreen : theme.colors.accentOrange,
+    backgroundColor:
+      status === 'approved'
+        ? theme.colors.accentGreen
+        : status === 'rejected'
+          ? theme.colors.accentRed
+          : theme.colors.accentOrange,
   }),
   statusIcon: {
     marginRight: 2,
