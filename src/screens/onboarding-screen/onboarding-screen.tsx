@@ -57,6 +57,11 @@ export function OnboardingScreen() {
       return
     }
     storage.set(MMKV_KEYS.APP.ONBOARDING_COMPLETED, 'true')
+    const hasSeenGettingStarted = storage.getString(MMKV_KEYS.APP.GETTING_STARTED_SEEN) === 'true'
+    if (!hasSeenGettingStarted) {
+      router.replace('/(shared)/getting-started')
+      return
+    }
     router.replace('/(tabs)')
   }
 

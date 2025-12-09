@@ -16,7 +16,7 @@ jest.mock('rose-sms-reader', () => ({
 
 // Mock MMKV storage module
 jest.mock('@/utils/mmkv/storage', () => ({
-  storage: { set: jest.fn() },
+  storage: { set: jest.fn(), getString: jest.fn(() => undefined) },
 }))
 jest.spyOn(smsPermission.SMSPermissionService, 'requestPermissionWithExplanation').mockResolvedValue({
   granted: true,
@@ -75,6 +75,6 @@ describe('OnboardingScreen', () => {
     })
 
     expect(storage.set).toHaveBeenCalledWith(MMKV_KEYS.APP.ONBOARDING_COMPLETED, 'true')
-    expect(replaceMock).toHaveBeenCalledWith('/(tabs)')
+    expect(replaceMock).toHaveBeenCalledWith('/(shared)/getting-started')
   })
 })

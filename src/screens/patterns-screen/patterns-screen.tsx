@@ -96,23 +96,22 @@ export const PatternsScreen = () => {
   }
 
   return (
-    <>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.patternsListContent}
-        showsVerticalScrollIndicator={false}
-        bounces={true}
-        alwaysBounceVertical={false}
-      >
-        {data.map((pattern) => (
-          <PatternCard
-            key={pattern.id}
-            template={pattern.template}
-            status={pattern.status}
-            onReview={() => handleReviewPattern(pattern.id)}
-          />
-        ))}
-      </ScrollView>
-    </>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.patternsListContent}
+      showsVerticalScrollIndicator={false}
+      bounces={true}
+      alwaysBounceVertical={false}
+    >
+      {data.map((pattern, idx) => (
+        <PatternCard
+          key={pattern.id}
+          template={pattern.template}
+          status={pattern.status}
+          onReview={() => handleReviewPattern(pattern.id)}
+          isFirstCard={idx === 0}
+        />
+      ))}
+    </ScrollView>
   )
 }
