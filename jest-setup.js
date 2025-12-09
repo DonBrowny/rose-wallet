@@ -12,6 +12,43 @@ jest.mock('lottie-react-native', () => {
   return LottieMock
 })
 
+// Mock @wrack/react-native-tour-guide to avoid ESM parsing issues in Jest
+jest.mock('@wrack/react-native-tour-guide', () => {
+  const React = require('react')
+  const { View } = require('react-native')
+
+  function TourGuideProvider({ children }) {
+    return children
+  }
+
+  function TourGuideOverlay() {
+    return null
+  }
+
+  function TourSpot(props) {
+    return React.createElement(View, props, props.children)
+  }
+
+  function useTourGuide() {
+    return {
+      start: jest.fn(),
+      stop: jest.fn(),
+      isRunning: false,
+      currentStep: null,
+      goToStep: jest.fn(),
+      next: jest.fn(),
+      prev: jest.fn(),
+    }
+  }
+
+  return {
+    TourGuideProvider,
+    TourGuideOverlay,
+    TourSpot,
+    useTourGuide,
+  }
+})
+
 // Mock zustand immer middleware to behave as a no-proxy mutate helper in tests
 // It converts set(fn) where fn mutates a draft into a full state replacement
 jest.mock('zustand/middleware/immer', () => ({
