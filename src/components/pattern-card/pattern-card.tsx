@@ -3,7 +3,7 @@ import { Text } from '@/components/ui/text/text'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { type DistinctPattern } from '@/types/sms/transaction'
 import { useTourGuide } from '@wrack/react-native-tour-guide'
-import { AlertCircle, CheckCircle } from 'lucide-react-native'
+import { AlertCircle, CheckCircle, XCircle } from 'lucide-react-native'
 import { useEffect, useRef } from 'react'
 import { View } from 'react-native'
 import { useMMKVBoolean } from 'react-native-mmkv'
@@ -11,10 +11,11 @@ import { styles } from './pattern-card.styles'
 
 interface PatternCardProps extends Pick<DistinctPattern, 'status' | 'template'> {
   onReview: () => void
+  onReject: () => void
   isFirstCard?: boolean
 }
 
-export const PatternCard = ({ template, status, onReview, isFirstCard }: PatternCardProps) => {
+export const PatternCard = ({ template, status, onReview, onReject, isFirstCard }: PatternCardProps) => {
   const buttonRef = useRef(null)
   const viewRef = useRef(null)
   const { startTour } = useTourGuide()
@@ -64,13 +65,20 @@ export const PatternCard = ({ template, status, onReview, isFirstCard }: Pattern
               size={14}
               style={styles.statusIcon}
             />
+          ) : status === 'rejected' ? (
+            <XCircle
+              size={14}
+              style={styles.statusIcon}
+            />
           ) : (
             <AlertCircle
               size={14}
               style={styles.statusIcon}
             />
           )}
-          <Text variant='pSm'>{status === 'approved' ? 'Approved' : 'Action Needed'}</Text>
+          <Text variant='pSm'>
+            {status === 'approved' ? 'Approved' : status === 'rejected' ? 'Rejected' : 'Action Needed'}
+          </Text>
         </View>
       </View>
       <Text variant='pMd'>{template}</Text>
@@ -79,7 +87,7 @@ export const PatternCard = ({ template, status, onReview, isFirstCard }: Pattern
         <Button
           title='Reject'
           type='destructive'
-          //TODO: Wire-up the reject action
+          onPress={onReject}
         />
         {showTour ? (
           <View ref={buttonRef}>

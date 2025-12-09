@@ -1,5 +1,4 @@
-import { patterns, type Pattern } from '@/db/schema'
-import { getDrizzleDb } from '@/services/database/db'
+import type { Pattern } from '@/db/schema'
 import stringSimilarity from 'string-similarity-js'
 import { extractAmountAndMerchant } from './extraction-template-builder'
 import { normalizeSMSTemplate } from './normalize-sms-template'
@@ -10,21 +9,7 @@ export interface PatternMatchResult {
   merchant?: string
 }
 
-let cachedPatterns: Pattern[] | null = null
-
-export async function getActivePatternsCache(): Promise<Pattern[]> {
-  if (cachedPatterns) return cachedPatterns
-  const db = getDrizzleDb()
-  try {
-    const rows = await db.select().from(patterns)
-    cachedPatterns = rows.filter((p: any) => p.isActive !== false && p.status !== 'rejected')
-  } catch {
-    cachedPatterns = []
-  }
-  return cachedPatterns
-}
-
-export async function matchPatternAndExtractFromDB(
+export async function matchPatternAndExtract(
   smsBody: string,
   providedPatterns: Pattern[]
 ): Promise<PatternMatchResult> {

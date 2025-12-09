@@ -5,11 +5,13 @@ import { PatternCard } from './pattern-card'
 describe('PatternCard', () => {
   it('renders template and approved status', () => {
     const onReview = jest.fn()
+    const onReject = jest.fn()
     const { getByText } = render(
       <PatternCard
         template='Paid ₹100 at STORE'
         status='approved'
         onReview={onReview}
+        onReject={onReject}
       />
     )
     expect(getByText('Paid ₹100 at STORE')).toBeTruthy()
@@ -20,11 +22,13 @@ describe('PatternCard', () => {
 
   it('renders action needed status when not approved', () => {
     const onReview = jest.fn()
+    const onReject = jest.fn()
     const { getByText } = render(
       <PatternCard
         template='Txn template'
         status='needs-review'
         onReview={onReview}
+        onReject={onReject}
       />
     )
     expect(getByText('Action Needed')).toBeTruthy()
@@ -32,14 +36,46 @@ describe('PatternCard', () => {
 
   it('calls onReview when "Review Pattern" is pressed', () => {
     const onReview = jest.fn()
+    const onReject = jest.fn()
     const { getByText } = render(
       <PatternCard
         template='Template'
         status='approved'
         onReview={onReview}
+        onReject={onReject}
       />
     )
     fireEvent.press(getByText('Review Pattern'))
     expect(onReview).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls onReject when "Reject" is pressed', () => {
+    const onReview = jest.fn()
+    const onReject = jest.fn()
+    const { getByText } = render(
+      <PatternCard
+        template='Template'
+        status='needs-review'
+        onReview={onReview}
+        onReject={onReject}
+      />
+    )
+    fireEvent.press(getByText('Reject'))
+    expect(onReject).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders rejected status', () => {
+    const onReview = jest.fn()
+    const onReject = jest.fn()
+    const { getByText } = render(
+      <PatternCard
+        template='Rejected template'
+        status='rejected'
+        onReview={onReview}
+        onReject={onReject}
+      />
+    )
+    expect(getByText('Rejected')).toBeTruthy()
+    expect(getByText('Rejected template')).toBeTruthy()
   })
 })
