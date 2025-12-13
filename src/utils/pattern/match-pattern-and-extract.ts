@@ -4,6 +4,7 @@ import { extractAmountAndMerchant } from './extraction-template-builder'
 import { normalizeSMSTemplate } from './normalize-sms-template'
 
 export interface PatternMatchResult {
+  patternId?: number
   patternName?: string
   amount?: string
   merchant?: string
@@ -42,5 +43,5 @@ export async function matchPatternAndExtract(
     merchant = tRes.merchant
   }
 
-  return { patternName: acceptedPattern?.name, amount, merchant }
+  return { patternId: acceptedPattern?.id, patternName: acceptedPattern?.name, amount, merchant }
 }

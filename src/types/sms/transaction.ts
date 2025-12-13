@@ -11,6 +11,11 @@ export interface Transaction {
   message: SMSMessage
 }
 
+export interface SMSTransaction extends Omit<Transaction, 'id'> {
+  smsId: string
+  patternId?: number
+}
+
 export interface SMSMessage {
   id: string
   body: string

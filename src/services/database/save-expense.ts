@@ -1,7 +1,7 @@
 import { getOrCreateCategoryIdByName } from './categories-repository'
 import { ensureMerchantCategoryGroup } from './merchant-category-groups-repository'
 import { getOrCreateMerchantIdByName } from './merchants-repository'
-import { ensurePatternSmsGroupLink, getPatternByName } from './patterns-repository'
+import { ensurePatternSmsGroupLink } from './patterns-repository'
 import { insertEncryptedSms } from './sms-messages-repository'
 import { insertTransaction } from './transactions-repository'
 
@@ -11,7 +11,7 @@ interface SaveExpense {
   smsDate: number
   merchantName: string
   categoryName: string
-  patternName?: string
+  patternId?: number
   amount: number
   currency?: string
   type?: 'debit' | 'credit'
@@ -36,12 +36,8 @@ export async function saveExpense(input: SaveExpense) {
     await ensureMerchantCategoryGroup(merchantId, categoryId)
 
     let patternId: number | undefined
-    if (input.patternName) {
-      const pat = await getPatternByName(input.patternName)
-      if (pat) {
-        patternId = pat.id as number
-        await ensurePatternSmsGroupLink(patternId, smsId, 1.0)
-      }
+    if (input.patternId) {
+      await ensurePatternSmsGroupLink(input.patternId, smsId, 1.0)
     }
 
     const amount = Number(input.amount)
