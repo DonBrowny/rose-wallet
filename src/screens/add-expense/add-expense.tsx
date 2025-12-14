@@ -5,8 +5,7 @@ import { IconButton } from '@/components/ui/icon-button/icon-button'
 import { Text } from '@/components/ui/text/text'
 import { useSaveExpense } from '@/hooks/use-save-expense'
 import { useSMSTransactions } from '@/hooks/use-sms-transactions'
-import { MMKV_KEYS } from '@/types/mmkv-keys'
-import { storage } from '@/utils/mmkv/storage'
+import { updateLastReadSmsTimestamp } from '@/utils/mmkv/storage'
 import { useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
 import { Check, MessageSquareText, X } from 'lucide-react-native'
@@ -40,7 +39,7 @@ export default function AddExpenseScreen() {
   function handleReject() {
     const tx = transactions[currentIndex]
     if (tx) {
-      storage.set(MMKV_KEYS.SMS.LAST_READ_AT, tx.transactionDate)
+      updateLastReadSmsTimestamp(tx.transactionDate)
     }
 
     if (isLastItem) {
@@ -132,12 +131,31 @@ export default function AddExpenseScreen() {
         </View>
       ) : transactions.length === 0 ? (
         <View style={styles.centeredContainer}>
+          <LottieView
+            source={require('@/assets/animations/congratulations.json')}
+            autoPlay
+            loop={false}
+            style={styles.lottieAnimation}
+            resizeMode='contain'
+          />
+          <Text
+            variant='h4'
+            style={styles.completedTitle}
+          >
+            All Caught Up!
+          </Text>
           <Text
             variant='pMd'
             color='muted'
+            style={styles.completedDescription}
           >
-            No transactional SMS found.
+            No new expenses to review. Check back later!
           </Text>
+          <Button
+            title='Back to Home'
+            onPress={handleGoHome}
+            containerStyle={styles.completedButton}
+          />
         </View>
       ) : (
         <>
