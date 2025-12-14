@@ -26,4 +26,7 @@ export const styles = StyleSheet.create((theme) => ({
     width: '100%',
     alignItems: 'center',
   },
+  daysLeftSkeleton: {
+    marginTop: theme.space(1),
+  },
 }))

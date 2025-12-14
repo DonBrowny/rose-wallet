@@ -1,6 +1,20 @@
 /* global jest */
 require('react-native-reanimated').setUpTests()
 
+// Mock Skeleton component to avoid Animated timer leaks in tests
+jest.mock('@/components/ui/skeleton/skeleton', () => {
+  const React = require('react')
+  const { View } = require('react-native')
+  function SkeletonMock({ width, height, borderRadius = 4, style }) {
+    return React.createElement(View, {
+      testID: 'skeleton',
+      style: [{ width, height, borderRadius, backgroundColor: '#E8EEF3' }, style],
+    })
+  }
+  SkeletonMock.displayName = 'Skeleton'
+  return { Skeleton: SkeletonMock }
+})
+
 // Global mock for lottie-react-native to avoid native/animation internals in unit tests
 jest.mock('lottie-react-native', () => {
   const React = require('react')
