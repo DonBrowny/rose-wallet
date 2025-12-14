@@ -24,22 +24,22 @@ export async function saveExpense(input: SaveExpense) {
   try {
     const merchantName = input.merchantName.trim()
     const categoryName = input.categoryName.trim()
+    const { description, patternId, smsBody, smsDate, smsSender } = input
 
     const [merchantId, categoryId, smsId] = await Promise.all([
       getOrCreateMerchantIdByName(merchantName),
       getOrCreateCategoryIdByName(categoryName),
       insertEncryptedSms({
-        sender: input.smsSender,
-        body: input.smsBody,
-        date: input.smsDate,
+        sender: smsSender,
+        body: smsBody,
+        date: smsDate,
       }),
     ])
 
     await ensureMerchantCategoryGroup(merchantId, categoryId)
 
-    let patternId: number | undefined
-    if (input.patternId) {
-      await ensurePatternSmsGroupLink(input.patternId, smsId, 1.0)
+    if (patternId) {
+      await ensurePatternSmsGroupLink(patternId, smsId, 1.0)
     }
 
     const amount = Number(input.amount)
@@ -50,7 +50,7 @@ export async function saveExpense(input: SaveExpense) {
       amount: Number.isFinite(amount) ? amount : 0,
       currency,
       type,
-      description: input.description ?? null,
+      description,
       categoryId,
       merchantId,
     })

@@ -9,10 +9,6 @@ export interface Transaction {
   bankName: string
   transactionDate: number
   message: SMSMessage
-}
-
-export interface SMSTransaction extends Omit<Transaction, 'id'> {
-  smsId: string
   patternId?: number
 }
 

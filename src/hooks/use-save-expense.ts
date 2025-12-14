@@ -1,9 +1,9 @@
 import { saveExpense } from '@/services/database/save-expense'
-import type { SMSTransaction } from '@/types/sms/transaction'
+import type { Transaction } from '@/types/sms/transaction'
 import { useMutation } from '@tanstack/react-query'
 
 interface SaveExpenseParams {
-  transaction: SMSTransaction
+  transaction: Transaction
   amount: number
   merchantName: string
   categoryName: string

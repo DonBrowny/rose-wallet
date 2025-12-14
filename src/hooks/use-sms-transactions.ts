@@ -3,10 +3,9 @@ import { SMSDataExtractor } from '@/services/sms-parsing/sms-data-extractor-serv
 import { SMSIntentService } from '@/services/sms-parsing/sms-intent-service'
 import { SMSService } from '@/services/sms-parsing/sms-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
-import type { SMSMessage, SMSTransaction } from '@/types/sms/transaction'
+import type { SMSMessage, Transaction } from '@/types/sms/transaction'
 import { storage } from '@/utils/mmkv/storage'
-import { getActivePatterns } from '@/utils/pattern/get-active-patterns'
-import { getRejectedPatterns } from '@/utils/pattern/get-rejected-patterns'
+import { getPatterns } from '@/utils/pattern/get-patterns'
 import { matchPatternAndExtract } from '@/utils/pattern/match-pattern-and-extract'
 import { matchesRejectedPattern } from '@/utils/pattern/matches-rejected-pattern'
 import { useQuery } from '@tanstack/react-query'
@@ -22,7 +21,7 @@ async function processSMS(
   activePatterns: Pattern[],
   rejectedPatterns: Pattern[],
   intentService: SMSIntentService
-): Promise<SMSTransaction | null> {
+): Promise<Transaction | null> {
   // Skip if matches rejected pattern
   if (matchesRejectedPattern(sms.body, rejectedPatterns)) {
     return null
@@ -30,11 +29,11 @@ async function processSMS(
 
   // Try pattern matching first (faster than ML)
   const patternResult = await matchPatternAndExtract(sms.body, activePatterns)
-  if (patternResult.patternName && patternResult.amount) {
+  if (patternResult.patternId && patternResult.amount) {
     const amount = Number(patternResult.amount)
     if (Number.isFinite(amount) && amount > 0) {
       return {
-        smsId: sms.id,
+        id: sms.id,
         patternId: patternResult.patternId,
         amount,
         merchant: patternResult.merchant || 'Unknown',
@@ -55,7 +54,7 @@ async function processSMS(
     const extractedData = SMSDataExtractor.extract(sms.body, intentResult.label)
     if (extractedData.amount && extractedData.amount.value > 0) {
       return {
-        smsId: sms.id,
+        id: sms.id,
         amount: extractedData.amount.value,
         merchant: extractedData.merchant || 'Unknown',
         bankName: extractedData.bank?.name || 'Unknown',
@@ -70,7 +69,7 @@ async function processSMS(
   return null
 }
 
-async function fetchSMSTransactions(): Promise<SMSTransaction[]> {
+async function fetchSMSTransactions(): Promise<Transaction[]> {
   const lastRead = storage.getNumber(MMKV_KEYS.SMS.LAST_READ_AT)
   const startTimestamp = typeof lastRead === 'number' ? lastRead : getThreeMonthsAgoTimestamp()
   const endTimestamp = Date.now()
@@ -83,7 +82,7 @@ async function fetchSMSTransactions(): Promise<SMSTransaction[]> {
   }
 
   // Step 2: Fetch all patterns once
-  const [activePatterns, rejectedPatterns] = await Promise.all([getActivePatterns(), getRejectedPatterns()])
+  const { active: activePatterns, rejected: rejectedPatterns } = await getPatterns()
 
   // Step 3: Initialize ML service once
   const intentService = SMSIntentService.getInstance()
@@ -94,8 +93,8 @@ async function fetchSMSTransactions(): Promise<SMSTransaction[]> {
     result.sms.map((sms) => processSMS(sms, activePatterns, rejectedPatterns, intentService))
   )
 
-  // Step 5: Filter out nulls
-  return results.filter((tx): tx is SMSTransaction => tx !== null)
+  // Step 5: Filter out nulls and sort by date (oldest first)
+  return results.filter((tx): tx is Transaction => tx !== null).sort((a, b) => a.transactionDate - b.transactionDate)
 }
 
 export function useSMSTransactions() {

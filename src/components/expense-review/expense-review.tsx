@@ -1,13 +1,13 @@
 import { Input } from '@/components/ui/input/input'
 import { Text } from '@/components/ui/text/text'
-import type { SMSTransaction } from '@/types/sms/transaction'
+import type { Transaction } from '@/types/sms/transaction'
 import { formatCurrency } from '@/utils/formatter/format-currency'
 import React from 'react'
 import { View, type ViewStyle } from 'react-native'
 import { styles } from './expense-review.style'
 
 interface Props {
-  transaction: SMSTransaction
+  transaction: Transaction
   style?: ViewStyle
   amountValue: string
   merchantValue: string
