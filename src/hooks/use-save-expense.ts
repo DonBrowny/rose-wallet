@@ -1,6 +1,7 @@
 import { saveExpense } from '@/services/database/save-expense'
 import type { Transaction } from '@/types/sms/transaction'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { MONTHLY_EXPENSE_QUERY_KEY } from './use-monthly-expense'
 
 interface SaveExpenseParams {
   transaction: Transaction
@@ -26,7 +27,12 @@ async function saveExpenseWithPattern(params: SaveExpenseParams) {
 }
 
 export function useSaveExpense() {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: saveExpenseWithPattern,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: MONTHLY_EXPENSE_QUERY_KEY })
+    },
   })
 }

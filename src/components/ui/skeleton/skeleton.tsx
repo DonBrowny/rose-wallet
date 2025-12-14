@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { memo, useEffect, useRef } from 'react'
 import { Animated, View, ViewStyle } from 'react-native'
 import { styles } from './skeleton.style'
 
@@ -9,7 +9,7 @@ interface SkeletonProps {
   style?: ViewStyle
 }
 
-export function Skeleton({ width, height, borderRadius = 4, style }: SkeletonProps) {
+export const Skeleton = memo(function Skeleton({ width, height, borderRadius = 4, style }: SkeletonProps) {
   const shimmerAnim = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
@@ -29,7 +29,8 @@ export function Skeleton({ width, height, borderRadius = 4, style }: SkeletonPro
     )
     animation.start()
     return () => animation.stop()
-  }, [shimmerAnim])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const opacity = shimmerAnim.interpolate({
     inputRange: [0, 1],
@@ -41,4 +42,4 @@ export function Skeleton({ width, height, borderRadius = 4, style }: SkeletonPro
       <Animated.View style={[styles.shimmer, { opacity, borderRadius }]} />
     </View>
   )
-}
+})
