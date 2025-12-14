@@ -67,8 +67,8 @@ export const styles = StyleSheet.create((theme) => ({
     paddingHorizontal: theme.space(6),
   },
   lottieAnimation: {
-    width: 200,
-    height: 200,
+    width: 250,
+    height: 250,
   },
   completedTitle: {
     textAlign: 'center',
@@ -81,5 +81,16 @@ export const styles = StyleSheet.create((theme) => ({
   completedButton: {
     marginTop: theme.space(6),
     minWidth: 180,
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: theme.space(4),
   },
 }))

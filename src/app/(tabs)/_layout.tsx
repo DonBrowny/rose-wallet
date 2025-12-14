@@ -8,6 +8,10 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Animated, View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
 
+const containerStyle = {
+  flex: 1,
+}
+
 export default function TabsLayout() {
   const { shouldHideTabBar } = useTabBarVisibility()
   const fadeAnim = useRef(new Animated.Value(1)).current
@@ -84,7 +88,7 @@ export default function TabsLayout() {
   )
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={containerStyle}>
       <Tabs screenOptions={screenOptions}>
         <Tabs.Screen
           name='index'

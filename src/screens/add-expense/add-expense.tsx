@@ -115,14 +115,14 @@ export default function AddExpenseScreen() {
           />
         </View>
       ) : isLoading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.centeredContainer}>
           <Loading
             title='Reading Messages'
             description='Rosie is analyzing your SMS messages to find expenses...'
           />
         </View>
       ) : errorMessage ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
+        <View style={styles.errorContainer}>
           <Text
             variant='pMd'
             color='muted'
@@ -131,7 +131,7 @@ export default function AddExpenseScreen() {
           </Text>
         </View>
       ) : transactions.length === 0 ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.centeredContainer}>
           <Text
             variant='pMd'
             color='muted'
