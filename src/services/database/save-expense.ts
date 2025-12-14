@@ -1,3 +1,5 @@
+import { MMKV_KEYS } from '@/types/mmkv-keys'
+import { storage } from '@/utils/mmkv/storage'
 import { getOrCreateCategoryIdByName } from './categories-repository'
 import { ensureMerchantCategoryGroup } from './merchant-category-groups-repository'
 import { getOrCreateMerchantIdByName } from './merchants-repository'
@@ -52,6 +54,8 @@ export async function saveExpense(input: SaveExpense) {
       categoryId,
       merchantId,
     })
+
+    storage.set(MMKV_KEYS.SMS.LAST_READ_AT, input.smsDate)
 
     return { merchantId, categoryId, smsId, patternId }
   } catch (error) {
