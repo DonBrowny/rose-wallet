@@ -1,3 +1,4 @@
+import { Skeleton } from '@/components/ui/skeleton/skeleton'
 import { Text } from '@/components/ui/text/text'
 import { useRouter } from 'expo-router'
 import { ArrowRight, Edit3 } from 'lucide-react-native'
@@ -11,9 +12,15 @@ interface BudgetInfoRowsProps {
   spentFormatted: string
   budgetFormatted: string
   isOverBudget: boolean
+  isLoading?: boolean
 }
 
-export function BudgetInfoRows({ spentFormatted, budgetFormatted, isOverBudget }: BudgetInfoRowsProps) {
+export function BudgetInfoRows({
+  spentFormatted,
+  budgetFormatted,
+  isOverBudget,
+  isLoading = false,
+}: BudgetInfoRowsProps) {
   const { theme } = useUnistyles()
   const router = useRouter()
   const [isModalVisible, setIsModalVisible] = useState(false)
@@ -35,15 +42,24 @@ export function BudgetInfoRows({ spentFormatted, budgetFormatted, isOverBudget }
       <TouchableOpacity
         style={styles.infoRow}
         onPress={handleExpensePress}
+        disabled={isLoading}
       >
         <Text variant='pSm'>Monthly Expense</Text>
         <View style={styles.valueRow}>
-          <Text
-            variant='aLg'
-            color={isOverBudget ? 'error' : 'default'}
-          >
-            {spentFormatted}
-          </Text>
+          {isLoading ? (
+            <Skeleton
+              width={90}
+              height={30}
+              borderRadius={4}
+            />
+          ) : (
+            <Text
+              variant='aLg'
+              color={isOverBudget ? 'error' : 'default'}
+            >
+              {spentFormatted}
+            </Text>
+          )}
           <ArrowRight
             size={24}
             color={theme.colors.grey4}
