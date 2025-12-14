@@ -20,7 +20,7 @@ export const Loading = ({
       {showImage && (
         <Image
           testID='loading-image'
-          source={require('@/assets/images/read.png')}
+          source={require('@/assets/svg/read.svg')}
           style={styles.image}
           contentFit='contain'
           transition={200}
