@@ -7,7 +7,6 @@ export const styles = StyleSheet.create((theme) => ({
     alignItems: 'center',
     gap: theme.gap(3),
     paddingHorizontal: theme.space(5),
-    backgroundColor: theme.colors.background,
   },
   image: {
     width: 200,

@@ -1,10 +1,11 @@
 import { TabBarButton } from '@/components/tab-bar-button/tab-bar-button'
+import { Fab } from '@/components/ui/fab/fab'
 import { useTabBarVisibility } from '@/hooks/use-tab-bar-visibility'
 import { type BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
 import { Tabs } from 'expo-router'
 import { BarChart3, Home, Settings } from 'lucide-react-native'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { Animated } from 'react-native'
+import { Animated, View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
 
 export default function TabsLayout() {
@@ -83,40 +84,43 @@ export default function TabsLayout() {
   )
 
   return (
-    <Tabs screenOptions={screenOptions}>
-      <Tabs.Screen
-        name='index'
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Home
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name='analytics'
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <BarChart3
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name='settings'
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Settings
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-    </Tabs>
+    <View style={{ flex: 1 }}>
+      <Tabs screenOptions={screenOptions}>
+        <Tabs.Screen
+          name='index'
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Home
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name='analytics'
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <BarChart3
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name='settings'
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Settings
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+      </Tabs>
+      <Fab visible={!shouldHideTabBar} />
+    </View>
   )
 }

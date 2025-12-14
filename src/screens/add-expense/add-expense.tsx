@@ -1,20 +1,32 @@
 import { ExpenseReview } from '@/components/expense-review/expense-review'
+import { Loading } from '@/components/loading/loading'
 import { Button } from '@/components/ui/button/button'
-import { ProgressBar } from '@/components/ui/progress-bar/progress-bar'
+import { IconButton } from '@/components/ui/icon-button/icon-button'
 import { Text } from '@/components/ui/text/text'
 import { useSaveExpense } from '@/hooks/use-save-expense'
 import { useSMSTransactions } from '@/hooks/use-sms-transactions'
+import { MMKV_KEYS } from '@/types/mmkv-keys'
+import { storage } from '@/utils/mmkv/storage'
+import { useRouter } from 'expo-router'
+import LottieView from 'lottie-react-native'
+import { Check, MessageSquareText, X } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
+import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './add-expense.style'
 
 export default function AddExpenseScreen() {
+  const { theme } = useUnistyles()
+  const router = useRouter()
   const { data: transactions = [], isLoading, errorMessage } = useSMSTransactions()
   const { mutate: saveExpense, isPending: isSaving } = useSaveExpense()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [amountValue, setAmountValue] = useState('')
   const [merchantValue, setMerchantValue] = useState('')
   const [categoryValue, setCategoryValue] = useState('')
+  const [isCompleted, setIsCompleted] = useState(false)
+
+  const isLastItem = currentIndex >= transactions.length - 1
 
   // Prefill inputs when the current item changes
   useEffect(() => {
@@ -25,12 +37,20 @@ export default function AddExpenseScreen() {
     setCategoryValue('')
   }, [transactions, currentIndex])
 
-  function handlePrevious() {
-    const prev = Math.max(0, currentIndex - 1)
-    setCurrentIndex(prev)
+  function handleReject() {
+    const tx = transactions[currentIndex]
+    if (tx) {
+      storage.set(MMKV_KEYS.SMS.LAST_READ_AT, tx.transactionDate)
+    }
+
+    if (isLastItem) {
+      setIsCompleted(true)
+      return
+    }
+    setCurrentIndex(currentIndex + 1)
   }
 
-  function handleSave() {
+  function handleConfirm() {
     const tx = transactions[currentIndex]
     if (!tx) return
 
@@ -43,14 +63,21 @@ export default function AddExpenseScreen() {
       },
       {
         onSuccess: () => {
-          const next = Math.min(transactions.length - 1, currentIndex + 1)
-          setCurrentIndex(next)
+          if (isLastItem) {
+            setIsCompleted(true)
+            return
+          }
+          setCurrentIndex(currentIndex + 1)
         },
         onError: (e) => {
-          console.warn('Save expense failed', e)
+          console.warn('Confirm expense failed', e)
         },
       }
     )
+  }
+
+  function handleGoHome() {
+    router.replace('/(tabs)')
   }
 
   return (
@@ -62,18 +89,37 @@ export default function AddExpenseScreen() {
           color='muted'
           style={styles.subHeader}
         >
-          Recent transactional SMS
+          Add Expense from transactional SMS
         </Text>
       </View>
 
-      {isLoading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      {isCompleted ? (
+        <View style={styles.completedContainer}>
+          <LottieView
+            source={require('@/assets/animations/congratulations.json')}
+            autoPlay
+            loop={false}
+            style={styles.lottieAnimation}
+            resizeMode='contain'
+          />
           <Text
-            variant='pMd'
-            color='muted'
+            variant='h4'
+            style={styles.completedTitle}
           >
-            Loading SMS…
+            All Done! 👍
           </Text>
+          <Button
+            title='Back to Home'
+            onPress={handleGoHome}
+            containerStyle={styles.completedButton}
+          />
+        </View>
+      ) : isLoading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Loading
+            title='Reading Messages'
+            description='Rosie is analyzing your SMS messages to find expenses...'
+          />
         </View>
       ) : errorMessage ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}>
@@ -96,10 +142,18 @@ export default function AddExpenseScreen() {
       ) : (
         <>
           <View style={styles.progressContainer}>
-            <ProgressBar
-              total={transactions.length}
-              currentIndex={currentIndex}
-            />
+            <View style={styles.pill}>
+              <MessageSquareText
+                size={16}
+                color={theme.colors.textMuted}
+              />
+              <Text
+                variant='pSmBold'
+                color='muted'
+              >
+                {transactions.length - currentIndex} of {transactions.length} remaining
+              </Text>
+            </View>
           </View>
           <View style={styles.cardContainer}>
             <ExpenseReview
@@ -113,18 +167,40 @@ export default function AddExpenseScreen() {
             />
           </View>
           <View style={styles.actionsRow}>
-            <Button
-              type='outline'
-              title='Previous'
-              disabled={isSaving || currentIndex === 0 || transactions.length === 0}
-              onPress={handlePrevious}
-            />
-            <View style={{ flex: 1 }} />
-            <Button
-              title='Save'
-              disabled={isSaving || transactions.length === 0}
-              onPress={handleSave}
-            />
+            <IconButton
+              disabled={isSaving}
+              onPress={handleReject}
+            >
+              <View style={[styles.iconCircleBase, styles.rejectCircle(isSaving)]}>
+                <X
+                  size={32}
+                  color={styles.rejectColor(isSaving).color}
+                />
+              </View>
+              <Text
+                variant='pSm'
+                style={styles.rejectColor(isSaving)}
+              >
+                Reject
+              </Text>
+            </IconButton>
+            <IconButton
+              disabled={isSaving}
+              onPress={handleConfirm}
+            >
+              <View style={[styles.iconCircleBase, styles.confirmCircle(isSaving)]}>
+                <Check
+                  size={32}
+                  color={theme.colors.surface}
+                />
+              </View>
+              <Text
+                variant='pSmBold'
+                style={styles.confirmColor(isSaving)}
+              >
+                Confirm
+              </Text>
+            </IconButton>
           </View>
         </>
       )}

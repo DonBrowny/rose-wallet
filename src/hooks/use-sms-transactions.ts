@@ -10,9 +10,9 @@ import { matchPatternAndExtract } from '@/utils/pattern/match-pattern-and-extrac
 import { matchesRejectedPattern } from '@/utils/pattern/matches-rejected-pattern'
 import { useQuery } from '@tanstack/react-query'
 
-function getThreeMonthsAgoTimestamp(): number {
+function getOneMonthAgoTimestamp(): number {
   const d = new Date()
-  d.setMonth(d.getMonth() - 3)
+  d.setMonth(d.getMonth() - 1)
   return d.getTime()
 }
 
@@ -71,7 +71,7 @@ async function processSMS(
 
 async function fetchSMSTransactions(): Promise<Transaction[]> {
   const lastRead = storage.getNumber(MMKV_KEYS.SMS.LAST_READ_AT)
-  const startTimestamp = typeof lastRead === 'number' ? lastRead : getThreeMonthsAgoTimestamp()
+  const startTimestamp = typeof lastRead === 'number' ? lastRead : getOneMonthAgoTimestamp()
   const endTimestamp = Date.now()
 
   // Step 1: Get transactional SMS (pre-filtered by sender format)
