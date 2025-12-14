@@ -11,12 +11,7 @@ interface SuccessStateProps {
   onButtonPress: () => void
 }
 
-export function SuccessState({
-  title,
-  description,
-  buttonTitle = 'Back to Home',
-  onButtonPress,
-}: SuccessStateProps) {
+export function SuccessState({ title, description, buttonTitle = 'Back to Home', onButtonPress }: SuccessStateProps) {
   return (
     <View style={styles.container}>
       <LottieView
