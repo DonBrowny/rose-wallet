@@ -28,7 +28,7 @@ async function processSMS(
   }
 
   // Try pattern matching first (faster than ML)
-  const patternResult = await matchPatternAndExtract(sms.body, activePatterns)
+  const patternResult = matchPatternAndExtract(sms.body, activePatterns)
   if (patternResult.patternId && patternResult.amount) {
     const amount = Number(patternResult.amount)
     if (Number.isFinite(amount) && amount > 0) {

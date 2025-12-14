@@ -11,18 +11,17 @@ export async function getPatterns(): Promise<PatternsByStatus> {
   try {
     const allPatterns = await db.select().from(patterns)
 
-    const active: Pattern[] = []
-    const rejected: Pattern[] = []
-
-    for (const pattern of allPatterns) {
-      if (pattern.status === 'rejected') {
-        rejected.push(pattern)
-      } else if (pattern.isActive) {
-        active.push(pattern)
-      }
-    }
-
-    return { active, rejected }
+    return allPatterns.reduce<PatternsByStatus>(
+      (acc, p) => {
+        if (p.status === 'rejected') {
+          acc.rejected.push(p)
+        } else if (p.isActive) {
+          acc.active.push(p)
+        }
+        return acc
+      },
+      { active: [], rejected: [] }
+    )
   } catch {
     return { active: [], rejected: [] }
   }

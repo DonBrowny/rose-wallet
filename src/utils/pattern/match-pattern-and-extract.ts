@@ -10,38 +10,37 @@ export interface PatternMatchResult {
   merchant?: string
 }
 
-export async function matchPatternAndExtract(
-  smsBody: string,
-  providedPatterns: Pattern[]
-): Promise<PatternMatchResult> {
+const SIMILARITY_THRESHOLD = 0.8
+
+export function matchPatternAndExtract(smsBody: string, patterns: Pattern[]): PatternMatchResult {
   const raw = String(smsBody ?? '').trim()
   if (!raw) return {}
 
   const target = normalizeSMSTemplate(raw)
 
-  let bestPattern: Pattern | undefined
-  let bestScore = -1
+  // Fast path: exact match
+  const exactMatch = patterns.find((p) => p.groupingPattern === target)
+  if (exactMatch) {
+    return buildResult(exactMatch, raw)
+  }
 
-  for (const p of providedPatterns) {
-    const normalized = String(p.groupingPattern ?? '')
-    if (!normalized) continue
-    const score = target === normalized ? 1 : stringSimilarity(target, normalized)
-    if (score > bestScore) {
-      bestScore = score
-      bestPattern = p
+  // Slow path: find best similarity match
+  const best = patterns.reduce<{ pattern: Pattern; score: number } | null>((acc, p) => {
+    if (!p.groupingPattern) return acc
+    const score = stringSimilarity(target, p.groupingPattern)
+    if (score >= SIMILARITY_THRESHOLD && (!acc || score > acc.score)) {
+      return { pattern: p, score }
     }
-    if (bestScore === 1) break
-  }
+    return acc
+  }, null)
 
-  const acceptedPattern = bestScore >= 0.8 ? bestPattern : undefined
-  let amount: string | undefined
-  let merchant: string | undefined
+  return best ? buildResult(best.pattern, raw) : {}
+}
 
-  if (acceptedPattern?.extractionPattern) {
-    const tRes = extractAmountAndMerchant(acceptedPattern.extractionPattern, raw)
-    amount = tRes.amount
-    merchant = tRes.merchant
-  }
+function buildResult(pattern: Pattern, smsBody: string): PatternMatchResult {
+  const { amount, merchant } = pattern.extractionPattern
+    ? extractAmountAndMerchant(pattern.extractionPattern, smsBody)
+    : { amount: undefined, merchant: undefined }
 
-  return { patternId: acceptedPattern?.id, patternName: acceptedPattern?.name, amount, merchant }
+  return { patternId: pattern.id, patternName: pattern.name, amount, merchant }
 }
