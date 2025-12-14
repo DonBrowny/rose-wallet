@@ -6,13 +6,6 @@ export const styles = StyleSheet.create((theme) => ({
     paddingTop: theme.space(4),
     gap: theme.gap(1),
   },
-  headerContainer: {
-    paddingHorizontal: theme.space(4),
-    marginBottom: theme.space(3),
-  },
-  subHeader: {
-    marginTop: theme.space(1),
-  },
   progressContainer: {
     paddingHorizontal: theme.space(4),
     marginBottom: theme.space(3),
@@ -60,37 +53,9 @@ export const styles = StyleSheet.create((theme) => ({
   confirmColor: (disabled: boolean) => ({
     color: disabled ? theme.colors.grey2 : theme.colors.success,
   }),
-  completedContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: theme.space(6),
-  },
-  lottieAnimation: {
-    width: 250,
-    height: 250,
-  },
-  completedTitle: {
-    textAlign: 'center',
-    marginTop: theme.space(4),
-  },
-  completedDescription: {
-    textAlign: 'center',
-    marginTop: theme.space(2),
-  },
-  completedButton: {
-    marginTop: theme.space(6),
-    minWidth: 180,
-  },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: theme.space(4),
   },
 }))
