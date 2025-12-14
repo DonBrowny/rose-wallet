@@ -9,6 +9,7 @@ export interface Transaction {
   bankName: string
   transactionDate: number
   message: SMSMessage
+  patternId?: number
 }
 
 export interface SMSMessage {

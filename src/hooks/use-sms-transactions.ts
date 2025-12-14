@@ -5,8 +5,7 @@ import { SMSService } from '@/services/sms-parsing/sms-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import type { SMSMessage, Transaction } from '@/types/sms/transaction'
 import { storage } from '@/utils/mmkv/storage'
-import { getActivePatterns } from '@/utils/pattern/get-active-patterns'
-import { getRejectedPatterns } from '@/utils/pattern/get-rejected-patterns'
+import { getPatterns } from '@/utils/pattern/get-patterns'
 import { matchPatternAndExtract } from '@/utils/pattern/match-pattern-and-extract'
 import { matchesRejectedPattern } from '@/utils/pattern/matches-rejected-pattern'
 import { useQuery } from '@tanstack/react-query'
@@ -17,55 +16,57 @@ function getThreeMonthsAgoTimestamp(): number {
   return d.getTime()
 }
 
-async function enrichTransactionsWithPatterns(list: Transaction[], patterns: Pattern[]): Promise<Transaction[]> {
-  return Promise.all(
-    list.map(async (tx) => {
-      try {
-        const result = await matchPatternAndExtract(tx.message.body, patterns)
-        return {
-          ...tx,
-          amount: typeof result.amount === 'number' && !Number.isNaN(result.amount) ? result.amount : tx.amount,
-          merchant: result.merchant || tx.merchant,
-        }
-      } catch {
-        return tx
+async function processSMS(
+  sms: SMSMessage,
+  activePatterns: Pattern[],
+  rejectedPatterns: Pattern[],
+  intentService: SMSIntentService
+): Promise<Transaction | null> {
+  // Skip if matches rejected pattern
+  if (matchesRejectedPattern(sms.body, rejectedPatterns)) {
+    return null
+  }
+
+  // Try pattern matching first (faster than ML)
+  const patternResult = matchPatternAndExtract(sms.body, activePatterns)
+  if (patternResult.patternId && patternResult.amount) {
+    const amount = Number(patternResult.amount)
+    if (Number.isFinite(amount) && amount > 0) {
+      return {
+        id: sms.id,
+        patternId: patternResult.patternId,
+        amount,
+        merchant: patternResult.merchant || 'Unknown',
+        bankName: 'Unknown',
+        transactionDate: sms.date,
+        message: sms,
       }
-    })
-  )
-}
-
-async function classifyAndExtractTransactions(messages: SMSMessage[]): Promise<Transaction[]> {
-  const intentService = SMSIntentService.getInstance()
-  await intentService.init()
-
-  const transactions: Transaction[] = []
-
-  for (const sms of messages) {
-    try {
-      const intentResult = await intentService.classify(sms.body)
-
-      if (intentResult.label === 'not_txn') {
-        continue
-      }
-
-      const extractedData = SMSDataExtractor.extract(sms.body, intentResult.label)
-
-      if (extractedData.amount && extractedData.amount.value > 0) {
-        transactions.push({
-          id: sms.id,
-          amount: extractedData.amount.value,
-          merchant: extractedData.merchant || 'Unknown',
-          bankName: extractedData.bank?.name || 'Unknown',
-          transactionDate: sms.date,
-          message: sms,
-        })
-      }
-    } catch (error) {
-      console.warn(`Failed to process SMS ${sms.id}:`, error)
     }
   }
 
-  return transactions
+  // Fall back to ML classification
+  try {
+    const intentResult = await intentService.classify(sms.body)
+    if (intentResult.label === 'not_txn') {
+      return null
+    }
+
+    const extractedData = SMSDataExtractor.extract(sms.body, intentResult.label)
+    if (extractedData.amount && extractedData.amount.value > 0) {
+      return {
+        id: sms.id,
+        amount: extractedData.amount.value,
+        merchant: extractedData.merchant || 'Unknown',
+        bankName: extractedData.bank?.name || 'Unknown',
+        transactionDate: sms.date,
+        message: sms,
+      }
+    }
+  } catch (error) {
+    console.warn(`Failed to process SMS ${sms.id}:`, error)
+  }
+
+  return null
 }
 
 async function fetchSMSTransactions(): Promise<Transaction[]> {
@@ -80,17 +81,20 @@ async function fetchSMSTransactions(): Promise<Transaction[]> {
     throw new Error(result.errors[0] || 'Failed to load SMS')
   }
 
-  // Step 2: Fetch patterns once for filtering and enrichment
-  const [activePatterns, rejectedPatterns] = await Promise.all([getActivePatterns(), getRejectedPatterns()])
+  // Step 2: Fetch all patterns once
+  const { active: activePatterns, rejected: rejectedPatterns } = await getPatterns()
 
-  // Step 3: Filter out SMS that match rejected patterns
-  const filteredMessages = result.sms.filter((sms) => !matchesRejectedPattern(sms.body, rejectedPatterns))
+  // Step 3: Initialize ML service once
+  const intentService = SMSIntentService.getInstance()
+  await intentService.init()
 
-  // Step 4: Classify with ML and extract transaction data
-  const transactions = await classifyAndExtractTransactions(filteredMessages)
+  // Step 4: Process all SMS - pattern match first, then ML fallback
+  const results = await Promise.all(
+    result.sms.map((sms) => processSMS(sms, activePatterns, rejectedPatterns, intentService))
+  )
 
-  // Step 5: Enrich with pattern-based extraction
-  return enrichTransactionsWithPatterns(transactions, activePatterns)
+  // Step 5: Filter out nulls and sort by date (oldest first)
+  return results.filter((tx): tx is Transaction => tx !== null).sort((a, b) => a.transactionDate - b.transactionDate)
 }
 
 export function useSMSTransactions() {
