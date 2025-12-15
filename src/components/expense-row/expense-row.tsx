@@ -24,7 +24,7 @@ export const ExpenseRow = memo(function ExpenseRow({ expense }: ExpenseRowProps)
       </View>
       <View style={styles.content}>
         <Text
-          variant='pLgBold'
+          variant='pMdBold'
           numberOfLines={1}
         >
           {expense.merchantName}

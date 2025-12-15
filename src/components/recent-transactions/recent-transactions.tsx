@@ -35,6 +35,8 @@ export function RecentTransactions({ expenses = [], isLoading = false }: RecentT
 
   const renderItem = useCallback(({ item }: { item: Expense }) => <ExpenseRow expense={item} />, [])
 
+  const keyExtractor = useCallback((item: Expense) => item.id.toString(), [])
+
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -44,7 +46,7 @@ export function RecentTransactions({ expenses = [], isLoading = false }: RecentT
             variant='pSm'
             color='muted'
           >
-            Loading transactions...
+            Loading expenses...
           </Text>
         </View>
       </View>
@@ -105,6 +107,7 @@ export function RecentTransactions({ expenses = [], isLoading = false }: RecentT
         <FlashList
           data={expenses}
           renderItem={renderItem}
+          keyExtractor={keyExtractor}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
         />
