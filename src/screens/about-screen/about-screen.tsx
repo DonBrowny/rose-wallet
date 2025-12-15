@@ -1,9 +1,12 @@
 import { Text } from '@/components/ui/text/text'
+import Constants from 'expo-constants'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from './about-screen.styles'
 
 export const AboutScreen = () => {
+  const version = Constants.expoConfig?.version ?? '1.0.0'
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.section}>
@@ -17,7 +20,7 @@ export const AboutScreen = () => {
           variant='pSm'
           color='muted'
         >
-          1.0.0
+          {version}
         </Text>
       </View>
 

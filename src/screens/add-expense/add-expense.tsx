@@ -74,8 +74,8 @@ export default function AddExpenseScreen() {
     )
   }
 
-  function handleGoHome() {
-    router.replace('/(tabs)')
+  function handleGoBack() {
+    router.back()
   }
 
   if (isLoading) {
@@ -110,7 +110,8 @@ export default function AddExpenseScreen() {
       <SuccessState
         title={title}
         description={description}
-        onButtonPress={handleGoHome}
+        buttonTitle='Go Back'
+        onButtonPress={handleGoBack}
       />
     )
   }
