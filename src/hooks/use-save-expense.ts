@@ -1,6 +1,7 @@
 import { saveExpense } from '@/services/database/save-expense'
 import type { Transaction } from '@/types/sms/transaction'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { RECENT_EXPENSES_QUERY_KEY } from './use-get-recent-expenses'
 import { MONTHLY_EXPENSE_QUERY_KEY } from './use-monthly-expense'
 
 interface SaveExpenseParams {
@@ -33,6 +34,7 @@ export function useSaveExpense() {
     mutationFn: saveExpenseWithPattern,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MONTHLY_EXPENSE_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: RECENT_EXPENSES_QUERY_KEY })
     },
   })
 }
