@@ -2,12 +2,9 @@ import { StyleSheet } from 'react-native-unistyles'
 
 export const styles = StyleSheet.create((theme) => ({
   container: {
-    flex: 1,
     paddingHorizontal: theme.space(3),
-    marginVertical: theme.space(5),
-  },
-  sectionTitle: {
-    marginBottom: theme.space(5),
+    marginTop: theme.space(5),
+    paddingBottom: 160,
   },
   emptyStateContainer: {
     flex: 1,
@@ -32,10 +29,12 @@ export const styles = StyleSheet.create((theme) => ({
   addButton: {
     ...theme.elevation[2],
   },
-  placeholderContainer: {
-    padding: theme.space(5),
-    backgroundColor: theme.colors.grey5,
-    borderRadius: 12,
+  loadingContainer: {
+    padding: theme.space(8),
     alignItems: 'center',
+  },
+  listContainer: {
+    marginTop: theme.space(4),
+    minHeight: 400,
   },
 }))
