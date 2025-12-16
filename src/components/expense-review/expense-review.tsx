@@ -44,7 +44,7 @@ export function ExpenseReview({
       >
         {transaction.message.body}
       </Text>
-      <View style={{ gap: 12, marginTop: 8 }}>
+      <View style={styles.footerRow}>
         <Input
           label='Amount'
           value={amountValue}
