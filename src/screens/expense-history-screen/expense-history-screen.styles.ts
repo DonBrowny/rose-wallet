@@ -7,12 +7,6 @@ export const styles = StyleSheet.create((theme) => ({
   },
   listContent: {
     padding: theme.space(4),
-    paddingBottom: 120,
-  },
-  sectionHeader: {
-    paddingVertical: theme.space(3),
-    paddingHorizontal: theme.space(1),
-    marginTop: theme.space(2),
   },
   emptyContainer: {
     flex: 1,

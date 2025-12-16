@@ -1,4 +1,6 @@
+import { ExpenseGroupHeader } from '@/components/expense-group-header/expense-group-header'
 import { ExpenseRow } from '@/components/expense-row/expense-row'
+import { ExpenseSummaryCard } from '@/components/expense-summary-card/expense-summary-card'
 import { Text } from '@/components/ui/text/text'
 import { useGetRecentExpenses } from '@/hooks/use-get-recent-expenses'
 import { GroupedExpenseItem, groupExpensesByDate } from '@/utils/expense/group-expenses-by-date'
@@ -6,26 +8,34 @@ import { FlashList } from '@shopify/flash-list'
 import { Image } from 'expo-image'
 import { useCallback, useMemo } from 'react'
 import { ActivityIndicator, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { styles } from './expense-history-screen.styles'
 
 const EXPENSE_HISTORY_LIMIT = 100
 
 export function ExpenseHistoryScreen() {
   const { data: expenses = [], isLoading } = useGetRecentExpenses(EXPENSE_HISTORY_LIMIT)
+  const insets = useSafeAreaInsets()
 
   const groupedItems = useMemo(() => groupExpensesByDate(expenses), [expenses])
+
+  const totalSpent = useMemo(() => expenses.reduce((sum, e) => sum + e.amount, 0), [expenses])
+
+  const uniqueDays = useMemo(() => {
+    const days = new Set(
+      groupedItems.filter((item) => item.type === 'header').map((item) => item.type === 'header' && item.date)
+    )
+    return days.size
+  }, [groupedItems])
 
   const renderItem = useCallback(({ item }: { item: GroupedExpenseItem }) => {
     if (item.type === 'header') {
       return (
-        <View style={styles.sectionHeader}>
-          <Text
-            variant='pSmBold'
-            color='muted'
-          >
-            {item.date}
-          </Text>
-        </View>
+        <ExpenseGroupHeader
+          date={item.date}
+          total={item.total}
+          count={item.count}
+        />
       )
     }
     return <ExpenseRow expense={item.expense} />
@@ -39,6 +49,17 @@ export function ExpenseHistoryScreen() {
   }, [])
 
   const getItemType = useCallback((item: GroupedExpenseItem) => item.type, [])
+
+  const ListHeader = useCallback(
+    () => (
+      <ExpenseSummaryCard
+        totalSpent={totalSpent}
+        expenseCount={expenses.length}
+        dayCount={uniqueDays}
+      />
+    ),
+    [totalSpent, expenses.length, uniqueDays]
+  )
 
   if (isLoading) {
     return (
@@ -81,7 +102,8 @@ export function ExpenseHistoryScreen() {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         getItemType={getItemType}
-        contentContainerStyle={styles.listContent}
+        ListHeaderComponent={ListHeader}
+        contentContainerStyle={{ ...styles.listContent, paddingBottom: 120 + insets.bottom }}
         showsVerticalScrollIndicator={false}
       />
     </View>
