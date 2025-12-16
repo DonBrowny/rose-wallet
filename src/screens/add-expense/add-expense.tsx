@@ -24,9 +24,10 @@ export default function AddExpenseScreen() {
   const [amountValue, setAmountValue] = useState('')
   const [merchantValue, setMerchantValue] = useState('')
 
-  useRefetchOnFocus(refetch)
   const [categoryValue, setCategoryValue] = useState('')
   const [isCompleted, setIsCompleted] = useState(false)
+
+  useRefetchOnFocus(refetch)
 
   const isLastItem = currentIndex >= transactions.length - 1
 
