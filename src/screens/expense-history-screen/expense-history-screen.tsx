@@ -1,21 +1,30 @@
 import { ExpenseGroupHeader } from '@/components/expense-group-header/expense-group-header'
 import { ExpenseRow } from '@/components/expense-row/expense-row'
 import { ExpenseSummaryCard } from '@/components/expense-summary-card/expense-summary-card'
+import { MonthPicker } from '@/components/month-picker/month-picker'
 import { Text } from '@/components/ui/text/text'
-import { useGetRecentExpenses } from '@/hooks/use-get-recent-expenses'
+import { useGetExpensesByMonth, useGetMonthTotal } from '@/hooks/use-get-expenses-by-month'
+import { getPreviousMonth } from '@/utils/date/get-previous-month'
 import { GroupedExpenseItem, groupExpensesByDate } from '@/utils/expense/group-expenses-by-date'
 import { FlashList } from '@shopify/flash-list'
 import { Image } from 'expo-image'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { styles } from './expense-history-screen.styles'
 
-const EXPENSE_HISTORY_LIMIT = 100
-
 export function ExpenseHistoryScreen() {
-  const { data: expenses = [], isLoading } = useGetRecentExpenses(EXPENSE_HISTORY_LIMIT)
+  const now = new Date()
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear())
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth())
+
   const insets = useSafeAreaInsets()
+  const previousMonth = getPreviousMonth(selectedYear, selectedMonth)
+
+  const { data: expenses = [], isLoading } = useGetExpensesByMonth(selectedYear, selectedMonth)
+  const { data: previousMonthTotal } = useGetMonthTotal(previousMonth.year, previousMonth.month)
+
+  const isCurrentMonth = selectedYear === now.getFullYear() && selectedMonth === now.getMonth()
 
   const groupedItems = useMemo(() => groupExpensesByDate(expenses), [expenses])
 
@@ -27,6 +36,11 @@ export function ExpenseHistoryScreen() {
     )
     return days.size
   }, [groupedItems])
+
+  const handleMonthSelect = useCallback((year: number, month: number) => {
+    setSelectedYear(year)
+    setSelectedMonth(month)
+  }, [])
 
   const renderItem = useCallback(({ item }: { item: GroupedExpenseItem }) => {
     if (item.type === 'header') {
@@ -56,47 +70,68 @@ export function ExpenseHistoryScreen() {
         totalSpent={totalSpent}
         expenseCount={expenses.length}
         dayCount={uniqueDays}
+        previousMonthTotal={previousMonthTotal}
+        isCurrentMonth={isCurrentMonth}
       />
     ),
-    [totalSpent, expenses.length, uniqueDays]
+    [totalSpent, expenses.length, uniqueDays, previousMonthTotal, isCurrentMonth]
   )
 
   if (isLoading) {
     return (
-      <View style={styles.emptyContainer}>
-        <ActivityIndicator size='large' />
+      <View style={styles.container}>
+        <MonthPicker
+          selectedYear={selectedYear}
+          selectedMonth={selectedMonth}
+          onMonthSelect={handleMonthSelect}
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size='large' />
+        </View>
       </View>
     )
   }
 
   if (expenses.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Image
-          source={require('@/assets/images/empty.png')}
-          style={styles.emptyImage}
-          contentFit='contain'
-          transition={300}
+      <View style={styles.container}>
+        <MonthPicker
+          selectedYear={selectedYear}
+          selectedMonth={selectedMonth}
+          onMonthSelect={handleMonthSelect}
         />
-        <Text
-          variant='h3'
-          style={styles.emptyTitle}
-        >
-          No Expenses Yet
-        </Text>
-        <Text
-          variant='pSm'
-          color='muted'
-          style={styles.emptyDescription}
-        >
-          Your expense history will appear here once you start tracking
-        </Text>
+        <View style={styles.emptyContainer}>
+          <Image
+            source={require('@/assets/images/empty.png')}
+            style={styles.emptyImage}
+            contentFit='contain'
+            transition={300}
+          />
+          <Text
+            variant='h3'
+            style={styles.emptyTitle}
+          >
+            No Expenses
+          </Text>
+          <Text
+            variant='pSm'
+            color='muted'
+            style={styles.emptyDescription}
+          >
+            No expenses recorded for this month
+          </Text>
+        </View>
       </View>
     )
   }
 
   return (
     <View style={styles.container}>
+      <MonthPicker
+        selectedYear={selectedYear}
+        selectedMonth={selectedMonth}
+        onMonthSelect={handleMonthSelect}
+      />
       <FlashList
         data={groupedItems}
         renderItem={renderItem}

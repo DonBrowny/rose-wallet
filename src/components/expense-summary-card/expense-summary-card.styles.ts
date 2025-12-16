@@ -4,7 +4,6 @@ export const styles = StyleSheet.create((theme) => ({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.accentRed,
     borderRadius: 16,
     padding: theme.space(4),
     marginBottom: theme.space(4),
@@ -23,5 +22,10 @@ export const styles = StyleSheet.create((theme) => ({
   },
   amount: {
     marginVertical: theme.space(1),
+  },
+  comparisonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.space(1),
   },
 }))
