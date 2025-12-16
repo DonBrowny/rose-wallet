@@ -34,7 +34,7 @@ export function ExpenseReview({
           variant='pSm'
           color='muted'
         >
-          {new Date(transaction.transactionDate).toLocaleDateString()}
+          {new Date(transaction.message.date).toLocaleString()}
         </Text>
         <Text variant='aMdBold'>{formatCurrency(transaction.amount)}</Text>
       </View>
@@ -44,7 +44,7 @@ export function ExpenseReview({
       >
         {transaction.message.body}
       </Text>
-      <View style={{ gap: 12, marginTop: 8 }}>
+      <View style={styles.footerRow}>
         <Input
           label='Amount'
           value={amountValue}

@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui/text/text'
 import type { Expense } from '@/types/expense'
 import { getColorForCategory } from '@/utils/color/get-color-for-category'
-import { formatRelativeDate } from '@/utils/date/format-relative-date'
+import { formatDateTime } from '@/utils/date/format-date-time'
 import { formatCurrency } from '@/utils/formatter/format-currency'
 import React, { memo, useMemo } from 'react'
 import { View } from 'react-native'
@@ -44,7 +44,7 @@ export const ExpenseRow = memo(function ExpenseRow({ expense }: ExpenseRowProps)
           color='muted'
           style={styles.date}
         >
-          {formatRelativeDate(expense.createdAt)}
+          {formatDateTime(expense.receivedAt)}
         </Text>
       </View>
     </View>

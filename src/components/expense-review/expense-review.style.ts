@@ -14,4 +14,5 @@ export const styles = StyleSheet.create((theme) => ({
     justifyContent: 'space-between',
     marginBottom: theme.space(2),
   },
+  footerRow: { gap: 12, marginTop: 8 },
 }))

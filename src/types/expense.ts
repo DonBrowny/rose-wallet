@@ -3,5 +3,5 @@ export interface Expense {
   amount: number
   merchantName: string
   categoryName: string
-  createdAt: Date
+  receivedAt: Date
 }
