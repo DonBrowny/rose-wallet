@@ -145,7 +145,7 @@ export function Text({ variant = 'pMd', color = 'default', style, children, ...r
       letterSpacing: t.track.normal,
     },
     aMdBold: {
-      fontFamily: t.family.mono,
+      fontFamily: t.family.monoBold,
       fontWeight: '700',
       fontSize: amountMdSize,
       lineHeight: amountMdLine,
@@ -159,7 +159,7 @@ export function Text({ variant = 'pMd', color = 'default', style, children, ...r
       letterSpacing: t.track.normal,
     },
     aLgBold: {
-      fontFamily: t.family.mono,
+      fontFamily: t.family.monoBold,
       fontWeight: '700',
       fontSize: amountLgSize,
       lineHeight: amountLgLine,

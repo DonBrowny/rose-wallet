@@ -47,6 +47,7 @@ export function HighlightedSMS({ text, merchant, amount }: HighlightedSMSProps) 
     <Text
       testID='highlighted-sms'
       variant='pMd'
+      selectable
     >
       {content}
     </Text>

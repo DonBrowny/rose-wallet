@@ -3,9 +3,14 @@ import { StyleSheet } from 'react-native-unistyles'
 export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
-    gap: theme.gap(3),
     backgroundColor: theme.colors.background,
     padding: theme.space(4),
+    gap: theme.gap(3),
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: theme.space(2),
+    gap: theme.gap(3),
   },
   headerRow: {
     flexDirection: 'row',

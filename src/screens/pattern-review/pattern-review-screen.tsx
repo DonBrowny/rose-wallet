@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router'
 import { X } from 'lucide-react-native'
 import { useCallback } from 'react'
 import { View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './pattern-review-screen.styles'
@@ -61,18 +62,25 @@ export function PatternReviewScreen() {
           }
         />
       </View>
-      {total > 1 ? (
-        <ProgressStepper
-          total={total}
-          currentIndex={currentIndex}
-        />
-      ) : null}
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps='handled'
+        bottomOffset={16}
+      >
+        {total > 1 ? (
+          <ProgressStepper
+            total={total}
+            currentIndex={currentIndex}
+          />
+        ) : null}
 
-      <PatternReviewPane
-        sample={current}
-        index={currentIndex}
-        total={total}
-      />
+        <PatternReviewPane
+          sample={current}
+          index={currentIndex}
+          total={total}
+        />
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   )
 }
