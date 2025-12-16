@@ -4,6 +4,9 @@ export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     paddingTop: theme.space(4),
+  },
+  scrollContent: {
+    flexGrow: 1,
     gap: theme.gap(1),
   },
   progressContainer: {

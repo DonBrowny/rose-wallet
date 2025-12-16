@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router'
 import { Check, MessageSquareText, X } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './add-expense.style'
 
@@ -118,31 +119,38 @@ export default function AddExpenseScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.progressContainer}>
-        <View style={styles.pill}>
-          <MessageSquareText
-            size={16}
-            color={theme.colors.textMuted}
-          />
-          <Text
-            variant='pSmBold'
-            color='muted'
-          >
-            {transactions.length - currentIndex} of {transactions.length} remaining
-          </Text>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps='handled'
+        bottomOffset={16}
+      >
+        <View style={styles.progressContainer}>
+          <View style={styles.pill}>
+            <MessageSquareText
+              size={16}
+              color={theme.colors.textMuted}
+            />
+            <Text
+              variant='pSmBold'
+              color='muted'
+            >
+              {transactions.length - currentIndex} of {transactions.length} remaining
+            </Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.cardContainer}>
-        <ExpenseReview
-          transaction={transactions[currentIndex]}
-          amountValue={amountValue}
-          merchantValue={merchantValue}
-          categoryValue={categoryValue}
-          onChangeAmount={setAmountValue}
-          onChangeMerchant={setMerchantValue}
-          onChangeCategory={setCategoryValue}
-        />
-      </View>
+        <View style={styles.cardContainer}>
+          <ExpenseReview
+            transaction={transactions[currentIndex]}
+            amountValue={amountValue}
+            merchantValue={merchantValue}
+            categoryValue={categoryValue}
+            onChangeAmount={setAmountValue}
+            onChangeMerchant={setMerchantValue}
+            onChangeCategory={setCategoryValue}
+          />
+        </View>
+      </KeyboardAwareScrollView>
       <View style={styles.actionsRow}>
         <IconButton
           disabled={isSaving}
