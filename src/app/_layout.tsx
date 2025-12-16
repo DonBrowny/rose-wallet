@@ -8,6 +8,7 @@ import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite'
 import { StatusBar } from 'expo-status-bar'
 import { Suspense } from 'react'
 import { ActivityIndicator, Text, View } from 'react-native'
+import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { useUnistyles } from 'react-native-unistyles'
 import migrations from '../drizzle/migrations'
 
@@ -47,40 +48,42 @@ export default function Root() {
 
   return (
     <Suspense fallback={<ActivityIndicator size='large' />}>
-      <QueryClientProvider client={queryClient}>
-        <SQLiteProvider
-          databaseName={DB_NAME}
-          options={{ enableChangeListener: true }}
-          useSuspense
-        >
-          <TourGuideProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen
-                name='index'
-                options={{ headerShown: false }}
+      <KeyboardProvider>
+        <QueryClientProvider client={queryClient}>
+          <SQLiteProvider
+            databaseName={DB_NAME}
+            options={{ enableChangeListener: true }}
+            useSuspense
+          >
+            <TourGuideProvider>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen
+                  name='index'
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name='(tabs)'
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name='(shared)'
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name='onboarding'
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+              <StatusBar
+                style={barStyle}
+                backgroundColor={background}
+                translucent
               />
-              <Stack.Screen
-                name='(tabs)'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='(shared)'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='onboarding'
-                options={{ headerShown: false }}
-              />
-            </Stack>
-            <StatusBar
-              style={barStyle}
-              backgroundColor={background}
-              translucent
-            />
-            <TourGuideOverlay />
-          </TourGuideProvider>
-        </SQLiteProvider>
-      </QueryClientProvider>
+              <TourGuideOverlay />
+            </TourGuideProvider>
+          </SQLiteProvider>
+        </QueryClientProvider>
+      </KeyboardProvider>
     </Suspense>
   )
 }

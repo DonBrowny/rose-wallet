@@ -3,6 +3,7 @@ import { Loading } from '@/components/loading/loading'
 import { SuccessState } from '@/components/success-state/success-state'
 import { IconButton } from '@/components/ui/icon-button/icon-button'
 import { Text } from '@/components/ui/text/text'
+import { useRefetchOnFocus } from '@/hooks/use-refetch-on-focus'
 import { useSaveExpense } from '@/hooks/use-save-expense'
 import { useSMSTransactions } from '@/hooks/use-sms-transactions'
 import { updateLastReadSmsTimestamp } from '@/utils/mmkv/storage'
@@ -10,17 +11,20 @@ import { useRouter } from 'expo-router'
 import { Check, MessageSquareText, X } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './add-expense.style'
 
 export default function AddExpenseScreen() {
   const { theme } = useUnistyles()
   const router = useRouter()
-  const { data: transactions = [], isLoading, errorMessage } = useSMSTransactions()
+  const { data: transactions = [], isLoading, isFetching, errorMessage, refetch } = useSMSTransactions()
   const { mutate: saveExpense, isPending: isSaving } = useSaveExpense()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [amountValue, setAmountValue] = useState('')
   const [merchantValue, setMerchantValue] = useState('')
+
+  useRefetchOnFocus(refetch)
   const [categoryValue, setCategoryValue] = useState('')
   const [isCompleted, setIsCompleted] = useState(false)
 
@@ -78,7 +82,7 @@ export default function AddExpenseScreen() {
     router.back()
   }
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <View style={styles.centeredContainer}>
         <Loading
@@ -118,31 +122,38 @@ export default function AddExpenseScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.progressContainer}>
-        <View style={styles.pill}>
-          <MessageSquareText
-            size={16}
-            color={theme.colors.textMuted}
-          />
-          <Text
-            variant='pSmBold'
-            color='muted'
-          >
-            {transactions.length - currentIndex} of {transactions.length} remaining
-          </Text>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps='handled'
+        bottomOffset={16}
+      >
+        <View style={styles.progressContainer}>
+          <View style={styles.pill}>
+            <MessageSquareText
+              size={16}
+              color={theme.colors.textMuted}
+            />
+            <Text
+              variant='pSmBold'
+              color='muted'
+            >
+              {transactions.length - currentIndex} of {transactions.length} remaining
+            </Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.cardContainer}>
-        <ExpenseReview
-          transaction={transactions[currentIndex]}
-          amountValue={amountValue}
-          merchantValue={merchantValue}
-          categoryValue={categoryValue}
-          onChangeAmount={setAmountValue}
-          onChangeMerchant={setMerchantValue}
-          onChangeCategory={setCategoryValue}
-        />
-      </View>
+        <View style={styles.cardContainer}>
+          <ExpenseReview
+            transaction={transactions[currentIndex]}
+            amountValue={amountValue}
+            merchantValue={merchantValue}
+            categoryValue={categoryValue}
+            onChangeAmount={setAmountValue}
+            onChangeMerchant={setMerchantValue}
+            onChangeCategory={setCategoryValue}
+          />
+        </View>
+      </KeyboardAwareScrollView>
       <View style={styles.actionsRow}>
         <IconButton
           disabled={isSaving}
