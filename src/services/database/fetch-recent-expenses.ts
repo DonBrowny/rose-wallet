@@ -1,4 +1,4 @@
-import { categories, merchants, transactions } from '@/db/schema'
+import { categories, merchants, smsMessages, transactions } from '@/db/schema'
 import type { Expense } from '@/types/expense'
 import { desc, eq } from 'drizzle-orm'
 import { getDrizzleDb } from './db'
@@ -14,13 +14,14 @@ export async function fetchRecentExpenses(limit: number = DEFAULT_LIMIT): Promis
       amount: transactions.amount,
       merchantName: merchants.name,
       categoryName: categories.name,
-      createdAt: transactions.createdAt,
+      receivedAt: smsMessages.dateTime,
     })
     .from(transactions)
     .leftJoin(merchants, eq(transactions.merchantId, merchants.id))
     .leftJoin(categories, eq(transactions.categoryId, categories.id))
+    .leftJoin(smsMessages, eq(transactions.smsId, smsMessages.id))
     .where(eq(transactions.type, 'debit'))
-    .orderBy(desc(transactions.createdAt))
+    .orderBy(desc(smsMessages.dateTime))
     .limit(limit)
 
   return result.map((row) => ({
@@ -28,6 +29,6 @@ export async function fetchRecentExpenses(limit: number = DEFAULT_LIMIT): Promis
     amount: row.amount,
     merchantName: row.merchantName ?? 'Unknown',
     categoryName: row.categoryName ?? 'Uncategorized',
-    createdAt: row.createdAt,
+    receivedAt: row.receivedAt ?? new Date(),
   }))
 }
