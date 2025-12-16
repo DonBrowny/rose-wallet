@@ -12,7 +12,6 @@ export function useRefetchOnFocus(refetch: () => void) {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('Focus effect triggered for refetching')
       if (firstTimeRef.current) {
         firstTimeRef.current = false
         return

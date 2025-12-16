@@ -101,7 +101,6 @@ export function useSMSTransactions() {
   const query = useQuery({
     queryKey: ['sms-transactions'],
     queryFn: fetchSMSTransactions,
-    gcTime: 0,
   })
 
   const errorMessage = query.error instanceof Error ? query.error.message : query.error ? 'Failed to load SMS' : null
