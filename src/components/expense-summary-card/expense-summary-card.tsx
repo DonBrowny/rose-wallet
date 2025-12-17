@@ -2,7 +2,8 @@ import { Text } from '@/components/ui/text/text'
 import { formatCountDiff } from '@/utils/formatter/format-count-diff'
 import { formatCurrency } from '@/utils/formatter/format-currency'
 import { calculatePercentageChange } from '@/utils/math/calculate-percentage-change'
-import { ArrowDown, ArrowUp, Minus, TrendingDown, TrendingUp } from 'lucide-react-native'
+import { getDiffColor, getTrendConfig, getTrendDirection } from '@/utils/trend/get-trend-config'
+import { memo } from 'react'
 import { View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './expense-summary-card.styles'
@@ -15,7 +16,7 @@ interface ExpenseSummaryCardProps {
   isCurrentMonth?: boolean
 }
 
-export function ExpenseSummaryCard({
+export const ExpenseSummaryCard = memo(function ExpenseSummaryCard({
   totalSpent,
   expenseCount,
   previousMonthTotal,
@@ -26,24 +27,17 @@ export function ExpenseSummaryCard({
 
   const hasComparison = previousMonthTotal !== undefined && previousMonthTotal > 0 && isCurrentMonth
   const percentageChange = hasComparison ? calculatePercentageChange(totalSpent, previousMonthTotal) : 0
-  const isSpendingUp = percentageChange > 0
-  const isSpendingDown = percentageChange < 0
-  const isSpendingSame = percentageChange === 0
+  const trendDirection = getTrendDirection(percentageChange)
+  const {
+    TrendIcon,
+    ArrowIcon,
+    color: trendColor,
+    background: cardBackground,
+  } = getTrendConfig(trendDirection, theme.colors)
 
   const countDiff = previousMonthCount !== undefined ? expenseCount - previousMonthCount : 0
   const showCountDiff = hasComparison && previousMonthCount !== undefined && previousMonthCount > 0
-
-  const TrendIcon = isSpendingUp ? TrendingUp : isSpendingDown ? TrendingDown : Minus
-  const ArrowIcon = isSpendingUp ? ArrowUp : isSpendingDown ? ArrowDown : Minus
-  const trendColor = isSpendingUp ? theme.colors.error : isSpendingDown ? theme.colors.success : theme.colors.textMuted
-  const cardBackground = isSpendingUp
-    ? theme.colors.accentRed
-    : isSpendingDown
-      ? theme.colors.accentGreen
-      : theme.colors.grey0
-
-  const countDiffColor =
-    countDiff > 0 ? theme.colors.error : countDiff < 0 ? theme.colors.success : theme.colors.textMuted
+  const countDiffColor = getDiffColor(countDiff, theme.colors)
 
   return (
     <View style={[styles.container, { backgroundColor: cardBackground }]}>
@@ -66,7 +60,7 @@ export function ExpenseSummaryCard({
         >
           {formatCurrency(totalSpent)}
         </Text>
-        {hasComparison && !isSpendingSame ? (
+        {hasComparison && trendDirection !== 'same' ? (
           <View style={styles.comparisonRow}>
             <ArrowIcon
               size={14}
@@ -76,10 +70,10 @@ export function ExpenseSummaryCard({
               variant='pSm'
               style={{ color: trendColor }}
             >
-              {Math.abs(percentageChange)}% {isSpendingUp ? 'more' : 'less'} than last month
+              {Math.abs(percentageChange)}% {trendDirection === 'up' ? 'more' : 'less'} than last month
             </Text>
           </View>
-        ) : hasComparison && isSpendingSame ? (
+        ) : hasComparison && trendDirection === 'same' ? (
           <Text
             variant='pSm'
             color='muted'
@@ -119,4 +113,4 @@ export function ExpenseSummaryCard({
       </View>
     </View>
   )
-}
+})

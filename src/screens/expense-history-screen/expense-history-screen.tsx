@@ -8,12 +8,13 @@ import { getPreviousMonth } from '@/utils/date/get-previous-month'
 import { GroupedExpenseItem } from '@/utils/expense/group-expenses-by-date'
 import { FlashList } from '@shopify/flash-list'
 import { Image } from 'expo-image'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { styles } from './expense-history-screen.styles'
 
 const now = new Date()
+const LIST_BOTTOM_PADDING = 120
 
 export function ExpenseHistoryScreen() {
   const [selectedYear, setSelectedYear] = useState(now.getFullYear())
@@ -54,7 +55,12 @@ export function ExpenseHistoryScreen() {
 
   const getItemType = useCallback((item: GroupedExpenseItem) => item.type, [])
 
-  const ListHeader = useCallback(
+  const listContentStyle = useMemo(
+    () => ({ ...styles.listContent, paddingBottom: LIST_BOTTOM_PADDING + insets.bottom }),
+    [insets.bottom]
+  )
+
+  const renderListHeader = useCallback(
     () => (
       <ExpenseSummaryCard
         totalSpent={data?.totalAmount ?? 0}
@@ -64,7 +70,7 @@ export function ExpenseHistoryScreen() {
         isCurrentMonth={isCurrentMonth}
       />
     ),
-    [data, previousMonthTotal, isCurrentMonth]
+    [data?.totalAmount, data?.count, previousMonthTotal?.total, previousMonthTotal?.count, isCurrentMonth]
   )
 
   if (isLoading) {
@@ -127,8 +133,8 @@ export function ExpenseHistoryScreen() {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         getItemType={getItemType}
-        ListHeaderComponent={ListHeader}
-        contentContainerStyle={{ ...styles.listContent, paddingBottom: 120 + insets.bottom }}
+        ListHeaderComponent={renderListHeader}
+        contentContainerStyle={listContentStyle}
         showsVerticalScrollIndicator={false}
       />
     </View>

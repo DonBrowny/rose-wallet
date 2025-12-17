@@ -62,7 +62,6 @@ export const MonthPicker = memo(function MonthPicker({ selectedYear, selectedMon
         contentContainerStyle={styles.listContent}
         snapToInterval={PILL_WIDTH + PILL_GAP}
         decelerationRate='fast'
-        extraData={{ selectedYear, selectedMonth }}
       />
     </View>
   )
