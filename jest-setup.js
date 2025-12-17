@@ -63,6 +63,8 @@ jest.mock('@wrack/react-native-tour-guide', () => {
   }
 })
 
+jest.mock('react-native-keyboard-controller', () => require('react-native-keyboard-controller/jest'))
+
 // Mock zustand immer middleware to behave as a no-proxy mutate helper in tests
 // It converts set(fn) where fn mutates a draft into a full state replacement
 jest.mock('zustand/middleware/immer', () => ({
