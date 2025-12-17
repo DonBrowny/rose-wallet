@@ -1,11 +1,16 @@
 import { categories, merchants, smsMessages, transactions } from '@/db/schema'
 import type { Expense } from '@/types/expense'
-import { and, between, desc, eq } from 'drizzle-orm'
+import { and, between, count, desc, eq, sum } from 'drizzle-orm'
 import { getDrizzleDb } from './db'
 
 export interface MonthRange {
   start: Date
   end: Date
+}
+
+export interface MonthStats {
+  total: number
+  count: number
 }
 
 export function getMonthRange(year: number, month: number): MonthRange {
@@ -42,7 +47,21 @@ export async function fetchExpensesByMonth(year: number, month: number): Promise
   }))
 }
 
-export async function fetchMonthTotal(year: number, month: number): Promise<number> {
-  const expenses = await fetchExpensesByMonth(year, month)
-  return expenses.reduce((sum, e) => sum + e.amount, 0)
+export async function fetchMonthTotal(year: number, month: number): Promise<MonthStats> {
+  const db = getDrizzleDb()
+  const { start, end } = getMonthRange(year, month)
+
+  const result = await db
+    .select({
+      total: sum(transactions.amount),
+      count: count(transactions.id),
+    })
+    .from(transactions)
+    .leftJoin(smsMessages, eq(transactions.smsId, smsMessages.id))
+    .where(and(eq(transactions.type, 'debit'), between(smsMessages.dateTime, start, end)))
+
+  return {
+    total: Number(result[0]?.total) || 0,
+    count: result[0]?.count || 0,
+  }
 }

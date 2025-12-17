@@ -28,4 +28,13 @@ export const styles = StyleSheet.create((theme) => ({
     alignItems: 'center',
     gap: theme.space(1),
   },
+  countContainer: {
+    alignItems: 'center',
+    paddingLeft: theme.space(3),
+    borderLeftWidth: 1,
+    borderLeftColor: theme.colors.grey2,
+  },
+  countNumber: {
+    marginBottom: theme.space(0.5),
+  },
 }))

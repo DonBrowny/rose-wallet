@@ -2,7 +2,7 @@ import { Card } from '@/components/ui/card/card'
 import { Skeleton } from '@/components/ui/skeleton/skeleton'
 import { Text } from '@/components/ui/text/text'
 import { useBudgetContext } from '@/contexts/budget-context'
-import { useMonthlyExpense } from '@/hooks/use-monthly-expense'
+import { useGetMonthTotal } from '@/hooks/use-get-expenses-by-month'
 import { calculateBudgetData } from '@/utils/formatter/calculate-budget-data'
 import React, { useMemo } from 'react'
 import { View } from 'react-native'
@@ -11,9 +11,12 @@ import { BudgetInfoRows } from './budget-info-rows/budget-info-rows'
 import { BudgetStatusIndicator } from './budget-status-indicator/budget-status-indicator'
 import { GaugeChart } from './gauge-chart/gauge-chart'
 
+const now = new Date()
+
 export function BudgetCard() {
   const { monthlyBudget } = useBudgetContext()
-  const { totalExpense, isLoading } = useMonthlyExpense()
+  const { data, isLoading } = useGetMonthTotal(now.getFullYear(), now.getMonth())
+  const totalExpense = data?.total ?? 0
 
   const { dailyAllowanceMessage, remainingDays, dailyAllowance, spentFormatted, budgetFormatted, isOverBudget } =
     useMemo(() => calculateBudgetData(monthlyBudget, totalExpense), [monthlyBudget, totalExpense])

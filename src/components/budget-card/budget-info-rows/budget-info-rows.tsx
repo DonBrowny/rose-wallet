@@ -30,7 +30,7 @@ export function BudgetInfoRows({
   }
 
   const handleExpensePress = () => {
-    router.push('/analytics')
+    router.navigate('/analytics/expense-history')
   }
 
   const handleCancelEdit = () => {

@@ -5,37 +5,27 @@ import { MonthPicker } from '@/components/month-picker/month-picker'
 import { Text } from '@/components/ui/text/text'
 import { useGetExpensesByMonth, useGetMonthTotal } from '@/hooks/use-get-expenses-by-month'
 import { getPreviousMonth } from '@/utils/date/get-previous-month'
-import { GroupedExpenseItem, groupExpensesByDate } from '@/utils/expense/group-expenses-by-date'
+import { GroupedExpenseItem } from '@/utils/expense/group-expenses-by-date'
 import { FlashList } from '@shopify/flash-list'
 import { Image } from 'expo-image'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { styles } from './expense-history-screen.styles'
 
+const now = new Date()
+
 export function ExpenseHistoryScreen() {
-  const now = new Date()
   const [selectedYear, setSelectedYear] = useState(now.getFullYear())
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth())
 
   const insets = useSafeAreaInsets()
   const previousMonth = getPreviousMonth(selectedYear, selectedMonth)
 
-  const { data: expenses = [], isLoading } = useGetExpensesByMonth(selectedYear, selectedMonth)
+  const { data, isLoading } = useGetExpensesByMonth(selectedYear, selectedMonth)
   const { data: previousMonthTotal } = useGetMonthTotal(previousMonth.year, previousMonth.month)
 
   const isCurrentMonth = selectedYear === now.getFullYear() && selectedMonth === now.getMonth()
-
-  const groupedItems = useMemo(() => groupExpensesByDate(expenses), [expenses])
-
-  const totalSpent = useMemo(() => expenses.reduce((sum, e) => sum + e.amount, 0), [expenses])
-
-  const uniqueDays = useMemo(() => {
-    const days = new Set(
-      groupedItems.filter((item) => item.type === 'header').map((item) => item.type === 'header' && item.date)
-    )
-    return days.size
-  }, [groupedItems])
 
   const handleMonthSelect = useCallback((year: number, month: number) => {
     setSelectedYear(year)
@@ -67,14 +57,14 @@ export function ExpenseHistoryScreen() {
   const ListHeader = useCallback(
     () => (
       <ExpenseSummaryCard
-        totalSpent={totalSpent}
-        expenseCount={expenses.length}
-        dayCount={uniqueDays}
-        previousMonthTotal={previousMonthTotal}
+        totalSpent={data?.totalAmount ?? 0}
+        expenseCount={data?.count ?? 0}
+        previousMonthTotal={previousMonthTotal?.total}
+        previousMonthCount={previousMonthTotal?.count}
         isCurrentMonth={isCurrentMonth}
       />
     ),
-    [totalSpent, expenses.length, uniqueDays, previousMonthTotal, isCurrentMonth]
+    [data, previousMonthTotal, isCurrentMonth]
   )
 
   if (isLoading) {
@@ -92,7 +82,7 @@ export function ExpenseHistoryScreen() {
     )
   }
 
-  if (expenses.length === 0) {
+  if (!data || data.count === 0) {
     return (
       <View style={styles.container}>
         <MonthPicker
@@ -133,7 +123,7 @@ export function ExpenseHistoryScreen() {
         onMonthSelect={handleMonthSelect}
       />
       <FlashList
-        data={groupedItems}
+        data={data.groupedItems}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         getItemType={getItemType}
