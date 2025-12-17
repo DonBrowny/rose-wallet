@@ -28,9 +28,9 @@ describe('BudgetInfoRows', () => {
     expect(getByText('₹5,000')).toBeTruthy()
   })
 
-  it('navigates to analytics when Monthly Expense row is pressed', () => {
-    const push = jest.fn()
-    ;(useRouter as unknown as jest.Mock).mockReturnValue({ push })
+  it('navigates to expense history when Monthly Expense row is pressed', () => {
+    const navigate = jest.fn()
+    ;(useRouter as unknown as jest.Mock).mockReturnValue({ navigate })
 
     const { getByText } = render(
       <BudgetInfoRows
@@ -41,7 +41,7 @@ describe('BudgetInfoRows', () => {
     )
 
     fireEvent.press(getByText('Monthly Expense'))
-    expect(push).toHaveBeenCalledWith('/analytics')
+    expect(navigate).toHaveBeenCalledWith('/analytics/expense-history')
   })
 
   it('opens the budget edit modal when Monthly Budget row is pressed', () => {

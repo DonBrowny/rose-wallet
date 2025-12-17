@@ -26,6 +26,15 @@ export const styles = StyleSheet.create((theme) => ({
     textAlign: 'center',
     marginBottom: theme.space(4),
   },
+  historyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.space(2),
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: theme.space(5),
+    paddingVertical: theme.space(3),
+    borderRadius: 25,
+  },
   comingSoonButton: {
     backgroundColor: theme.colors.grey4,
     paddingHorizontal: theme.space(6),
