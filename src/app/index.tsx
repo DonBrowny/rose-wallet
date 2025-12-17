@@ -10,7 +10,7 @@ export default function IndexRedirect() {
     return <Redirect href='/onboarding' />
   }
   if (!hasSeenGettingStarted) {
-    return <Redirect href='/(shared)/getting-started' />
+    return <Redirect href='/getting-started' />
   }
   return <Redirect href='/(tabs)' />
 }

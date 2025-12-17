@@ -8,6 +8,7 @@ export default function SharedLayout() {
   const patternsOptions = useScreenHeaderOptions({ title: 'SMS Patterns' })
   const patternReviewOptions = useScreenHeaderOptions({ title: 'Pattern Review', headerShown: false })
   const gettingStartedOptions = useScreenHeaderOptions({ title: 'Getting Started', headerShown: false })
+  const expenseHistoryOptions = useScreenHeaderOptions({ title: 'Expense History' })
 
   return (
     <Stack screenOptions={headerOptions}>
@@ -26,6 +27,10 @@ export default function SharedLayout() {
       <Stack.Screen
         name='getting-started'
         options={gettingStartedOptions}
+      />
+      <Stack.Screen
+        name='expense-history'
+        options={expenseHistoryOptions}
       />
     </Stack>
   )

@@ -32,7 +32,7 @@ export function AnalyticsScreen() {
           We&apos;re growing powerful analytics features to help you understand your spending patterns
         </Text>
         <Link
-          href='/analytics/expense-history'
+          href='/expense-history'
           asChild
         >
           <Pressable style={styles.historyButton}>

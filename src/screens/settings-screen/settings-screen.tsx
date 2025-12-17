@@ -34,7 +34,7 @@ export const SettingsScreen = () => {
           <Pressable
             key={item.id}
             onPress={() => {
-              router.push(item.href as any)
+              router.navigate(item.href as any)
             }}
           >
             <SettingsItem
