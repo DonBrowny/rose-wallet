@@ -94,8 +94,3 @@ export async function fetchPatterns(options?: FetchPatternsOptions): Promise<Dis
     status: (row.status as PatternStatus) ?? PatternStatus.NeedsReview,
   }))
 }
-
-export async function fetchReviewedPatternsCount(options?: FetchPatternsOptions): Promise<number> {
-  const allPatterns = await fetchPatterns(options)
-  return allPatterns.filter((p) => p.status !== PatternStatus.NeedsReview).length
-}

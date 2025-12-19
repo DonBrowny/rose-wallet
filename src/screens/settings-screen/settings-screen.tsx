@@ -52,7 +52,7 @@ export const SettingsScreen = () => {
           }}
         >
           <SettingsItem
-            header={'Shown Onboarding'}
+            header={'Show Onboarding'}
             subHeader={'Show the onboarding screens again'}
           />
         </Pressable>
@@ -64,7 +64,7 @@ export const SettingsScreen = () => {
           }}
         >
           <SettingsItem
-            header={'Shown Tour'}
+            header={'Show Tour'}
             subHeader={'Show the app tour again'}
           />
         </Pressable>

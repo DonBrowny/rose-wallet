@@ -41,6 +41,11 @@ export function GettingStartedScreen() {
   const [showCongratulations, setShowCongratulations] = useState(false)
   const hasShownCongratulations = useRef(false)
 
+  const skipPressHandler = () => {
+    storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN, 'true')
+    router.replace('/(tabs)')
+  }
+
   useEffect(() => {
     if (allTasksCompleted && !hasShownCongratulations.current) {
       hasShownCongratulations.current = true
@@ -184,6 +189,13 @@ export function GettingStartedScreen() {
           title={expenseTourDone ? 'View again' : 'Start tour'}
           onPress={() => router.push('/(shared)/add-expense')}
           disabled={!canStartExpenseTour}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button
+          containerStyle={styles.button}
+          title='Skip tour'
+          onPress={skipPressHandler}
         />
       </View>
     </SafeAreaView>
