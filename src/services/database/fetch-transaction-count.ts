@@ -1,14 +1,9 @@
 import { transactions } from '@/db/schema'
+import type { FilterOptions } from '@/types/filters'
 import { count, gte } from 'drizzle-orm'
 import { getDrizzleDb } from './db'
 
-interface FetchTransactionCountOptions {
-  filter?: {
-    startDate?: Date
-  }
-}
-
-export async function fetchTransactionCount(options?: FetchTransactionCountOptions): Promise<number> {
+export async function fetchTransactionCount(options?: FilterOptions): Promise<number> {
   const db = getDrizzleDb()
 
   const query = db.select({ count: count() }).from(transactions)

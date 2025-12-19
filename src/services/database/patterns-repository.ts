@@ -1,6 +1,6 @@
 import { patterns, patternSmsGroup } from '@/db/schema'
+import { FilterOptions } from '@/types/filters'
 import { PatternStatus, PatternType } from '@/types/patterns/enums'
-import { FetchPatternsOptions } from '@/types/patterns/patterns'
 import type { DistinctPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
 import { and, eq, gte, sql } from 'drizzle-orm'
@@ -67,7 +67,7 @@ export async function ensurePatternSmsGroupLink(patternId: number, smsId: number
   }
 }
 
-export async function fetchPatterns(options?: FetchPatternsOptions): Promise<DistinctPattern[]> {
+export async function fetchPatterns(options?: FilterOptions): Promise<DistinctPattern[]> {
   const db = getDrizzleDb()
 
   const query = db
