@@ -1,4 +1,4 @@
-import { PillStatus, StatusPill } from '@/components/status-pill'
+import { PillStatus, StatusPill } from '@/components/status-pill/status-pill'
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
 import { View } from 'react-native'

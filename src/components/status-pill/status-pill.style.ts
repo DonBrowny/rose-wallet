@@ -3,15 +3,12 @@ import { StyleSheet } from 'react-native-unistyles'
 export const styles = StyleSheet.create((theme) => ({
   container: {
     flexShrink: 0,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: theme.space(2),
+    paddingVertical: theme.space(1),
     borderRadius: 999,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-  },
-  text: {
-    color: '#FFFFFF',
+    gap: theme.gap(1),
   },
   pending: {
     backgroundColor: theme.colors.warning,
@@ -21,5 +18,8 @@ export const styles = StyleSheet.create((theme) => ({
   },
   locked: {
     backgroundColor: theme.colors.grey3,
+  },
+  rejected: {
+    backgroundColor: theme.colors.error,
   },
 }))

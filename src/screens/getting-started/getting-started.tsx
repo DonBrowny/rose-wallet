@@ -1,5 +1,5 @@
-import { PillStatus } from '@/components/status-pill'
-import { TourCard } from '@/components/tour-card'
+import { PillStatus } from '@/components/status-pill/status-pill'
+import { TourCard } from '@/components/tour-card/tour-card'
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
 import { useGetPatterns } from '@/hooks/use-get-patterns'
