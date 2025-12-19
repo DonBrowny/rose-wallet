@@ -1,7 +1,11 @@
 import { StyleSheet } from 'react-native-unistyles'
 
 export const styles = StyleSheet.create((theme) => ({
+  scrollView: {
+    flex: 1,
+  },
   container: {
+    flexGrow: 1,
     gap: theme.gap(2),
     alignItems: 'center',
     justifyContent: 'center',
@@ -15,27 +19,14 @@ export const styles = StyleSheet.create((theme) => ({
   },
   itemRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: theme.gap(1),
   },
   bulletText: {
+    flex: 1,
     textAlign: 'left',
   },
   linkText: {
     textDecorationLine: 'underline',
-  },
-  overlay: {
-    borderRadius: 16,
-    padding: 0,
-    width: '90%',
-    maxWidth: 360,
-  },
-  overlayContent: {
-    padding: theme.space(5),
-    gap: theme.gap(2),
-    maxHeight: '80%',
-  },
-  overlayTitle: {
-    textAlign: 'center',
   },
 }))

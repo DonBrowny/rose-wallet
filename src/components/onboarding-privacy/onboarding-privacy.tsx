@@ -1,27 +1,39 @@
-import { Button } from '@/components/ui/button/button'
-import { Overlay } from '@/components/ui/overlay/overlay'
+import { SmsInfoOverlay } from '@/components/sms-info-overlay/sms-info-overlay'
 import { Text } from '@/components/ui/text/text'
 import { Image } from 'expo-image'
 import { CheckCircle2 } from 'lucide-react-native'
 import React, { useState } from 'react'
-import { Linking, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './onboarding-privacy.style'
+
+const ICON_SIZE = 18
+
+const PRIVACY_POINTS = [
+  'We do not collect, store, or sell any personal data.',
+  'Your saved links are stored only on your device.',
+  'We do not track your activity or share your data with third parties.',
+]
 
 export function OnboardingPrivacy() {
   const { theme } = useUnistyles()
   const [isSmsInfoVisible, setIsSmsInfoVisible] = useState(false)
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
       <Image
         source={require('@/assets/images/privacy.png')}
         style={styles.imageContainer}
         contentFit='contain'
+        accessibilityLabel='Privacy and security illustration'
       />
 
       <Text
-        variant='h3'
+        variant='h4'
         color='primary'
       >
         Privacy & Data Security
@@ -31,56 +43,33 @@ export function OnboardingPrivacy() {
         variant='pMd'
         color='primary'
       >
-        We take privacy seriously. Rose Wallet is designed to ensure that your data remains in your control. Here’s how
+        We take privacy seriously. Rose Wallet is designed to ensure that your data remains in your control. Here is how
         we handle your information:
       </Text>
 
       <View style={styles.list}>
-        <View style={styles.itemRow}>
-          <CheckCircle2
-            size={18}
-            color={theme.colors.primary}
-          />
-          <Text
-            variant='pMd'
-            color='muted'
-            style={styles.bulletText}
+        {PRIVACY_POINTS.map((point) => (
+          <View
+            key={point}
+            style={styles.itemRow}
           >
-            We do not collect, store, or sell any personal data.
-          </Text>
-        </View>
+            <CheckCircle2
+              size={ICON_SIZE}
+              color={theme.colors.primary}
+            />
+            <Text
+              variant='pMd'
+              color='muted'
+              style={styles.bulletText}
+            >
+              {point}
+            </Text>
+          </View>
+        ))}
 
         <View style={styles.itemRow}>
           <CheckCircle2
-            size={18}
-            color={theme.colors.primary}
-          />
-          <Text
-            variant='pMd'
-            color='muted'
-            style={styles.bulletText}
-          >
-            Your saved links are stored only on your device.
-          </Text>
-        </View>
-
-        <View style={styles.itemRow}>
-          <CheckCircle2
-            size={18}
-            color={theme.colors.primary}
-          />
-          <Text
-            variant='pMd'
-            color='muted'
-            style={styles.bulletText}
-          >
-            We do not track your activity or share your data with third parties.
-          </Text>
-        </View>
-
-        <View style={styles.itemRow}>
-          <CheckCircle2
-            size={18}
+            size={ICON_SIZE}
             color={theme.colors.primary}
           />
           <Text
@@ -91,6 +80,7 @@ export function OnboardingPrivacy() {
             Reads SMS only after you allow permission -{' '}
             <Text
               color='primary'
+              accessibilityRole='link'
               onPress={() => setIsSmsInfoVisible(true)}
               style={styles.linkText}
             >
@@ -100,73 +90,10 @@ export function OnboardingPrivacy() {
         </View>
       </View>
 
-      <Overlay
-        testID='sms-permission-info'
+      <SmsInfoOverlay
         isVisible={isSmsInfoVisible}
-        onBackdropPress={() => setIsSmsInfoVisible(false)}
-        overlayStyle={styles.overlay}
-      >
-        <View style={styles.overlayContent}>
-          <Text
-            variant='h4'
-            style={styles.overlayTitle}
-          >
-            Why we need SMS access
-          </Text>
-          <Text
-            variant='pMd'
-            color='muted'
-          >
-            We only process SMS from verified financial senders (banks, cards, UPI) and ignore OTPs, promotions, and
-            personal chats.
-          </Text>
-          <Text
-            variant='pMd'
-            color='muted'
-          >
-            The algorithm is designed to extract the data from the sms and generate patterns for data extraction. Users
-            can confirm or correct the data if needed.
-          </Text>
-          <Text
-            variant='pMd'
-            color='muted'
-          >
-            The data we extract from the sms are the bank name, amount, date and merchant name. All the extraction
-            happens on your device.
-          </Text>
-          <Text
-            variant='pMd'
-            color='muted'
-          >
-            Nothing leaves your device. We store only derived transaction records, not full SMS content.
-          </Text>
-          <Text
-            variant='pMd'
-            color='muted'
-          >
-            You can revoke SMS permission anytime in your device settings.
-          </Text>
-          <Text
-            variant='pMd'
-            color='muted'
-          >
-            If you have any questions about this privacy policy, feel free to contact us at{' '}
-            <Text
-              color='primary'
-              style={styles.linkText}
-              accessibilityRole='link'
-              onPress={() => Linking.openURL('mailto:kishore13ask@gmail.com')}
-            >
-              kishore13ask@gmail.com
-            </Text>
-            .
-          </Text>
-          <Button
-            title='Got it'
-            onPress={() => setIsSmsInfoVisible(false)}
-          />
-        </View>
-      </Overlay>
-    </View>
+        onClose={() => setIsSmsInfoVisible(false)}
+      />
+    </ScrollView>
   )
 }

@@ -134,7 +134,7 @@ describe('GettingStartedScreen', () => {
 
     fireEvent.press(getByText('Skip tour'))
 
-    expect(mockStorage.set).toHaveBeenCalledWith('app.getting_started_seen', 'true')
+    expect(mockStorage.set).toHaveBeenCalledWith('app.getting_started_seen', true)
     expect(mockRouter.replace).toHaveBeenCalledWith('/(tabs)')
   })
 
