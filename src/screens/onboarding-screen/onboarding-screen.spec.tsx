@@ -16,7 +16,7 @@ jest.mock('rose-sms-reader', () => ({
 
 // Mock MMKV storage module
 jest.mock('@/utils/mmkv/storage', () => ({
-  storage: { set: jest.fn(), getString: jest.fn(() => undefined) },
+  storage: { set: jest.fn(), getBoolean: jest.fn(() => undefined) },
 }))
 jest.spyOn(smsPermission.SMSPermissionService, 'requestPermissionWithExplanation').mockResolvedValue({
   granted: true,
