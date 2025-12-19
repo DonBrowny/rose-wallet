@@ -1,3 +1,5 @@
+import { PillStatus } from '@/components/status-pill'
+import { TourCard } from '@/components/tour-card'
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
 import { useGetPatterns } from '@/hooks/use-get-patterns'
@@ -7,11 +9,9 @@ import { PatternStatus } from '@/types/patterns/enums'
 import { storage } from '@/utils/mmkv/storage'
 import { useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
-import { CheckCircle2, Clock, Lock } from 'lucide-react-native'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './getting-started.style'
 
 const PATTERN_TOUR_THRESHOLD = 2
@@ -19,8 +19,6 @@ const EXPENSE_TOUR_THRESHOLD = 2
 
 export function GettingStartedScreen() {
   const router = useRouter()
-  const { theme } = useUnistyles()
-
   const lastSeenDate = storage.getString(MMKV_KEYS.APP.GETTING_STARTED_SEEN_AT)
 
   const { data: patterns, isLoading: isPatternsLoading } = useGetPatterns({
@@ -32,8 +30,8 @@ export function GettingStartedScreen() {
     if (!patterns) return 0
     return patterns.filter((p) => p.status !== PatternStatus.NeedsReview).length
   }, [patterns])
-  const patternTourDone = reviewedCount >= PATTERN_TOUR_THRESHOLD
 
+  const patternTourDone = reviewedCount >= PATTERN_TOUR_THRESHOLD
   const canStartExpenseTour = patternTourDone
   const expenseTourDone = transactionCount >= EXPENSE_TOUR_THRESHOLD
   const allTasksCompleted = patternTourDone && expenseTourDone
@@ -41,8 +39,8 @@ export function GettingStartedScreen() {
   const [showCongratulations, setShowCongratulations] = useState(false)
   const hasShownCongratulations = useRef(false)
 
-  const skipPressHandler = () => {
-    storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN, 'true')
+  const completeOnboarding = () => {
+    storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN, true)
     router.replace('/(tabs)')
   }
 
@@ -53,9 +51,21 @@ export function GettingStartedScreen() {
     }
   }, [allTasksCompleted])
 
-  function handleAnimationFinish() {
-    storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN, 'true')
-    router.replace('/(tabs)')
+  const getPatternHint = () => {
+    if (isPatternsLoading || patternTourDone) return undefined
+    return `Review at least ${PATTERN_TOUR_THRESHOLD} patterns: Currently you have ${reviewedCount}/${PATTERN_TOUR_THRESHOLD} reviewed.`
+  }
+
+  const getExpenseHint = () => {
+    if (!canStartExpenseTour) return 'Finish the pattern review tour to unlock.'
+    if (isTransactionsLoading || expenseTourDone) return undefined
+    return `Add at least ${EXPENSE_TOUR_THRESHOLD} transactions: Currently you have ${transactionCount}/${EXPENSE_TOUR_THRESHOLD} added.`
+  }
+
+  const getExpenseStatus = (): PillStatus => {
+    if (expenseTourDone) return 'completed'
+    if (canStartExpenseTour) return 'pending'
+    return 'locked'
   }
 
   if (showCongratulations) {
@@ -67,7 +77,7 @@ export function GettingStartedScreen() {
           loop={false}
           style={styles.lottieAnimation}
           resizeMode='contain'
-          onAnimationFinish={handleAnimationFinish}
+          onAnimationFinish={completeOnboarding}
         />
         <Text
           variant='h3'
@@ -96,106 +106,31 @@ export function GettingStartedScreen() {
         Two short tours to master your finances.
       </Text>
 
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text variant='pLgBold'>Learn to review a pattern</Text>
-          <View style={[styles.pill, patternTourDone ? styles.pillDone : styles.pillPending]}>
-            {patternTourDone ? (
-              <CheckCircle2
-                size={14}
-                color={theme.colors.background}
-              />
-            ) : (
-              <Clock
-                size={14}
-                color={theme.colors.background}
-              />
-            )}
-            <Text
-              variant='pMd'
-              style={styles.pillText}
-            >
-              {patternTourDone ? 'Completed' : 'Not started'}
-            </Text>
-          </View>
-        </View>
-        <Text variant='pMd'>Approve and categorize bank SMS quickly.</Text>
-        <Button
-          title={patternTourDone ? 'View again' : 'Start tour'}
-          onPress={() => router.push('/(shared)/patterns')}
-          containerStyle={styles.button}
-        />
-        {!isPatternsLoading && reviewedCount < PATTERN_TOUR_THRESHOLD ? (
-          <Text
-            variant='pSm'
-            color='muted'
-          >
-            Review at least {PATTERN_TOUR_THRESHOLD} patterns: Currently you have {reviewedCount}/
-            {PATTERN_TOUR_THRESHOLD} reviewed.
-          </Text>
-        ) : null}
-      </View>
+      <TourCard
+        title='Learn to review a pattern'
+        description='Approve and categorize bank SMS quickly.'
+        status={patternTourDone ? 'completed' : 'pending'}
+        buttonTitle={patternTourDone ? 'View again' : 'Start tour'}
+        onPress={() => router.push('/(shared)/patterns')}
+        hint={getPatternHint()}
+      />
 
-      <View style={[styles.card, !canStartExpenseTour && styles.cardLocked]}>
-        <View style={styles.cardHeader}>
-          <Text variant='pLgBold'>Learn to add an expense</Text>
-          <View
-            style={[
-              styles.pill,
-              expenseTourDone ? styles.pillDone : canStartExpenseTour ? styles.pillPending : styles.pillLocked,
-            ]}
-          >
-            {expenseTourDone ? (
-              <CheckCircle2
-                size={14}
-                color={theme.colors.background}
-              />
-            ) : canStartExpenseTour ? (
-              <Clock
-                size={14}
-                color={theme.colors.background}
-              />
-            ) : (
-              <Lock
-                size={14}
-                color={theme.colors.background}
-              />
-            )}
-            <Text style={styles.pillText}>
-              {expenseTourDone ? 'Completed' : canStartExpenseTour ? 'Not started' : 'Locked'}
-            </Text>
-          </View>
-        </View>
-        <Text variant='pMd'>Add a manual expense in a few taps.</Text>
-        {!canStartExpenseTour && (
-          <Text
-            variant='pSm'
-            color='muted'
-          >
-            Finish the pattern review tour to unlock.
-          </Text>
-        )}
-        {canStartExpenseTour && !isTransactionsLoading && transactionCount < EXPENSE_TOUR_THRESHOLD ? (
-          <Text
-            variant='pSm'
-            color='muted'
-          >
-            Add at least {EXPENSE_TOUR_THRESHOLD} transactions: Currently you have {transactionCount}/
-            {EXPENSE_TOUR_THRESHOLD} added.
-          </Text>
-        ) : null}
-        <Button
-          containerStyle={styles.button}
-          title={expenseTourDone ? 'View again' : 'Start tour'}
-          onPress={() => router.push('/(shared)/add-expense')}
-          disabled={!canStartExpenseTour}
-        />
-      </View>
+      <TourCard
+        title='Learn to add an expense'
+        description='Add a manual expense in a few taps.'
+        status={getExpenseStatus()}
+        buttonTitle={expenseTourDone ? 'View again' : 'Start tour'}
+        onPress={() => router.push('/(shared)/add-expense')}
+        disabled={!canStartExpenseTour}
+        locked={!canStartExpenseTour}
+        hint={getExpenseHint()}
+      />
+
       <View style={styles.buttonContainer}>
         <Button
-          containerStyle={styles.button}
+          containerStyle={styles.skipButton}
           title='Skip tour'
-          onPress={skipPressHandler}
+          onPress={completeOnboarding}
         />
       </View>
     </SafeAreaView>

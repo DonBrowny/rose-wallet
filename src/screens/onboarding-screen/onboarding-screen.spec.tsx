@@ -74,7 +74,7 @@ describe('OnboardingScreen', () => {
       fireEvent.press(getByText('Finish'))
     })
 
-    expect(storage.set).toHaveBeenCalledWith(MMKV_KEYS.APP.ONBOARDING_COMPLETED, 'true')
+    expect(storage.set).toHaveBeenCalledWith(MMKV_KEYS.APP.ONBOARDING_COMPLETED, true)
     expect(replaceMock).toHaveBeenCalledWith('/(shared)/getting-started')
   })
 })

@@ -47,7 +47,7 @@ export const SettingsScreen = () => {
         ))}
         <Pressable
           onPress={() => {
-            storage.set(MMKV_KEYS.APP.ONBOARDING_COMPLETED, 'false')
+            storage.set(MMKV_KEYS.APP.ONBOARDING_COMPLETED, false)
             router.replace('/onboarding')
           }}
         >
@@ -58,8 +58,10 @@ export const SettingsScreen = () => {
         </Pressable>
         <Pressable
           onPress={() => {
-            storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN, 'false')
+            storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN, false)
             storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN_AT, Date.now().toString())
+            storage.set(MMKV_KEYS.PATTERNS.PATTERN_GUIDE_SEEN, false)
+            storage.set(MMKV_KEYS.PATTERNS.REVIEW_GUIDE_SEEN, false)
             router.replace('/getting-started')
           }}
         >
