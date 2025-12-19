@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
-import { useLivePatterns } from '@/hooks/use-live-patterns'
-import { useLiveTransactionCount } from '@/hooks/use-live-transaction-count'
+import { useGetPatterns } from '@/hooks/use-get-patterns'
+import { useGetTransactionCount } from '@/hooks/use-get-transaction-count'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { PatternStatus } from '@/types/patterns/enums'
 import { storage } from '@/utils/mmkv/storage'
@@ -21,8 +21,12 @@ export function GettingStartedScreen() {
   const router = useRouter()
   const { theme } = useUnistyles()
 
-  const { data: patterns, isLoading: isPatternsLoading } = useLivePatterns()
-  const { count: transactionCount, isLoading: isTransactionsLoading } = useLiveTransactionCount()
+  const lastSeenDate = storage.getString(MMKV_KEYS.APP.GETTING_STARTED_SEEN_AT)
+
+  const { data: patterns, isLoading: isPatternsLoading } = useGetPatterns({
+    filter: { startDate: lastSeenDate ? new Date(parseInt(lastSeenDate, 10)) : undefined },
+  })
+  const { data: transactionCount = 0, isLoading: isTransactionsLoading } = useGetTransactionCount()
 
   const reviewedCount = useMemo(() => {
     if (!patterns) return 0
@@ -36,6 +40,11 @@ export function GettingStartedScreen() {
 
   const [showCongratulations, setShowCongratulations] = useState(false)
   const hasShownCongratulations = useRef(false)
+
+  const skipPressHandler = () => {
+    storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN, 'true')
+    router.replace('/(tabs)')
+  }
 
   useEffect(() => {
     if (allTasksCompleted && !hasShownCongratulations.current) {
@@ -180,6 +189,13 @@ export function GettingStartedScreen() {
           title={expenseTourDone ? 'View again' : 'Start tour'}
           onPress={() => router.push('/(shared)/add-expense')}
           disabled={!canStartExpenseTour}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button
+          containerStyle={styles.button}
+          title='Skip tour'
+          onPress={skipPressHandler}
         />
       </View>
     </SafeAreaView>

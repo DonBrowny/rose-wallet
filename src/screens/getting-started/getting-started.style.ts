@@ -57,4 +57,8 @@ export const styles = StyleSheet.create((theme) => ({
   congratulationsText: {
     textAlign: 'center',
   },
+  buttonContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
 }))

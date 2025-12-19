@@ -5,3 +5,18 @@ export interface Expense {
   categoryName: string
   receivedAt: Date
 }
+
+export interface ExpenseMonthStats {
+  total: number
+  count: number
+}
+
+export interface InsertTransactionInput {
+  smsId: number
+  amount: number
+  currency: string
+  type: 'debit' | 'credit'
+  description?: string | null
+  categoryId: number
+  merchantId: number
+}

@@ -1,5 +1,7 @@
 import { SettingsItem } from '@/components/settings-item/settings-item'
 import { Text } from '@/components/ui/text/text'
+import { MMKV_KEYS } from '@/types/mmkv-keys'
+import { storage } from '@/utils/mmkv/storage'
 import { router } from 'expo-router'
 import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -43,6 +45,29 @@ export const SettingsScreen = () => {
             />
           </Pressable>
         ))}
+        <Pressable
+          onPress={() => {
+            storage.set(MMKV_KEYS.APP.ONBOARDING_COMPLETED, 'false')
+            router.replace('/onboarding')
+          }}
+        >
+          <SettingsItem
+            header={'Show Onboarding'}
+            subHeader={'Show the onboarding screens again'}
+          />
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN, 'false')
+            storage.set(MMKV_KEYS.APP.GETTING_STARTED_SEEN_AT, Date.now().toString())
+            router.replace('/getting-started')
+          }}
+        >
+          <SettingsItem
+            header={'Show Tour'}
+            subHeader={'Show the app tour again'}
+          />
+        </Pressable>
       </View>
     </SafeAreaView>
   )

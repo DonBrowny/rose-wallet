@@ -1,4 +1,4 @@
-import { fetchRecentExpenses } from '@/services/database/fetch-recent-expenses'
+import { fetchRecentExpenses } from '@/services/database/transactions-repository'
 import type { Expense } from '@/types/expense'
 import { useQuery } from '@tanstack/react-query'
 

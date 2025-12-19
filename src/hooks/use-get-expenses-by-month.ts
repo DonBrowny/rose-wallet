@@ -1,5 +1,5 @@
-import { fetchExpensesByMonth, fetchMonthTotal, MonthStats } from '@/services/database/fetch-expenses-by-month'
-import type { Expense } from '@/types/expense'
+import { fetchExpensesByMonth, fetchMonthTotal } from '@/services/database/transactions-repository'
+import type { Expense, ExpenseMonthStats } from '@/types/expense'
 import { GroupedExpenseItem, groupExpensesByDate } from '@/utils/expense/group-expenses-by-date'
 import { useQuery } from '@tanstack/react-query'
 
@@ -29,7 +29,7 @@ export function useGetExpensesByMonth(year: number, month: number) {
 }
 
 export function useGetMonthTotal(year: number, month: number) {
-  return useQuery<MonthStats>({
+  return useQuery<ExpenseMonthStats>({
     queryKey: [...MONTH_TOTAL_QUERY_KEY, year, month],
     queryFn: () => fetchMonthTotal(year, month),
   })
