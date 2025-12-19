@@ -1,6 +1,6 @@
 import { usePathname } from 'expo-router'
 
-export const hiddenRoutes = ['/add-expense', ' /patterns', '/settings/about']
+export const hiddenRoutes = ['/add-expense', '/patterns', '/settings/about']
 
 export function useTabBarVisibility() {
   const pathname = usePathname()
