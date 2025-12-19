@@ -2,6 +2,7 @@ export const MMKV_KEYS = {
   APP: {
     ONBOARDING_COMPLETED: 'app.onboarding_completed',
     GETTING_STARTED_SEEN: 'app.getting_started_seen',
+    GETTING_STARTED_SEEN_AT: 'app.getting_started_seen_at',
   },
   BUDGET: {
     MONTHLY_BUDGET: 'budget.monthly_budget',
