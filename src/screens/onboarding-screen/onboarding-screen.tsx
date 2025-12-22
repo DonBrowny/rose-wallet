@@ -2,6 +2,7 @@ import {
   OnboardingBudgetSetup,
   OnboardingBudgetSetupRef,
 } from '@/components/onboarding-budget-setup/onboarding-budget-setup'
+import { OnboardingCategories, OnboardingCategoriesRef } from '@/components/onboarding-categories/onboarding-categories'
 import { OnboardingIntro } from '@/components/onboarding-intro/onboarding-intro'
 import { OnboardingPrivacy } from '@/components/onboarding-privacy/onboarding-privacy'
 import { Button } from '@/components/ui/button/button'
@@ -19,16 +20,19 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './onboarding-screen.styles'
 
+const TOTAL_STEPS = 4
+
 export function OnboardingScreen() {
   const router = useRouter()
   const { theme } = useUnistyles()
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState<'next' | 'back'>('next')
+  const categoriesRef = useRef<OnboardingCategoriesRef>(null)
   const budgetRef = useRef<OnboardingBudgetSetupRef>(null)
 
   const goNext = () => {
     setStep((s) => {
-      const target = Math.min(2, s + 1)
+      const target = Math.min(TOTAL_STEPS - 1, s + 1)
       setDirection('next')
       return target
     })
@@ -44,11 +48,15 @@ export function OnboardingScreen() {
 
   const handlePermissionRequest = async () => {
     await SMSPermissionService.requestPermissionWithExplanation()
-    setStep((s) => {
-      const target = Math.min(2, s + 1)
-      setDirection('next')
-      return target
-    })
+    goNext()
+  }
+
+  const handleCategoriesNext = async () => {
+    const saved = await categoriesRef.current?.save()
+    if (saved === false) {
+      return
+    }
+    goNext()
   }
 
   const handleFinish = () => {
@@ -70,7 +78,7 @@ export function OnboardingScreen() {
       <SafeAreaView style={styles.container}>
         <ProgressStepper
           currentIndex={step}
-          total={3}
+          total={TOTAL_STEPS}
           style={styles.stepper}
         />
 
@@ -82,7 +90,8 @@ export function OnboardingScreen() {
         >
           {step === 0 && <OnboardingIntro />}
           {step === 1 && <OnboardingPrivacy />}
-          {step === 2 && <OnboardingBudgetSetup ref={budgetRef} />}
+          {step === 2 && <OnboardingCategories ref={categoriesRef} />}
+          {step === 3 && <OnboardingBudgetSetup ref={budgetRef} />}
         </Animated.View>
 
         {step === 0 ? (
@@ -109,10 +118,10 @@ export function OnboardingScreen() {
                 }
                 containerStyle={styles.footerButton}
               />
-              {step < 2 ? (
+              {step < TOTAL_STEPS - 1 ? (
                 <Button
                   title='Next'
-                  onPress={step === 1 ? handlePermissionRequest : goNext}
+                  onPress={step === 1 ? handlePermissionRequest : step === 2 ? handleCategoriesNext : goNext}
                   rightIcon={
                     <ArrowRight
                       size={18}

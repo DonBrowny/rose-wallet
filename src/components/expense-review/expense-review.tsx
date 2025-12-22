@@ -1,5 +1,7 @@
+import { QuickCategoryChips } from '@/components/quick-category-chips/quick-category-chips'
 import { Input } from '@/components/ui/input/input'
 import { Text } from '@/components/ui/text/text'
+import { Category } from '@/db/schema'
 import type { Transaction } from '@/types/sms/transaction'
 import { formatDateTime } from '@/utils/date/format-date-time'
 import { formatCurrency } from '@/utils/formatter/format-currency'
@@ -18,6 +20,9 @@ interface Props {
   onChangeAmount: (text: string) => void
   onChangeMerchant: (text: string) => void
   onChangeCategory: (text: string) => void
+  favoriteCategories?: Category[]
+  isFavoriteCategoriesLoading?: boolean
+  onEditCategories?: () => void
 }
 
 export function ExpenseReview({
@@ -29,6 +34,9 @@ export function ExpenseReview({
   onChangeAmount,
   onChangeMerchant,
   onChangeCategory,
+  favoriteCategories = [],
+  isFavoriteCategoriesLoading = false,
+  onEditCategories,
 }: Props) {
   const { theme } = useUnistyles()
 
@@ -97,6 +105,15 @@ export function ExpenseReview({
             />
           }
         />
+        {onEditCategories && (
+          <QuickCategoryChips
+            categories={favoriteCategories}
+            selectedCategory={categoryValue}
+            onSelectCategory={onChangeCategory}
+            onEditPress={onEditCategories}
+            isLoading={isFavoriteCategoriesLoading}
+          />
+        )}
         <View style={styles.inputRow}>
           <Input
             label='Category'
