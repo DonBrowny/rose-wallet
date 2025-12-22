@@ -16,6 +16,7 @@ export const categories = sqliteTable('categories', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
   parentId: integer('parent_id').references((): AnySQLiteColumn => categories.id),
+  isFavorite: integer('is_favorite', { mode: 'boolean' }).notNull().default(false),
 })
 
 export const merchantCategoryGroups = sqliteTable('merchant_category_groups', {

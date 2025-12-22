@@ -1,11 +1,15 @@
+import { EditQuickCategories } from '@/components/edit-quick-categories/edit-quick-categories'
 import { ExpenseReview } from '@/components/expense-review/expense-review'
 import { Loading } from '@/components/loading/loading'
 import { SuccessState } from '@/components/success-state/success-state'
 import { IconButton } from '@/components/ui/icon-button/icon-button'
 import { Text } from '@/components/ui/text/text'
+import { DEFAULT_CATEGORIES } from '@/constants/categories'
+import { useGetFavoriteCategories, useSetFavoriteCategories } from '@/hooks/use-categories'
 import { useRefetchOnFocus } from '@/hooks/use-refetch-on-focus'
 import { useSaveExpense } from '@/hooks/use-save-expense'
 import { useSMSTransactions } from '@/hooks/use-sms-transactions'
+import { getCategoryByMerchantName } from '@/services/database/categories-repository'
 import { updateLastReadSmsTimestamp } from '@/utils/mmkv/storage'
 import { useRouter } from 'expo-router'
 import { Check, MessageSquareText, X } from 'lucide-react-native'
@@ -19,26 +23,42 @@ export default function AddExpenseScreen() {
   const { theme } = useUnistyles()
   const router = useRouter()
   const { data: transactions = [], isLoading, isFetching, errorMessage, refetch } = useSMSTransactions()
+  const { data: favoriteCategories = [], isLoading: isFavoriteCategoriesLoading } = useGetFavoriteCategories()
+  const { mutate: saveFavoriteCategories } = useSetFavoriteCategories()
   const { mutate: saveExpense, isPending: isSaving } = useSaveExpense()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [amountValue, setAmountValue] = useState('')
   const [merchantValue, setMerchantValue] = useState('')
-
   const [categoryValue, setCategoryValue] = useState('')
   const [isCompleted, setIsCompleted] = useState(false)
+  const [isEditCategoriesVisible, setIsEditCategoriesVisible] = useState(false)
 
   useRefetchOnFocus(refetch)
 
   const isLastItem = currentIndex >= transactions.length - 1
 
-  // Prefill inputs when the current item changes
+  // Prefill inputs when the current item changes (including auto-fill category)
   useEffect(() => {
     const tx = transactions[currentIndex]
     if (!tx) return
     setAmountValue(String(tx.amount ?? ''))
     setMerchantValue(tx.merchant ?? '')
-    setCategoryValue('')
+
+    // Auto-fill category based on merchant-category mapping
+    async function autoFillCategory() {
+      if (tx.merchant) {
+        const category = await getCategoryByMerchantName(tx.merchant)
+        setCategoryValue(category ?? '')
+      } else {
+        setCategoryValue('')
+      }
+    }
+    autoFillCategory()
   }, [transactions, currentIndex])
+
+  function handleSaveCategories(categories: string[]) {
+    saveFavoriteCategories(categories)
+  }
 
   function handleReject() {
     const tx = transactions[currentIndex]
@@ -152,9 +172,18 @@ export default function AddExpenseScreen() {
             onChangeAmount={setAmountValue}
             onChangeMerchant={setMerchantValue}
             onChangeCategory={setCategoryValue}
+            favoriteCategories={favoriteCategories}
+            isFavoriteCategoriesLoading={isFavoriteCategoriesLoading}
+            onEditCategories={() => setIsEditCategoriesVisible(true)}
           />
         </View>
       </KeyboardAwareScrollView>
+      <EditQuickCategories
+        isVisible={isEditCategoriesVisible}
+        onClose={() => setIsEditCategoriesVisible(false)}
+        onSave={handleSaveCategories}
+        currentCategories={favoriteCategories.length > 0 ? favoriteCategories.map((c) => c.name) : DEFAULT_CATEGORIES}
+      />
       <View style={styles.actionsRow}>
         <IconButton
           disabled={isSaving}

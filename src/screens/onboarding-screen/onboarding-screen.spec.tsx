@@ -1,3 +1,4 @@
+import * as categoriesRepository from '@/services/database/categories-repository'
 import * as smsPermission from '@/services/sms-parsing/sms-permission-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { storage } from '@/utils/mmkv/storage'
@@ -18,6 +19,10 @@ jest.mock('rose-sms-reader', () => ({
 jest.mock('@/utils/mmkv/storage', () => ({
   storage: { set: jest.fn(), getBoolean: jest.fn(() => undefined) },
 }))
+
+// Mock categories repository
+jest.spyOn(categoriesRepository, 'setFavoriteCategories').mockResolvedValue([])
+
 jest.spyOn(smsPermission.SMSPermissionService, 'requestPermissionWithExplanation').mockResolvedValue({
   granted: true,
   canAskAgain: true,
@@ -51,19 +56,45 @@ describe('OnboardingScreen', () => {
     await waitFor(() => expect(smsPermission.SMSPermissionService.requestPermissionWithExplanation).toHaveBeenCalled())
   })
 
-  it('completes budget step and finishes onboarding', async () => {
+  it('completes all steps and finishes onboarding', async () => {
     const { getByText, getByLabelText } = render(<OnboardingScreen />)
 
+    // Step 0 -> Step 1 (Privacy)
     await act(async () => {
       fireEvent.press(getByText('Get Started'))
     })
 
+    // Step 1 -> Step 2 (Categories)
     await act(async () => {
       fireEvent.press(getByText('Next'))
     })
 
-    // Now on step 2: budget setup
-    expect(getByText('Set Your Monthly Budget')).toBeTruthy()
+    // Now on step 2: categories selection
+    expect(getByText('Quick Categories')).toBeTruthy()
+
+    // Select 4 categories
+    await act(async () => {
+      fireEvent.press(getByText('Transportation'))
+    })
+    await act(async () => {
+      fireEvent.press(getByText('Food'))
+    })
+    await act(async () => {
+      fireEvent.press(getByText('Groceries'))
+    })
+    await act(async () => {
+      fireEvent.press(getByText('Utilities'))
+    })
+
+    // Step 2 -> Step 3 (Budget)
+    await act(async () => {
+      fireEvent.press(getByText('Next'))
+    })
+
+    // Wait for categories to be saved and step to advance
+    await waitFor(() => {
+      expect(getByText('Set Your Monthly Budget')).toBeTruthy()
+    })
 
     const input = getByLabelText('Monthly Budget')
     await act(async () => {

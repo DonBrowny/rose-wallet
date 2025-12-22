@@ -1,8 +1,12 @@
+import { EditQuickCategories } from '@/components/edit-quick-categories/edit-quick-categories'
+import { DEFAULT_CATEGORIES } from '@/constants/categories'
 import { SettingsItem } from '@/components/settings-item/settings-item'
 import { Text } from '@/components/ui/text/text'
+import { useGetFavoriteCategories, useSetFavoriteCategories } from '@/hooks/use-categories'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { storage } from '@/utils/mmkv/storage'
 import { router } from 'expo-router'
+import { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from './settings-screen.styles'
@@ -23,6 +27,14 @@ const settingsItems = [
 ]
 
 export const SettingsScreen = () => {
+  const { data: favoriteCategories = [] } = useGetFavoriteCategories()
+  const { mutate: saveFavoriteCategories } = useSetFavoriteCategories()
+  const [isEditCategoriesVisible, setIsEditCategoriesVisible] = useState(false)
+
+  function handleSaveCategories(categories: string[]) {
+    saveFavoriteCategories(categories)
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentContainer}>
@@ -45,6 +57,12 @@ export const SettingsScreen = () => {
             />
           </Pressable>
         ))}
+        <Pressable onPress={() => setIsEditCategoriesVisible(true)}>
+          <SettingsItem
+            header='Quick Categories'
+            subHeader='Edit your 4 quick-select expense categories'
+          />
+        </Pressable>
         <Pressable
           onPress={() => {
             storage.set(MMKV_KEYS.APP.ONBOARDING_COMPLETED, false)
@@ -52,8 +70,8 @@ export const SettingsScreen = () => {
           }}
         >
           <SettingsItem
-            header={'Show Onboarding'}
-            subHeader={'Show the onboarding screens again'}
+            header='Show Onboarding'
+            subHeader='Show the onboarding screens again'
           />
         </Pressable>
         <Pressable
@@ -66,11 +84,17 @@ export const SettingsScreen = () => {
           }}
         >
           <SettingsItem
-            header={'Show Tour'}
-            subHeader={'Show the app tour again'}
+            header='Show Tour'
+            subHeader='Show the app tour again'
           />
         </Pressable>
       </View>
+      <EditQuickCategories
+        isVisible={isEditCategoriesVisible}
+        onClose={() => setIsEditCategoriesVisible(false)}
+        onSave={handleSaveCategories}
+        currentCategories={favoriteCategories.length > 0 ? favoriteCategories.map((c) => c.name) : DEFAULT_CATEGORIES}
+      />
     </SafeAreaView>
   )
 }
