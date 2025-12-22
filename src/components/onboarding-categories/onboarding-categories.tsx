@@ -1,25 +1,13 @@
 import { CategoryChip } from '@/components/category-chip/category-chip'
 import { Input } from '@/components/ui/input/input'
 import { Text } from '@/components/ui/text/text'
+import { MAX_CATEGORIES, SUGGESTED_CATEGORIES } from '@/constants/categories'
 import { setFavoriteCategories } from '@/services/database/categories-repository'
 import { Plus } from 'lucide-react-native'
 import { forwardRef, useCallback, useImperativeHandle, useState } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './onboarding-categories.style'
-
-const SUGGESTED_CATEGORIES = [
-  'Transportation',
-  'Food',
-  'Groceries',
-  'Vegetables',
-  'Fruits',
-  'Utilities',
-  'Entertainment',
-  'Personal Care',
-]
-
-const MAX_CATEGORIES = 4
 
 export interface OnboardingCategoriesRef {
   save: () => Promise<boolean>
