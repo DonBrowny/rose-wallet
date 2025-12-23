@@ -1,4 +1,4 @@
-import { MAX_CATEGORIES, SUGGESTED_CATEGORIES } from '@/constants/categories'
+import { MAX_CATEGORIES } from '@/constants/categories'
 import { act, fireEvent, render } from '@testing-library/react-native'
 import React from 'react'
 import { EditQuickCategories } from './edit-quick-categories'
@@ -6,6 +6,7 @@ import { EditQuickCategories } from './edit-quick-categories'
 describe('EditQuickCategories', () => {
   const mockOnClose = jest.fn()
   const mockOnSave = jest.fn()
+  const defaultCategories = ['Food', 'Transportation', 'Groceries', 'Utilities']
 
   beforeEach(() => {
     mockOnClose.mockClear()
@@ -18,24 +19,24 @@ describe('EditQuickCategories', () => {
         isVisible={true}
         onClose={mockOnClose}
         onSave={mockOnSave}
-        currentCategories={[]}
+        currentCategories={defaultCategories}
       />
     )
 
     expect(getByTestId('edit-quick-categories')).toBeTruthy()
   })
 
-  it('renders all suggested categories', () => {
+  it('renders current categories as chips', () => {
     const { getByText } = render(
       <EditQuickCategories
         isVisible={true}
         onClose={mockOnClose}
         onSave={mockOnSave}
-        currentCategories={[]}
+        currentCategories={defaultCategories}
       />
     )
 
-    SUGGESTED_CATEGORIES.forEach((category) => {
+    defaultCategories.forEach((category) => {
       expect(getByText(category)).toBeTruthy()
     })
   })
@@ -55,17 +56,23 @@ describe('EditQuickCategories', () => {
   })
 
   it('allows selecting a category', () => {
+    const currentCategories = ['Food', 'Transportation']
     const { getByText } = render(
       <EditQuickCategories
         isVisible={true}
         onClose={mockOnClose}
         onSave={mockOnSave}
-        currentCategories={[]}
+        currentCategories={currentCategories}
       />
     )
 
+    // Deselect one first to have room to select
     fireEvent.press(getByText('Food'))
     expect(getByText(`1 of ${MAX_CATEGORIES} selected`)).toBeTruthy()
+
+    // Select it back
+    fireEvent.press(getByText('Food'))
+    expect(getByText(`2 of ${MAX_CATEGORIES} selected`)).toBeTruthy()
   })
 
   it('allows deselecting a category', () => {
@@ -84,7 +91,7 @@ describe('EditQuickCategories', () => {
 
   it('prevents selecting more than MAX_CATEGORIES', () => {
     const currentCategories = ['Food', 'Transportation', 'Groceries', 'Utilities']
-    const { getByText } = render(
+    const { getByText, getByPlaceholderText } = render(
       <EditQuickCategories
         isVisible={true}
         onClose={mockOnClose}
@@ -93,8 +100,19 @@ describe('EditQuickCategories', () => {
       />
     )
 
-    fireEvent.press(getByText('Entertainment'))
-    expect(getByText(`${MAX_CATEGORIES} of ${MAX_CATEGORIES} selected`)).toBeTruthy()
+    // All 4 are already selected
+    expect(getByText(`4 of ${MAX_CATEGORIES} selected`)).toBeTruthy()
+
+    // Try to add a custom category - it should be added but NOT auto-selected
+    const input = getByPlaceholderText('Add custom category')
+    act(() => {
+      fireEvent.changeText(input, 'Entertainment')
+    })
+    fireEvent(input, 'submitEditing')
+
+    // Should still be 4 selected (new category added but not selected)
+    expect(getByText('Entertainment')).toBeTruthy()
+    expect(getByText(`4 of ${MAX_CATEGORIES} selected`)).toBeTruthy()
   })
 
   it('calls onSave with selected categories when Save is pressed', () => {
@@ -127,21 +145,16 @@ describe('EditQuickCategories', () => {
     expect(mockOnSave).not.toHaveBeenCalled()
   })
 
-  it('calls onClose and resets state when Cancel is pressed', () => {
+  it('calls onClose when Cancel is pressed', () => {
     const { getByText } = render(
       <EditQuickCategories
         isVisible={true}
         onClose={mockOnClose}
         onSave={mockOnSave}
-        currentCategories={['Food']}
+        currentCategories={['Food', 'Transportation']}
       />
     )
 
-    // Select another category
-    fireEvent.press(getByText('Transportation'))
-    expect(getByText(`2 of ${MAX_CATEGORIES} selected`)).toBeTruthy()
-
-    // Press Cancel
     fireEvent.press(getByText('Cancel'))
     expect(mockOnClose).toHaveBeenCalled()
   })

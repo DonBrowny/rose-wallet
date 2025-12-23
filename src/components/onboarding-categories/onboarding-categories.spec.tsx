@@ -14,7 +14,7 @@ describe('OnboardingCategories', () => {
     const { getByText } = render(<OnboardingCategories />)
 
     expect(getByText('Quick Categories')).toBeTruthy()
-    expect(getByText(/Select 4 categories/)).toBeTruthy()
+    expect(getByText(/select exactly 4 categories/i)).toBeTruthy()
   })
 
   it('renders all suggested categories', () => {
@@ -78,7 +78,7 @@ describe('OnboardingCategories', () => {
   })
 
   it('does not add duplicate custom category', () => {
-    const { getByText, getByPlaceholderText, queryAllByText } = render(<OnboardingCategories />)
+    const { getByPlaceholderText, queryAllByText } = render(<OnboardingCategories />)
 
     const input = getByPlaceholderText('Add custom category')
     act(() => {
