@@ -1,10 +1,10 @@
+import { getDrizzleDb } from '@/services/database/db'
 import { DB_NAME } from '@/types/constants'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { TourGuideOverlay, TourGuideProvider } from '@wrack/react-native-tour-guide'
-import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import { Stack } from 'expo-router'
-import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite'
+import { SQLiteProvider } from 'expo-sqlite'
 import { StatusBar } from 'expo-status-bar'
 import { Suspense } from 'react'
 import { ActivityIndicator, Text, View } from 'react-native'
@@ -12,8 +12,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { useUnistyles } from 'react-native-unistyles'
 import migrations from '../drizzle/migrations'
 
-const expoDb = openDatabaseSync(DB_NAME)
-const db = drizzle(expoDb)
+const db = getDrizzleDb()
 
 const ONE_MINUTE = 1000 * 60
 
