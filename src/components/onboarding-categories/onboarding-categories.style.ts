@@ -19,31 +19,4 @@ export const styles = StyleSheet.create((theme) => ({
     textAlign: 'center',
     marginTop: theme.space(2),
   },
-  chipsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: theme.gap(1.5),
-    marginVertical: theme.space(2),
-  },
-  customInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.gap(1),
-    width: '100%',
-    maxWidth: 300,
-  },
-  customInput: {
-    flex: 1,
-  },
-  addButton: {
-    padding: theme.space(2),
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-  },
-  addButtonDisabled: {
-    borderColor: theme.colors.textMuted,
-    opacity: 0.5,
-  },
 }))

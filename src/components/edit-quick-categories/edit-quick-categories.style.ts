@@ -23,19 +23,6 @@ export const styles = StyleSheet.create((theme) => ({
   scrollView: {
     maxHeight: 200,
   },
-  chipsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.gap(1),
-  },
-  customInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.gap(1),
-  },
-  customInput: {
-    flex: 1,
-  },
   buttonRow: {
     flexDirection: 'row',
     gap: theme.gap(2),
