@@ -1,6 +1,7 @@
 import { Loading } from '@/components/loading/loading'
 import { PatternCard } from '@/components/pattern-card/pattern-card'
 import { Text } from '@/components/ui/text/text'
+import { GETTING_STARTED_PATTERNS_QUERY_KEY } from '@/hooks/use-getting-started'
 import { useLivePatterns } from '@/hooks/use-live-patterns'
 import { updatePatternStatusById, upsertPatternsByGrouping } from '@/services/database/patterns-repository'
 import { SMSService } from '@/services/sms-parsing/sms-service'
@@ -8,6 +9,7 @@ import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { PatternStatus } from '@/types/patterns/enums'
 import type { Transaction, TransactionPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { ScrollView, View } from 'react-native'
@@ -18,6 +20,7 @@ export const PatternsScreen = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { data } = useLivePatterns()
+  const queryClient = useQueryClient()
 
   const [isPatternDiscoveryCompleted = false, setIsPatternDiscoveryCompleted] = useMMKVBoolean(
     MMKV_KEYS.PATTERNS.IS_PATTERN_DISCOVERY_COMPLETED
@@ -73,6 +76,7 @@ export const PatternsScreen = () => {
 
   const handleRejectPattern = async (patternId: string) => {
     await updatePatternStatusById(Number(patternId), PatternStatus.Rejected)
+    queryClient.invalidateQueries({ queryKey: [GETTING_STARTED_PATTERNS_QUERY_KEY] })
   }
 
   if (isLoading) {

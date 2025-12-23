@@ -1,9 +1,11 @@
 import { SmsReviewItem } from '@/components/sms-review-item/sms-review-item'
 import { Button } from '@/components/ui/button/button'
 import { Card } from '@/components/ui/card/card'
+import { GETTING_STARTED_PATTERNS_QUERY_KEY } from '@/hooks/use-getting-started'
 import { finalizeReview, reviewNext, reviewPrev, reviewReset, reviewUpdateItem } from '@/hooks/use-store'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import type { Transaction } from '@/types/sms/transaction'
+import { useQueryClient } from '@tanstack/react-query'
 import { useTourGuide } from '@wrack/react-native-tour-guide'
 import { useRouter } from 'expo-router'
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react-native'
@@ -22,6 +24,7 @@ interface Props {
 export function PatternReviewPane({ sample, index, total }: Props) {
   const { theme } = useUnistyles()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { startTour } = useTourGuide()
   const buttonRef = useRef(null)
   const viewRef = useRef(null)
@@ -96,6 +99,7 @@ export function PatternReviewPane({ sample, index, total }: Props) {
   const handleApprove = () => {
     persist()
     finalizeReview().finally(() => {
+      queryClient.invalidateQueries({ queryKey: [GETTING_STARTED_PATTERNS_QUERY_KEY] })
       reviewReset()
       router.back()
     })

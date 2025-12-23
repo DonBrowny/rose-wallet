@@ -8,6 +8,9 @@ import { storage } from '@/utils/mmkv/storage'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
+export const GETTING_STARTED_PATTERNS_QUERY_KEY = 'getting-started-patterns'
+export const GETTING_STARTED_TRANSACTIONS_QUERY_KEY = 'getting-started-transactions'
+
 function getPatternProgress(reviewedCount: number, isDone: boolean): string | undefined {
   if (isDone) return undefined
   return `${reviewedCount}/${PATTERN_TOUR_THRESHOLD} reviewed`
@@ -38,12 +41,12 @@ export function useGettingStarted() {
   const startDateKey = startDate?.getTime() ?? null
 
   const { data: patterns } = useQuery({
-    queryKey: ['getting-started-patterns', startDateKey],
+    queryKey: [GETTING_STARTED_PATTERNS_QUERY_KEY, startDateKey],
     queryFn: () => fetchPatterns({ filter: { startDate } }),
   })
 
   const { data: expenseStats } = useQuery({
-    queryKey: ['getting-started-transactions', startDateKey],
+    queryKey: [GETTING_STARTED_TRANSACTIONS_QUERY_KEY, startDateKey],
     queryFn: () => getExpenseStats({ filter: { startDate } }),
   })
 
