@@ -8,6 +8,7 @@ import { OnboardingPrivacy } from '@/components/onboarding-privacy/onboarding-pr
 import { Button } from '@/components/ui/button/button'
 import { ProgressStepper } from '@/components/ui/progress-stepper/progress-stepper'
 import { BudgetProvider } from '@/contexts/budget-context'
+import { useGetFavoriteCategories } from '@/hooks/use-categories'
 import { SMSPermissionService } from '@/services/sms-parsing/sms-permission-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { storage } from '@/utils/mmkv/storage'
@@ -29,6 +30,8 @@ export function OnboardingScreen() {
   const [direction, setDirection] = useState<'next' | 'back'>('next')
   const categoriesRef = useRef<OnboardingCategoriesRef>(null)
   const budgetRef = useRef<OnboardingBudgetSetupRef>(null)
+  const { data: existingFavorites } = useGetFavoriteCategories()
+  const favoriteNames = existingFavorites?.map((c) => c.name)
 
   const goNext = () => {
     setStep((s) => {
@@ -90,7 +93,12 @@ export function OnboardingScreen() {
         >
           {step === 0 && <OnboardingIntro />}
           {step === 1 && <OnboardingPrivacy />}
-          {step === 2 && <OnboardingCategories ref={categoriesRef} />}
+          {step === 2 && (
+            <OnboardingCategories
+              ref={categoriesRef}
+              existingFavorites={favoriteNames}
+            />
+          )}
           {step === 3 && <OnboardingBudgetSetup ref={budgetRef} />}
         </Animated.View>
 

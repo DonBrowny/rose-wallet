@@ -1,4 +1,5 @@
 import * as categoriesRepository from '@/services/database/categories-repository'
+import * as useCategories from '@/hooks/use-categories'
 import * as smsPermission from '@/services/sms-parsing/sms-permission-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { storage } from '@/utils/mmkv/storage'
@@ -6,6 +7,9 @@ import { act, fireEvent, render, waitFor } from '@testing-library/react-native'
 import * as routerModule from 'expo-router'
 import React from 'react'
 import { OnboardingScreen } from './onboarding-screen'
+
+// Mock useGetFavoriteCategories hook
+jest.spyOn(useCategories, 'useGetFavoriteCategories').mockReturnValue({ data: undefined } as any)
 
 // Mock the ESM native module to avoid transform issues in Jest
 jest.mock('rose-sms-reader', () => ({
