@@ -6,6 +6,22 @@ import { PatternReviewScreen } from './pattern-review-screen'
 
 jest.mock('expo-router', () => ({ useRouter: jest.fn() }))
 
+jest.mock('@tanstack/react-query', () => ({
+  useQueryClient: jest.fn(() => ({
+    invalidateQueries: jest.fn(),
+  })),
+}))
+
+jest.mock('react-native-mmkv', () => ({
+  useMMKVBoolean: jest.fn(() => [false, jest.fn()]),
+  MMKV: jest.fn().mockImplementation(() => ({
+    getString: jest.fn(),
+    set: jest.fn(),
+    getBoolean: jest.fn(),
+    clearAll: jest.fn(),
+  })),
+}))
+
 const mockPatternReview = useAppStore.use.patternReview as unknown as jest.Mock
 jest.mock('@/hooks/use-store', () => {
   const mockPatternReview = jest.fn()

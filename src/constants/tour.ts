@@ -1,0 +1,2 @@
+export const PATTERN_TOUR_THRESHOLD = 2
+export const EXPENSE_TOUR_THRESHOLD = 2

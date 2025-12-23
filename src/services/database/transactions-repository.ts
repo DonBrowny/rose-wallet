@@ -1,7 +1,8 @@
 import { categories, merchants, smsMessages, transactions } from '@/db/schema'
 import type { Expense, ExpenseMonthStats, InsertTransactionInput } from '@/types/expense'
+import { FilterOptions } from '@/types/filters'
 import { getMonthRange } from '@/utils/date/get-month-range'
-import { and, between, count, desc, eq, sum } from 'drizzle-orm'
+import { and, between, count, desc, eq, gte, sum } from 'drizzle-orm'
 import { getDrizzleDb } from './db'
 
 const DEFAULT_LIMIT = 5
@@ -75,18 +76,32 @@ export async function fetchExpensesByMonth(year: number, month: number): Promise
   }))
 }
 
-export async function fetchMonthTotal(year: number, month: number): Promise<ExpenseMonthStats> {
+export async function getExpenseStats(options?: FilterOptions): Promise<ExpenseMonthStats> {
   const db = getDrizzleDb()
-  const { start, end } = getMonthRange(year, month)
+  const startDate = options?.filter?.startDate
+  const endDate = options?.filter?.endDate
+  const hasDateFilter = startDate || endDate
 
-  const result = await db
+  let query = db
     .select({
       total: sum(transactions.amount),
       count: count(transactions.id),
     })
     .from(transactions)
-    .leftJoin(smsMessages, eq(transactions.smsId, smsMessages.id))
-    .where(and(eq(transactions.type, 'debit'), between(smsMessages.dateTime, start, end)))
+    .$dynamic()
+
+  if (hasDateFilter) {
+    query = query.leftJoin(smsMessages, eq(transactions.smsId, smsMessages.id))
+  }
+
+  const conditions = [eq(transactions.type, 'debit')]
+  if (startDate && endDate) {
+    conditions.push(between(smsMessages.dateTime, startDate, endDate))
+  } else if (startDate) {
+    conditions.push(gte(smsMessages.dateTime, startDate))
+  }
+
+  const result = await query.where(and(...conditions))
 
   return {
     total: Number(result[0]?.total) || 0,

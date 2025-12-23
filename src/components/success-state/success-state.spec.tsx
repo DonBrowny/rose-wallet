@@ -5,18 +5,14 @@ jest.mock('lottie-react-native', () => 'LottieView')
 
 describe('SuccessState', () => {
   const mockOnButtonPress = jest.fn()
+  const mockOnAnimationFinish = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   it('renders title correctly', () => {
-    const { getByText } = render(
-      <SuccessState
-        title='All Done!'
-        onButtonPress={mockOnButtonPress}
-      />
-    )
+    const { getByText } = render(<SuccessState title='All Done!' />)
     expect(getByText('All Done!')).toBeTruthy()
   })
 
@@ -25,33 +21,22 @@ describe('SuccessState', () => {
       <SuccessState
         title='All Done!'
         description='You have completed all tasks'
-        onButtonPress={mockOnButtonPress}
       />
     )
     expect(getByText('You have completed all tasks')).toBeTruthy()
   })
 
   it('does not render description when not provided', () => {
-    const { queryByText } = render(
-      <SuccessState
-        title='All Done!'
-        onButtonPress={mockOnButtonPress}
-      />
-    )
+    const { queryByText } = render(<SuccessState title='All Done!' />)
     expect(queryByText('You have completed all tasks')).toBeNull()
   })
 
-  it('renders default button title', () => {
-    const { getByText } = render(
-      <SuccessState
-        title='All Done!'
-        onButtonPress={mockOnButtonPress}
-      />
-    )
-    expect(getByText('Back to Home')).toBeTruthy()
+  it('does not render button when buttonTitle is not provided', () => {
+    const { queryByText } = render(<SuccessState title='All Done!' />)
+    expect(queryByText('Back to Home')).toBeNull()
   })
 
-  it('renders custom button title', () => {
+  it('renders button when buttonTitle and onButtonPress are provided', () => {
     const { getByText } = render(
       <SuccessState
         title='All Done!'
@@ -66,10 +51,22 @@ describe('SuccessState', () => {
     const { getByText } = render(
       <SuccessState
         title='All Done!'
+        buttonTitle='Continue'
         onButtonPress={mockOnButtonPress}
       />
     )
-    fireEvent.press(getByText('Back to Home'))
+    fireEvent.press(getByText('Continue'))
     expect(mockOnButtonPress).toHaveBeenCalledTimes(1)
+  })
+
+  it('passes onAnimationFinish to LottieView', () => {
+    const { UNSAFE_getByType } = render(
+      <SuccessState
+        title='All Done!'
+        onAnimationFinish={mockOnAnimationFinish}
+      />
+    )
+    const lottieView = UNSAFE_getByType('LottieView' as any)
+    expect(lottieView.props.onAnimationFinish).toBe(mockOnAnimationFinish)
   })
 })

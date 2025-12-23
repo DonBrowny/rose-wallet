@@ -8,10 +8,11 @@ interface SuccessStateProps {
   title: string
   description?: string
   buttonTitle?: string
-  onButtonPress: () => void
+  onButtonPress?: () => void
+  onAnimationFinish?: () => void
 }
 
-export function SuccessState({ title, description, buttonTitle = 'Back to Home', onButtonPress }: SuccessStateProps) {
+export function SuccessState({ title, description, buttonTitle, onButtonPress, onAnimationFinish }: SuccessStateProps) {
   return (
     <View style={styles.container}>
       <LottieView
@@ -20,6 +21,7 @@ export function SuccessState({ title, description, buttonTitle = 'Back to Home',
         loop={false}
         style={styles.lottieAnimation}
         resizeMode='contain'
+        onAnimationFinish={onAnimationFinish}
       />
       <Text
         variant='h4'
@@ -36,11 +38,13 @@ export function SuccessState({ title, description, buttonTitle = 'Back to Home',
           {description}
         </Text>
       )}
-      <Button
-        title={buttonTitle}
-        onPress={onButtonPress}
-        containerStyle={styles.button}
-      />
+      {buttonTitle && onButtonPress && (
+        <Button
+          title={buttonTitle}
+          onPress={onButtonPress}
+          containerStyle={styles.button}
+        />
+      )}
     </View>
   )
 }

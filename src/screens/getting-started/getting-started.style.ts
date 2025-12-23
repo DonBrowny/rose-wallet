@@ -4,26 +4,19 @@ export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     paddingHorizontal: theme.space(4),
+    paddingTop: theme.space(4),
+  },
+  header: {
+    gap: theme.gap(1),
+    marginBottom: theme.space(4),
+  },
+  checklistContainer: {
     gap: theme.gap(2),
   },
-  congratulationsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: theme.space(4),
-  },
-  lottieAnimation: {
-    width: 300,
-    height: 300,
-  },
-  congratulationsText: {
-    textAlign: 'center',
-  },
   buttonContainer: {
-    width: '100%',
+    flex: 1,
+    justifyContent: 'flex-end',
     alignItems: 'center',
-  },
-  skipButton: {
-    width: 150,
+    paddingBottom: theme.space(4),
   },
 }))

@@ -12,9 +12,21 @@ jest.mock('expo-router', () => ({ useRouter: jest.fn() }))
 
 jest.mock('@/hooks/use-live-patterns', () => ({ useLivePatterns: jest.fn() }))
 
+jest.mock('@tanstack/react-query', () => ({
+  useQueryClient: jest.fn(() => ({
+    invalidateQueries: jest.fn(),
+  })),
+}))
+
 jest.mock('react-native-mmkv', () => ({
   useMMKVBoolean: jest.fn(),
   useMMKVObject: jest.fn(),
+  MMKV: jest.fn().mockImplementation(() => ({
+    getString: jest.fn(),
+    set: jest.fn(),
+    getBoolean: jest.fn(),
+    clearAll: jest.fn(),
+  })),
 }))
 
 jest.mock('@/services/sms-parsing/sms-service', () => ({
