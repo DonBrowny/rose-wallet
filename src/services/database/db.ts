@@ -12,10 +12,6 @@ export function getSQLite(): SQLiteDatabase {
   return sqliteInstance
 }
 
-/**
- * Resets the database by deleting all data from all tables.
- * Similar to drizzle-seed's reset function for SQLite.
- */
 export function resetDatabase(): void {
   const db = getSQLite()
 
