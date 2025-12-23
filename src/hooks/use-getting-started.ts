@@ -25,17 +25,25 @@ function getExpenseStatus(isDone: boolean, canStart: boolean): ChecklistStatus {
   return 'locked'
 }
 
+function parseStartDate(lastSeenDate: string | undefined): Date | undefined {
+  if (!lastSeenDate) return undefined
+  const timestamp = parseInt(lastSeenDate, 10)
+  if (Number.isNaN(timestamp)) return undefined
+  return new Date(timestamp)
+}
+
 export function useGettingStarted() {
   const lastSeenDate = storage.getString(MMKV_KEYS.APP.GETTING_STARTED_SEEN_AT)
-  const startDate = lastSeenDate ? new Date(parseInt(lastSeenDate, 10)) : undefined
+  const startDate = parseStartDate(lastSeenDate)
+  const startDateKey = startDate?.getTime() ?? null
 
   const { data: patterns } = useQuery({
-    queryKey: ['getting-started-patterns', startDate?.getTime()],
+    queryKey: ['getting-started-patterns', startDateKey],
     queryFn: () => fetchPatterns({ filter: { startDate } }),
   })
 
   const { data: expenseStats } = useQuery({
-    queryKey: ['getting-started-transactions', startDate?.getTime()],
+    queryKey: ['getting-started-transactions', startDateKey],
     queryFn: () => getExpenseStats({ filter: { startDate } }),
   })
 

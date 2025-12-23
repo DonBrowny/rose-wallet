@@ -2,6 +2,7 @@ import { ChecklistItem } from '@/components/checklist-item/checklist-item'
 import { SuccessState } from '@/components/success-state/success-state'
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
+import { EXPENSE_TOUR_THRESHOLD, PATTERN_TOUR_THRESHOLD } from '@/constants/tour'
 import { useGettingStarted } from '@/hooks/use-getting-started'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { storage } from '@/utils/mmkv/storage'
@@ -54,13 +55,13 @@ export function GettingStartedScreen() {
 
       <View style={styles.checklistContainer}>
         <ChecklistItem
-          title='Review 2 patterns'
+          title={`Review ${PATTERN_TOUR_THRESHOLD} patterns`}
           status={patternStatus}
           progress={patternProgress}
           onPress={() => router.push('/(shared)/patterns')}
         />
         <ChecklistItem
-          title='Add 2 expenses'
+          title={`Add ${EXPENSE_TOUR_THRESHOLD} expenses`}
           status={expenseStatus}
           progress={expenseProgress}
           onPress={() => router.push('/(shared)/add-expense')}
