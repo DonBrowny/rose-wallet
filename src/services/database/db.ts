@@ -12,6 +12,29 @@ export function getSQLite(): SQLiteDatabase {
   return sqliteInstance
 }
 
+/**
+ * Resets the database by deleting all data from all tables.
+ * Similar to drizzle-seed's reset function for SQLite.
+ */
+export function resetDatabase(): void {
+  const db = getSQLite()
+
+  // Get all table names from schema
+  const tableNames = Object.values(schema)
+    .filter(
+      (value): value is typeof schema.smsMessages => typeof value === 'object' && value !== null && 'getSQL' in value
+    )
+    .map((table) => (table as any)[Symbol.for('drizzle:Name')])
+    .filter(Boolean)
+
+  // Disable foreign keys, delete all data, re-enable foreign keys
+  db.execSync('PRAGMA foreign_keys = OFF')
+  for (const tableName of tableNames) {
+    db.execSync(`DELETE FROM ${tableName}`)
+  }
+  db.execSync('PRAGMA foreign_keys = ON')
+}
+
 export function getDrizzleDb() {
   return drizzle(getSQLite(), { schema })
 }

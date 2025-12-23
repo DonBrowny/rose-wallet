@@ -1,7 +1,8 @@
 import { EditQuickCategories } from '@/components/edit-quick-categories/edit-quick-categories'
-import { DEFAULT_CATEGORIES } from '@/constants/categories'
+import { ResetAppModal } from '@/components/reset-app-modal/reset-app-modal'
 import { SettingsItem } from '@/components/settings-item/settings-item'
 import { Text } from '@/components/ui/text/text'
+import { DEFAULT_CATEGORIES } from '@/constants/categories'
 import { useGetFavoriteCategories, useSetFavoriteCategories } from '@/hooks/use-categories'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { storage } from '@/utils/mmkv/storage'
@@ -30,6 +31,7 @@ export const SettingsScreen = () => {
   const { data: favoriteCategories = [] } = useGetFavoriteCategories()
   const { mutate: saveFavoriteCategories } = useSetFavoriteCategories()
   const [isEditCategoriesVisible, setIsEditCategoriesVisible] = useState(false)
+  const [isResetModalVisible, setIsResetModalVisible] = useState(false)
 
   function handleSaveCategories(categories: string[]) {
     saveFavoriteCategories(categories)
@@ -88,7 +90,17 @@ export const SettingsScreen = () => {
             subHeader='Show the app tour again'
           />
         </Pressable>
+        <Pressable onPress={() => setIsResetModalVisible(true)}>
+          <SettingsItem
+            header='Reset App'
+            subHeader='Delete all data and start fresh'
+          />
+        </Pressable>
       </View>
+      <ResetAppModal
+        isVisible={isResetModalVisible}
+        onCancel={() => setIsResetModalVisible(false)}
+      />
       <EditQuickCategories
         isVisible={isEditCategoriesVisible}
         onClose={() => setIsEditCategoriesVisible(false)}
