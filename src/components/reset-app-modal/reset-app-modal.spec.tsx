@@ -97,9 +97,7 @@ describe('ResetAppModal', () => {
       />
     )
 
-    expect(
-      getByText(/transactions, patterns, categories, and settings/)
-    ).toBeTruthy()
+    expect(getByText(/transactions, patterns, categories, and settings/)).toBeTruthy()
     expect(getByText(/This action cannot be undone/)).toBeTruthy()
   })
 })
