@@ -16,4 +16,10 @@ export const styles = StyleSheet.create((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  errorContainer: {
+    padding: theme.space(4),
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.gap(3),
+  },
 }))

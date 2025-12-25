@@ -1,19 +1,21 @@
+import { DeleteExpenseContent } from '@/components/delete-expense-content/delete-expense-content'
+import { EditExpenseContent } from '@/components/edit-expense-content/edit-expense-content'
+import { Button } from '@/components/ui/button/button'
 import { Overlay } from '@/components/ui/overlay/overlay'
+import { Text } from '@/components/ui/text/text'
 import { useDeleteExpense } from '@/hooks/use-delete-expense'
 import { useGetExpenseById } from '@/hooks/use-get-expense-by-id'
 import { useAppStore } from '@/hooks/use-store'
 import { useUpdateExpense } from '@/hooks/use-update-expense'
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, View } from 'react-native'
-import { DeleteExpenseContent } from '@/components/delete-expense-content/delete-expense-content'
-import { EditExpenseContent } from '@/components/edit-expense-content/edit-expense-content'
+import { ActivityIndicator, ToastAndroid, View } from 'react-native'
 import { styles } from './edit-expense-modal.style'
 
 export function EditExpenseModal() {
   const { isOpen, expenseId } = useAppStore((s) => s.editExpenseModal)
   const closeEditExpenseModal = useAppStore((s) => s.closeEditExpenseModal)
 
-  const { data: expense, isLoading } = useGetExpenseById(expenseId)
+  const { data: expense, isLoading, isError } = useGetExpenseById(expenseId)
   const updateExpense = useUpdateExpense()
   const deleteExpense = useDeleteExpense()
 
@@ -34,7 +36,10 @@ export function EditExpenseModal() {
   const handleSave = () => {
     if (!expense) return
     const parsedAmount = parseFloat(amount)
-    if (isNaN(parsedAmount) || parsedAmount <= 0) return
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      ToastAndroid.show('Please enter a valid amount', ToastAndroid.SHORT)
+      return
+    }
 
     updateExpense.mutate(
       {
@@ -82,9 +87,23 @@ export function EditExpenseModal() {
       overlayStyle={styles.overlay}
     >
       <View style={styles.overlayContent}>
-        {isLoading || !expense ? (
+        {isLoading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size='small' />
+          </View>
+        ) : isError || !expense ? (
+          <View style={styles.errorContainer}>
+            <Text
+              variant='pMd'
+              color='muted'
+            >
+              Failed to load expense
+            </Text>
+            <Button
+              title='Close'
+              type='outline'
+              onPress={handleClose}
+            />
           </View>
         ) : showDeleteConfirm ? (
           <DeleteExpenseContent
