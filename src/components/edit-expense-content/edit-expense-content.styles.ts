@@ -1,6 +1,9 @@
 import { StyleSheet } from 'react-native-unistyles'
 
 export const styles = StyleSheet.create((theme) => ({
+  scrollContent: {
+    gap: theme.gap(2),
+  },
   title: {
     textAlign: 'center',
   },
@@ -25,6 +28,9 @@ export const styles = StyleSheet.create((theme) => ({
   },
   smsMeta: {
     flex: 1,
+  },
+  smsBodyScroll: {
+    maxHeight: 120,
   },
   smsBody: {
     lineHeight: 20,

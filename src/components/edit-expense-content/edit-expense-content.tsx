@@ -5,7 +5,8 @@ import { Expense } from '@/types/expense'
 import { formatDateTime } from '@/utils/date/format-date-time'
 import { IndianRupee, MessageSquare, Store, Tag } from 'lucide-react-native'
 import React from 'react'
-import { View } from 'react-native'
+import { ScrollView, View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './edit-expense-content.styles'
 
@@ -37,7 +38,10 @@ export function EditExpenseContent({
   const { theme } = useUnistyles()
 
   return (
-    <>
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
       <Text
         variant='h4'
         style={styles.title}
@@ -64,14 +68,20 @@ export function EditExpenseContent({
               </Text>
             </View>
           </View>
-          <Text
-            variant='pSm'
-            color='muted'
-            style={styles.smsBody}
-            selectable
+          <ScrollView
+            style={styles.smsBodyScroll}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled
           >
-            {expense.smsBody}
-          </Text>
+            <Text
+              variant='pSm'
+              color='muted'
+              style={styles.smsBody}
+              selectable
+            >
+              {expense.smsBody}
+            </Text>
+          </ScrollView>
         </View>
       )}
 
@@ -132,6 +142,6 @@ export function EditExpenseContent({
           containerStyle={styles.button}
         />
       </View>
-    </>
+    </KeyboardAwareScrollView>
   )
 }
