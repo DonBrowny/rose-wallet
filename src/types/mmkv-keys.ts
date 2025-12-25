@@ -3,6 +3,7 @@ export const MMKV_KEYS = {
     ONBOARDING_COMPLETED: 'app.onboarding_completed',
     GETTING_STARTED_SEEN: 'app.getting_started_seen',
     GETTING_STARTED_SEEN_AT: 'app.getting_started_seen_at',
+    SMS_SECRET: 'app.sms_secret',
   },
   BUDGET: {
     MONTHLY_BUDGET: 'budget.monthly_budget',
