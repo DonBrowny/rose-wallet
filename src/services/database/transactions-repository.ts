@@ -1,6 +1,7 @@
 import { categories, merchants, smsMessages, transactions } from '@/db/schema'
-import type { Expense, ExpenseMonthStats, InsertTransactionInput } from '@/types/expense'
+import type { Expense, ExpenseMonthStats, InsertTransactionInput, UpdateTransactionInput } from '@/types/expense'
 import { FilterOptions } from '@/types/filters'
+import { decryptText } from '@/utils/crypto/secure-text'
 import { getMonthRange } from '@/utils/date/get-month-range'
 import { and, between, count, desc, eq, gte, sum } from 'drizzle-orm'
 import { getDrizzleDb } from './db'
@@ -18,6 +19,58 @@ export async function insertTransaction(input: InsertTransactionInput): Promise<
     categoryId: input.categoryId,
     merchantId: input.merchantId,
   })
+}
+
+export async function updateTransaction(input: UpdateTransactionInput): Promise<void> {
+  const db = getDrizzleDb()
+  await db
+    .update(transactions)
+    .set({
+      amount: input.amount,
+      merchantId: input.merchantId,
+      categoryId: input.categoryId,
+      updatedAt: new Date(),
+    })
+    .where(eq(transactions.id, input.id))
+}
+
+export async function deleteTransaction(id: number): Promise<void> {
+  const db = getDrizzleDb()
+  await db.delete(transactions).where(eq(transactions.id, id))
+}
+
+export async function fetchExpenseById(id: number): Promise<Expense | null> {
+  const db = getDrizzleDb()
+
+  const result = await db
+    .select({
+      id: transactions.id,
+      amount: transactions.amount,
+      merchantName: merchants.name,
+      categoryName: categories.name,
+      receivedAt: smsMessages.dateTime,
+      smsSender: smsMessages.sender,
+      smsBody: smsMessages.body,
+    })
+    .from(transactions)
+    .leftJoin(merchants, eq(transactions.merchantId, merchants.id))
+    .leftJoin(categories, eq(transactions.categoryId, categories.id))
+    .leftJoin(smsMessages, eq(transactions.smsId, smsMessages.id))
+    .where(eq(transactions.id, id))
+    .limit(1)
+
+  const row = result[0]
+  if (!row) return null
+
+  return {
+    id: row.id,
+    amount: row.amount,
+    merchantName: row.merchantName ?? 'Unknown',
+    categoryName: row.categoryName ?? 'Uncategorized',
+    receivedAt: row.receivedAt ?? new Date(),
+    smsSender: row.smsSender ? decryptText(row.smsSender) : undefined,
+    smsBody: row.smsBody ? decryptText(row.smsBody) : undefined,
+  }
 }
 
 export async function fetchRecentExpenses(limit: number = DEFAULT_LIMIT): Promise<Expense[]> {

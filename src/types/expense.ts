@@ -4,6 +4,8 @@ export interface Expense {
   merchantName: string
   categoryName: string
   receivedAt: Date
+  smsSender?: string
+  smsBody?: string
 }
 
 export interface ExpenseMonthStats {
@@ -19,4 +21,11 @@ export interface InsertTransactionInput {
   description?: string | null
   categoryId: number
   merchantId: number
+}
+
+export interface UpdateTransactionInput {
+  id: number
+  amount: number
+  merchantId: number
+  categoryId: number
 }
