@@ -22,38 +22,30 @@ export function setEncryptionSecret(secret: string) {
   storage.set(MMKV_KEYS.APP.SMS_SECRET, secret)
 }
 
-export function encryptTextWithSecret(plain: string, secret: string) {
+export function encryptTextWithSecret(plain: string, secret: string): string {
   if (!plain) return ''
-  try {
-    const key = deriveKey(secret)
-    const iv = crypto.randomBytes(IV_LENGTH)
-    const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
-    const enc = Buffer.concat([cipher.update(plain, 'utf8'), cipher.final()])
-    const tag = cipher.getAuthTag()
-    return `${iv.toString('hex')}:${tag.toString('hex')}:${enc.toString('hex')}`
-  } catch (e) {
-    console.error('encryptTextWithSecret failed', e)
-    return ''
-  }
+  const key = deriveKey(secret)
+  const iv = crypto.randomBytes(IV_LENGTH)
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
+  const enc = Buffer.concat([cipher.update(plain, 'utf8'), cipher.final()])
+  const tag = cipher.getAuthTag()
+  return `${iv.toString('hex')}:${tag.toString('hex')}:${enc.toString('hex')}`
 }
 
-export function decryptTextWithSecret(enc: string, secret: string) {
+export function decryptTextWithSecret(enc: string, secret: string): string {
   if (!enc) return ''
-  try {
-    const [ivHex, tagHex, ctHex] = enc.split(':')
-    if (!ivHex || !tagHex || !ctHex) return ''
-    const key = deriveKey(secret)
-    const iv = Buffer.from(ivHex, 'hex')
-    const tag = Buffer.from(tagHex, 'hex')
-    const ct = Buffer.from(ctHex, 'hex')
-    const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv)
-    decipher.setAuthTag(tag)
-    const dec = Buffer.concat([decipher.update(ct), decipher.final()])
-    return dec.toString('utf8')
-  } catch (e) {
-    console.error('decryptTextWithSecret failed', e)
-    return ''
+  const [ivHex, tagHex, ctHex] = enc.split(':')
+  if (!ivHex || !tagHex || !ctHex) {
+    throw new Error('Invalid encrypted text format')
   }
+  const key = deriveKey(secret)
+  const iv = Buffer.from(ivHex, 'hex')
+  const tag = Buffer.from(tagHex, 'hex')
+  const ct = Buffer.from(ctHex, 'hex')
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv)
+  decipher.setAuthTag(tag)
+  const dec = Buffer.concat([decipher.update(ct), decipher.final()])
+  return dec.toString('utf8')
 }
 
 export function encryptText(plain: string) {
