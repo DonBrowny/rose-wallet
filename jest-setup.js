@@ -1,4 +1,4 @@
-/* global jest */
+/* global jest, Buffer */
 require('react-native-reanimated').setUpTests()
 
 // Mock Skeleton component to avoid Animated timer leaks in tests
@@ -64,6 +64,23 @@ jest.mock('@wrack/react-native-tour-guide', () => {
 })
 
 jest.mock('react-native-keyboard-controller', () => require('react-native-keyboard-controller/jest'))
+
+// Mock react-native-quick-crypto to avoid native module errors in tests
+jest.mock('react-native-quick-crypto', () => ({
+  randomBytes: jest.fn((size) => Buffer.alloc(size)),
+  createHash: jest.fn(() => ({
+    update: jest.fn().mockReturnThis(),
+    digest: jest.fn(() => Buffer.alloc(32)),
+  })),
+  createHmac: jest.fn(() => ({
+    update: jest.fn().mockReturnThis(),
+    digest: jest.fn(() => Buffer.alloc(32)),
+  })),
+  createCipheriv: jest.fn(),
+  createDecipheriv: jest.fn(),
+  pbkdf2: jest.fn(),
+  pbkdf2Sync: jest.fn(() => Buffer.alloc(32)),
+}))
 
 // Mock zustand immer middleware to behave as a no-proxy mutate helper in tests
 // It converts set(fn) where fn mutates a draft into a full state replacement

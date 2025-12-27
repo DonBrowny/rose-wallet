@@ -1,3 +1,4 @@
+import { EditExpenseModal } from '@/components/edit-expense-modal/edit-expense-modal'
 import { getDrizzleDb } from '@/services/database/db'
 import { appMigrations, runMigrations } from '@/services/migrations'
 import { DB_NAME } from '@/types/constants'
@@ -111,6 +112,7 @@ export default function Root() {
                 translucent
               />
               <TourGuideOverlay />
+              <EditExpenseModal />
             </TourGuideProvider>
           </SQLiteProvider>
         </QueryClientProvider>

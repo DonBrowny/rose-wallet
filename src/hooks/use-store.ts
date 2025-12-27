@@ -24,6 +24,12 @@ interface AppState {
     currentIndex: number
   }
   setPatternReview: (transactions: Transaction[], name: string) => void
+  editExpenseModal: {
+    isOpen: boolean
+    expenseId: number | null
+  }
+  openEditExpenseModal: (expenseId: number) => void
+  closeEditExpenseModal: () => void
   isSaving: boolean
   error?: string
 }
@@ -40,6 +46,20 @@ const useAppStoreBase = create<AppState>()(
         state.patternReview.transactions = transactions
         state.patternReview.name = name
         state.patternReview.currentIndex = 0
+      }),
+    editExpenseModal: {
+      isOpen: false,
+      expenseId: null,
+    },
+    openEditExpenseModal: (expenseId: number) =>
+      set((state) => {
+        state.editExpenseModal.isOpen = true
+        state.editExpenseModal.expenseId = expenseId
+      }),
+    closeEditExpenseModal: () =>
+      set((state) => {
+        state.editExpenseModal.isOpen = false
+        state.editExpenseModal.expenseId = null
       }),
     isSaving: false,
     error: undefined,
