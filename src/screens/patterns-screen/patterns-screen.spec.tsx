@@ -19,7 +19,7 @@ jest.mock('@tanstack/react-query', () => ({
 
 jest.mock('react-native-mmkv', () => ({
   useMMKVBoolean: jest.fn(),
-  MMKV: jest.fn().mockImplementation(() => ({
+  createMMKV: jest.fn(() => ({
     getString: jest.fn(),
     set: jest.fn(),
     getBoolean: jest.fn(),

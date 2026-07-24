@@ -1,8 +1,8 @@
 import { MMKV_KEYS } from '@/types/mmkv-keys'
-import { MMKV } from 'react-native-mmkv'
+import { createMMKV } from 'react-native-mmkv'
 
 // Singleton MMKV instance (default ID: 'mmkv.default')
-export const storage = new MMKV()
+export const storage = createMMKV()
 
 /**
  * Updates the last read SMS timestamp.
