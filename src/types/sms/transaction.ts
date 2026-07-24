@@ -1,7 +1,12 @@
-import type { PatternStatusType, PatternTypeType } from '../patterns/enums'
+import type { PatternStatus, TransactionType } from '@/db/schema'
+import type { SMSMessage } from 'rose-sms-reader'
 
+export type { SMSMessage } from 'rose-sms-reader'
+
+/** @deprecated only sms-data-extractor still speaks this — use TransactionType from '@/db/schema' */
 export type Intent = 'not_txn' | 'expense' | 'income'
 
+/** @deprecated legacy pipeline shape — use ExtractedTxn from '@/types/sms-parsing' */
 export interface Transaction {
   id: string
   amount: number
@@ -12,30 +17,13 @@ export interface Transaction {
   patternId?: number
 }
 
-export interface SMSMessage {
-  id: string
-  body: string
-  address: string // sender number
-  date: number
-  read: boolean
-}
-
+/** @deprecated legacy pipeline shape — use PatternDraft from '@/types/sms-parsing' */
 export interface DistinctPattern {
   id: string
   template: string
   groupingTemplate: string
   occurrences: number
   transactions: Transaction[]
-  patternType: PatternTypeType
-  status: PatternStatusType
-}
-
-export interface TransactionPattern {
-  success: boolean
-  transactions: Transaction[]
-  distinctPatterns: DistinctPattern[]
-  totalSMSRead: number
-  totalTransactions: number
-  totalPatterns: number
-  errors: string[]
+  patternType: TransactionType
+  status: PatternStatus
 }

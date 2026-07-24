@@ -1,3 +1,5 @@
+import type { NewTransaction, Transaction } from '@/db/schema'
+
 export interface Expense {
   id: number
   amount: number
@@ -13,19 +15,13 @@ export interface ExpenseMonthStats {
   count: number
 }
 
-export interface InsertTransactionInput {
+export interface InsertTransactionInput extends Pick<NewTransaction, 'amount' | 'currency' | 'type' | 'description'> {
   smsId: number
-  amount: number
-  currency: string
-  type: 'debit' | 'credit'
-  description?: string | null
   categoryId: number
   merchantId: number
 }
 
-export interface UpdateTransactionInput {
-  id: number
-  amount: number
+export interface UpdateTransactionInput extends Pick<Transaction, 'id' | 'amount'> {
   merchantId: number
   categoryId: number
 }

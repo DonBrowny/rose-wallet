@@ -29,6 +29,13 @@
       "when": 1766200502380,
       "tag": "0003_certain_wildside",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1784780522518,
+      "tag": "0004_sticky_cammi",
+      "breakpoints": true
     }
   ]
 }

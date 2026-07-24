@@ -1,3 +1,4 @@
+import { TRANSACTION_TYPE } from '@/db/schema'
 import { saveExpense } from '@/services/database/save-expense'
 import type { Transaction } from '@/types/sms/transaction'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -24,7 +25,7 @@ async function saveExpenseWithPattern(params: SaveExpenseParams) {
     patternId: transaction.patternId,
     amount,
     currency: 'INR',
-    type: 'debit',
+    type: TRANSACTION_TYPE.Debit,
   })
 }
 

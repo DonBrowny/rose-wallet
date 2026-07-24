@@ -1,6 +1,12 @@
-import { patterns, patternSmsGroup } from '@/db/schema'
+import {
+  PATTERN_STATUS,
+  patterns,
+  patternSmsGroup,
+  TRANSACTION_TYPE,
+  type Pattern,
+  type PatternStatus,
+} from '@/db/schema'
 import { FilterOptions } from '@/types/filters'
-import { PatternStatus, PatternType } from '@/types/patterns/enums'
 import type { DistinctPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
 import { and, eq, gte, sql } from 'drizzle-orm'
@@ -12,7 +18,7 @@ export async function upsertPatternsByGrouping(distinct: DistinctPattern[]): Pro
     name: murmurHash32(p.groupingTemplate),
     groupingPattern: p.groupingTemplate,
     extractionPattern: p.template,
-    type: PatternType.Debit,
+    type: TRANSACTION_TYPE.Debit,
     status: p.status,
     isActive: true,
     usageCount: 0,
@@ -37,17 +43,48 @@ export async function upsertPatternsByGrouping(distinct: DistinctPattern[]): Pro
     })
 }
 
-export async function updatePatternStatusById(id: number, status: 'approved' | 'needs-review' | 'rejected') {
+export async function updatePatternStatusById(id: number, status: PatternStatus) {
   const db = getDrizzleDb()
   await db.update(patterns).set({ status, updatedAt: new Date() }).where(eq(patterns.id, id))
 }
 
-export async function updatePatternTemplateByName(name: string, extractionPattern: string) {
+export async function updatePatternTemplateByName(name: string, extractionPattern: string, extractionRegex?: string) {
   const db = getDrizzleDb()
   await db
     .update(patterns)
-    .set({ extractionPattern, updatedAt: new Date(), status: 'approved' })
+    .set({
+      extractionPattern,
+      extractionRegex: extractionRegex ?? null,
+      updatedAt: new Date(),
+      status: PATTERN_STATUS.Approved,
+    })
     .where(eq(patterns.name, name))
+}
+
+export interface PatternsByStatus {
+  active: Pattern[]
+  rejected: Pattern[]
+}
+
+export async function getPatterns(): Promise<PatternsByStatus> {
+  const db = getDrizzleDb()
+  try {
+    const allPatterns = await db.select().from(patterns)
+
+    return allPatterns.reduce<PatternsByStatus>(
+      (acc, p) => {
+        if (p.status === PATTERN_STATUS.Rejected) {
+          acc.rejected.push(p)
+        } else if (p.isActive) {
+          acc.active.push(p)
+        }
+        return acc
+      },
+      { active: [], rejected: [] }
+    )
+  } catch {
+    return { active: [], rejected: [] }
+  }
 }
 
 export async function getPatternByName(name: string) {
@@ -90,7 +127,7 @@ export async function fetchPatterns(options?: FilterOptions): Promise<DistinctPa
     groupingTemplate: row.groupingTemplate ?? '',
     occurrences: row.usageCount ?? 0,
     transactions: [],
-    patternType: (row.type as PatternType) ?? PatternType.Debit,
-    status: (row.status as PatternStatus) ?? PatternStatus.NeedsReview,
+    patternType: row.type,
+    status: row.status,
   }))
 }

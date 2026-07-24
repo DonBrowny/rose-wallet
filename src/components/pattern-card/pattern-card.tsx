@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button/button'
 import { Text } from '@/components/ui/text/text'
+import { PATTERN_STATUS } from '@/db/schema'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
 import { type DistinctPattern } from '@/types/sms/transaction'
 import { useTourGuide } from '@wrack/react-native-tour-guide'
@@ -60,12 +61,12 @@ export const PatternCard = ({ template, status, onReview, onReject, isFirstCard 
     >
       <View style={styles.statusContainer}>
         <View style={styles.statusPill(status)}>
-          {status === 'approved' ? (
+          {status === PATTERN_STATUS.Approved ? (
             <CheckCircle
               size={14}
               style={styles.statusIcon}
             />
-          ) : status === 'rejected' ? (
+          ) : status === PATTERN_STATUS.Rejected ? (
             <XCircle
               size={14}
               style={styles.statusIcon}
@@ -77,7 +78,11 @@ export const PatternCard = ({ template, status, onReview, onReject, isFirstCard 
             />
           )}
           <Text variant='pSm'>
-            {status === 'approved' ? 'Approved' : status === 'rejected' ? 'Rejected' : 'Action Needed'}
+            {status === PATTERN_STATUS.Approved
+              ? 'Approved'
+              : status === PATTERN_STATUS.Rejected
+                ? 'Rejected'
+                : 'Action Needed'}
           </Text>
         </View>
       </View>

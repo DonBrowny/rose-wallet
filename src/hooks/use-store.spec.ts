@@ -20,10 +20,8 @@ const sampleTxns = [
   },
 ] as any
 
-jest.mock('@/utils/mmkv/pattern-samples', () => ({ setPatternSamplesByName: jest.fn() }))
-jest.mock('@/utils/pattern/extraction-template-builder', () => ({ buildExtractionFromUser: () => ({ template: 'T' }) }))
-jest.mock('@/services/database/patterns-repository', () => ({
-  updatePatternTemplateByName: jest.fn().mockResolvedValue(undefined),
+jest.mock('@/services/sms-parsing/pattern-approval-service', () => ({
+  PatternApprovalService: { approve: jest.fn().mockResolvedValue({ warnings: [], accuracy: 1 }) },
 }))
 
 describe('useAppStore', () => {

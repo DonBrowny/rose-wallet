@@ -1,9 +1,9 @@
 import type { Pattern } from '@/db/schema'
-import { getPatterns } from './get-patterns'
+import { getPatterns } from './patterns-repository'
 
 const mockFrom = jest.fn()
 
-jest.mock('@/services/database/db', () => ({
+jest.mock('./db', () => ({
   getDrizzleDb: jest.fn(() => ({
     select: () => ({
       from: mockFrom,
@@ -17,6 +17,9 @@ function makePattern(overrides: Partial<Pattern>): Pattern {
     name: 'test-pattern',
     groupingPattern: 'test grouping',
     extractionPattern: 'test extraction',
+    extractionRegex: null,
+    sender: null,
+    normalizerVersion: 1,
     type: 'debit',
     status: 'approved',
     isActive: true,
