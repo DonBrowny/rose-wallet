@@ -1,0 +1,12 @@
+{
+  "name": "rose-sms-reader",
+  "version": "0.7.6",
+  "description": "Native module for reading transaction SMS messages on Android",
+  "main": "index.ts",
+  "types": "index.ts",
+  "private": true,
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "expo": "*"
+  }
+}
