@@ -3,7 +3,7 @@ import { TRANSACTION_TYPE, type TransactionType } from '@/db/schema'
 const RX_FAILURE = /\b(failed|declined|rejected|unsuccessful|could\s+not\s+be\s+processed)\b/i
 const RX_FUTURE =
   /\b(will\s+be\s+(?:debited|credited|charged)|scheduled\s+(?:on|for)|autopay|auto[-\s]?pay|standing\s+instruction|due\s+(?:on|by)|payment\s+reminder)\b/i
-const RX_DEBIT_VERB = /\b(debited|paid|spent|purchased?|withdrawn|sent|transferred|charged)\b/i
+const RX_DEBIT_VERB = /\b(debited|paid|spent|purchased?|withdraw(?:n|al)|sent|transferred|charged|deducted)\b/i
 const RX_CREDIT_VERB = /\b(credited|received|refund(?:ed)?|cashback|reversed)\b/i
 const RX_AMOUNT_CUE =
   /(?:₹|rs\.?|inr)\s*\d|\b\d[\d,]*(?:\.\d{1,2})?\s*(?:inr|rs)\b|\b(?:debited|credited|paid|received|charged)\s+(?:by|of|for|with)?\s*(?:₹|rs\.?|inr)?\s*\d/i
