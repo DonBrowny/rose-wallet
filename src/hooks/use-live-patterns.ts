@@ -1,6 +1,5 @@
 import { patterns } from '@/db/schema'
 import { getDrizzleDb } from '@/services/database/db'
-import { PatternStatus, PatternType } from '@/types/patterns/enums'
 import type { DistinctPattern } from '@/types/sms/transaction'
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite'
 
@@ -30,8 +29,8 @@ export function useLivePatterns(): {
     groupingTemplate: row.groupingTemplate ?? '',
     occurrences: row.usageCount ?? 0,
     transactions: [], // transactions come from MMKV samples when reviewing
-    patternType: (row.type as PatternType) ?? PatternType.Debit,
-    status: (row.status as PatternStatus) ?? PatternStatus.NeedsReview,
+    patternType: row.type,
+    status: row.status,
   }))
 
   return { data: mapped, isLoading: !data && !error, error }

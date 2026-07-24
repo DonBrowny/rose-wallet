@@ -1,4 +1,4 @@
-import { categories, merchants, smsMessages, transactions } from '@/db/schema'
+import { categories, merchants, smsMessages, TRANSACTION_TYPE, transactions } from '@/db/schema'
 import type { Expense, ExpenseMonthStats, InsertTransactionInput, UpdateTransactionInput } from '@/types/expense'
 import { FilterOptions } from '@/types/filters'
 import { decryptText } from '@/utils/crypto/secure-text'
@@ -88,7 +88,7 @@ export async function fetchRecentExpenses(limit: number = DEFAULT_LIMIT): Promis
     .leftJoin(merchants, eq(transactions.merchantId, merchants.id))
     .leftJoin(categories, eq(transactions.categoryId, categories.id))
     .leftJoin(smsMessages, eq(transactions.smsId, smsMessages.id))
-    .where(eq(transactions.type, 'debit'))
+    .where(eq(transactions.type, TRANSACTION_TYPE.Debit))
     .orderBy(desc(smsMessages.dateTime))
     .limit(limit)
 
@@ -117,7 +117,7 @@ export async function fetchExpensesByMonth(year: number, month: number): Promise
     .leftJoin(merchants, eq(transactions.merchantId, merchants.id))
     .leftJoin(categories, eq(transactions.categoryId, categories.id))
     .leftJoin(smsMessages, eq(transactions.smsId, smsMessages.id))
-    .where(and(eq(transactions.type, 'debit'), between(smsMessages.dateTime, start, end)))
+    .where(and(eq(transactions.type, TRANSACTION_TYPE.Debit), between(smsMessages.dateTime, start, end)))
     .orderBy(desc(smsMessages.dateTime))
 
   return result.map((row) => ({
@@ -147,7 +147,7 @@ export async function getExpenseStats(options?: FilterOptions): Promise<ExpenseM
     query = query.leftJoin(smsMessages, eq(transactions.smsId, smsMessages.id))
   }
 
-  const conditions = [eq(transactions.type, 'debit')]
+  const conditions = [eq(transactions.type, TRANSACTION_TYPE.Debit)]
   if (startDate && endDate) {
     conditions.push(between(smsMessages.dateTime, startDate, endDate))
   } else if (startDate) {

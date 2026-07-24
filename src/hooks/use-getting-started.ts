@@ -1,9 +1,9 @@
 import { ChecklistStatus } from '@/components/checklist-item/checklist-item'
 import { EXPENSE_TOUR_THRESHOLD, PATTERN_TOUR_THRESHOLD } from '@/constants/tour'
+import { PATTERN_STATUS } from '@/db/schema'
 import { fetchPatterns } from '@/services/database/patterns-repository'
 import { getExpenseStats } from '@/services/database/transactions-repository'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
-import { PatternStatus } from '@/types/patterns/enums'
 import { storage } from '@/utils/mmkv/storage'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -54,7 +54,7 @@ export function useGettingStarted() {
 
   const reviewedCount = useMemo(() => {
     if (!patterns) return 0
-    return patterns.filter((p) => p.status !== PatternStatus.NeedsReview).length
+    return patterns.filter((p) => p.status !== PATTERN_STATUS.NeedsReview).length
   }, [patterns])
 
   const patternTourDone = reviewedCount >= PATTERN_TOUR_THRESHOLD

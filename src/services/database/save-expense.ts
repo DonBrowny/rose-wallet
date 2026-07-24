@@ -1,3 +1,4 @@
+import { TRANSACTION_TYPE, type TransactionType } from '@/db/schema'
 import { updateLastReadSmsTimestamp } from '@/utils/mmkv/storage'
 import { getOrCreateCategoryIdByName } from './categories-repository'
 import { ensureMerchantCategoryGroup } from './merchant-category-groups-repository'
@@ -15,7 +16,7 @@ interface SaveExpense {
   patternId?: number
   amount: number
   currency?: string
-  type?: 'debit' | 'credit'
+  type?: TransactionType
   description?: string
 }
 
@@ -43,7 +44,7 @@ export async function saveExpense(input: SaveExpense) {
 
     const amount = Number(input.amount)
     const currency = input.currency ?? 'INR'
-    const type = input.type ?? 'debit'
+    const type = input.type ?? TRANSACTION_TYPE.Debit
     await insertTransaction({
       smsId,
       amount: Number.isFinite(amount) ? amount : 0,

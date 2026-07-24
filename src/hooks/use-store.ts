@@ -1,7 +1,5 @@
-import { updatePatternTemplateByName } from '@/services/database/patterns-repository'
+import { PatternApprovalService } from '@/services/sms-parsing/pattern-approval-service'
 import type { Transaction } from '@/types/sms/transaction'
-import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
-import { buildExtractionFromUser } from '@/utils/pattern/extraction-template-builder'
 import { create, type StoreApi, type UseBoundStore } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
@@ -93,9 +91,7 @@ export const finalizeReview = async (): Promise<void> => {
   try {
     const { patternReview } = useAppStoreBase.getState()
     const { transactions, name } = patternReview
-    setPatternSamplesByName(name, transactions)
-    const { template } = buildExtractionFromUser(transactions)
-    await updatePatternTemplateByName(name, template)
+    await PatternApprovalService.approve(name, transactions)
     useAppStoreBase.setState({ isSaving: false })
   } catch (err: any) {
     console.warn('finalizeReview failed', err)

@@ -10,8 +10,8 @@
  *
  * Example: AD-ICICIT-S
  *
- * This is a pre-filter to reduce ML processing load. We accept T and S suffixes,
- * then the ML classifier determines if it's an actual financial transaction.
+ * This is a cheap pre-filter. We accept T and S suffixes; pattern matching and
+ * the rule-based candidate filter decide if a message is an actual transaction.
  */
 
 const SENDER_FORMAT_REGEX = /^[A-Z]{2}-[A-Z0-9]{6}-[TS]$/i

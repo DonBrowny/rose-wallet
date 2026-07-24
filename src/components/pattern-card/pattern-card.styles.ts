@@ -1,3 +1,4 @@
+import { PATTERN_STATUS } from '@/db/schema'
 import { type DistinctPattern } from '@/types/sms/transaction'
 import { StyleSheet } from 'react-native-unistyles'
 
@@ -23,9 +24,9 @@ export const styles = StyleSheet.create((theme) => ({
     borderRadius: 16,
     gap: 6,
     backgroundColor:
-      status === 'approved'
+      status === PATTERN_STATUS.Approved
         ? theme.colors.accentGreen
-        : status === 'rejected'
+        : status === PATTERN_STATUS.Rejected
           ? theme.colors.accentRed
           : theme.colors.accentOrange,
   }),

@@ -1,4 +1,10 @@
-// sms-skeleton.ts
+/**
+ * Bump whenever the normalization rules below change: stored grouping patterns were
+ * computed with the version recorded on their row and must be recomputed to keep
+ * exact-match lookups working.
+ */
+export const NORMALIZER_VERSION = 1
+
 const PROTECTED = ['UPI', 'IMPS', 'NEFT', 'RTGS', 'POS', 'ATM', 'NETBANKING', 'OTP', 'EMI', 'SI', 'AUTO-PAY', 'AUTOPAY']
 
 const RX_CUR = /(?:₹|rs\.?|inr)/i
