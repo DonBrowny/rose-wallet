@@ -67,6 +67,7 @@ pnpm android
 
 - This app targets Android. SMS read permissions are required for parsing transaction messages.
 - Tested with modern Android SDKs via Expo. Device-specific OEM restrictions may affect background behavior.
+- The `android/` project is generated via `expo prebuild` (Continuous Native Generation) and is gitignored, not committed. Run `pnpm android` (or `npx expo prebuild --platform android`) to generate it locally; EAS Build regenerates it automatically for cloud builds.
 
 ## Project Structure
 

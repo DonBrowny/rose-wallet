@@ -19,7 +19,6 @@ const config: ExpoConfig = {
       foregroundImage: './src/assets/images/icon.png',
       backgroundColor: '#ffffff',
     },
-    edgeToEdgeEnabled: true,
     package: 'com.rosewallet.app',
   },
   web: {
