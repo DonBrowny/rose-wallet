@@ -126,17 +126,17 @@ This project uses EAS (Expo Application Services) with GitHub Actions for Androi
 
    - This updates `package.json` version, commits, and pushes the tag.
 
-2. Publish GitHub Release (triggers QA to Play Beta)
+2. Publish GitHub Release (triggers QA to Play Console's "Alpha" closed-testing track)
    - GitHub → Releases → “Draft new release” → select the new tag → Publish.
-   - This triggers the workflow to build an AAB and auto-submit to Play Beta.
+   - This triggers the workflow to build an AAB and auto-submit to the "Alpha" track.
 
 3. Monitor QA build and submission
    - Actions → QA Android Release (EAS) → view logs.
    - You can also track the build on Expo: `eas build:list` or the EAS dashboard.
 
-4. Test on device from Play Beta
-   - Ensure your tester account is added to the Beta track in Play Console.
-   - Install/update the app from Google Play (Beta) and verify functionality.
+4. Test on device from the "Alpha" track
+   - Ensure your tester account is added to the "Alpha" closed-testing track in Play Console.
+   - Install/update the app from Google Play and verify functionality.
 
 5. Promote to Production (version parity)
    - GitHub → Actions → “Production Android Release (EAS)” → Run workflow.
@@ -153,13 +153,13 @@ This project uses EAS (Expo Application Services) with GitHub Actions for Androi
   - `GOOGLE_SERVICE_ACCOUNT_KEY`: Google Play service account JSON (full contents)
 - Google Play Console
   - App created with package `com.rosewallet.app`
-  - Testing track enabled (Beta) with testers configured
+  - "Alpha" closed-testing track enabled with testers configured
 - EAS Project
   - Project linked (see `extra.eas.projectId` in `app.config.ts`)
   - `eas.json` profiles:
     - `development`: internal dev client (APK)
     - `preview`: internal preview (APK)
-    - `beta`: Play Beta submission (AAB)
+    - `beta`: QA build/submission, targets Play Console's "Alpha" track (AAB) — named `beta` as our internal QA profile, distinct from Play's own track naming
     - `production`: Play Production (AAB, autoIncrement)
 
 ### Versioning
@@ -174,13 +174,13 @@ This project uses EAS (Expo Application Services) with GitHub Actions for Androi
   - This bumps `package.json` version, commits, and creates a Git tag.
   - We do not run `expo prebuild` in the version hook.
 
-### QA (Play Beta) flow
+### QA (Play Console "Alpha" track) flow
 
 1. Create a Git tag and publish a GitHub Release for it.
 2. Workflow `QA Android Release (EAS)` runs automatically and:
    - Builds Android AAB with profile `beta`
-   - Auto-submits to Google Play Beta track
-3. Install from Play Beta on device and test.
+   - Auto-submits to Google Play Console's "Alpha" closed-testing track
+3. Install from the "Alpha" track on device and test.
 
 ### Production flow
 

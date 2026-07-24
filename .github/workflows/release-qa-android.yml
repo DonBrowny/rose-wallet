@@ -27,7 +27,7 @@ jobs:
           mkdir -p .github/keys
           echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > .github/keys/play.json
 
-      - name: EAS build & auto-submit (Android Beta track)
+      - name: EAS build & auto-submit (Android QA - Play Console "Alpha" track)
         uses: ./.github/actions/eas-build
         with:
           platform: android
