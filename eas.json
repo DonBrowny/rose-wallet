@@ -34,7 +34,7 @@
   "submit": {
     "beta": {
       "android": {
-        "track": "beta",
+        "track": "alpha",
         "serviceAccountKeyPath": ".github/keys/play.json"
       }
     },
