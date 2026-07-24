@@ -1,4 +1,5 @@
 import { EditExpenseModal } from '@/components/edit-expense-modal/edit-expense-modal'
+import { ErrorBoundary } from '@/components/error-boundary'
 import { getDrizzleDb } from '@/services/database/db'
 import { appMigrations, runMigrations } from '@/services/migrations'
 import { DB_NAME } from '@/types/constants'
@@ -79,44 +80,46 @@ export default function Root() {
   }
 
   return (
-    <Suspense fallback={<ActivityIndicator size='large' />}>
-      <KeyboardProvider>
-        <QueryClientProvider client={queryClient}>
-          <SQLiteProvider
-            databaseName={DB_NAME}
-            options={{ enableChangeListener: true }}
-            useSuspense
-          >
-            <TourGuideProvider>
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen
-                  name='index'
-                  options={{ headerShown: false }}
+    <ErrorBoundary>
+      <Suspense fallback={<ActivityIndicator size='large' />}>
+        <KeyboardProvider>
+          <QueryClientProvider client={queryClient}>
+            <SQLiteProvider
+              databaseName={DB_NAME}
+              options={{ enableChangeListener: true }}
+              useSuspense
+            >
+              <TourGuideProvider>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen
+                    name='index'
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name='(tabs)'
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name='(shared)'
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name='onboarding'
+                    options={{ headerShown: false }}
+                  />
+                </Stack>
+                <StatusBar
+                  style={barStyle}
+                  backgroundColor={background}
+                  translucent
                 />
-                <Stack.Screen
-                  name='(tabs)'
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name='(shared)'
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name='onboarding'
-                  options={{ headerShown: false }}
-                />
-              </Stack>
-              <StatusBar
-                style={barStyle}
-                backgroundColor={background}
-                translucent
-              />
-              <TourGuideOverlay />
-              <EditExpenseModal />
-            </TourGuideProvider>
-          </SQLiteProvider>
-        </QueryClientProvider>
-      </KeyboardProvider>
-    </Suspense>
+                <TourGuideOverlay />
+                <EditExpenseModal />
+              </TourGuideProvider>
+            </SQLiteProvider>
+          </QueryClientProvider>
+        </KeyboardProvider>
+      </Suspense>
+    </ErrorBoundary>
   )
 }
