@@ -4,7 +4,7 @@ import { storage } from './storage'
 
 // Mock the native MMKV to avoid requiring a real device environment
 jest.mock('react-native-mmkv', () => ({
-  MMKV: jest.fn().mockImplementation(() => ({
+  createMMKV: jest.fn(() => ({
     getString: jest.fn(),
     set: jest.fn(),
   })),
