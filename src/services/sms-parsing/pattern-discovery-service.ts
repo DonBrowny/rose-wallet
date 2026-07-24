@@ -25,7 +25,8 @@ interface CandidateSample {
 export class PatternDiscoveryService {
   static async discoverFromLastNDays(days: number): Promise<{ patternsFound: number }> {
     const range = SMSReaderService.createLastNDaysRange(days)
-    const { candidates } = await SmsSyncService.sync(range)
+    // Queue-backed sync: candidates include the durable backlog, not just this window.
+    const { candidates } = await SmsSyncService.syncWithQueue(range)
 
     const samples: CandidateSample[] = []
     for (const candidate of candidates) {

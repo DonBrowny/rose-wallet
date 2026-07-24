@@ -1,5 +1,10 @@
 import type { Pattern } from '@/db/schema'
 import { getPatterns } from '@/services/database/patterns-repository'
+import {
+  enqueueUnmatchedSms,
+  getUnmatchedSms,
+  updateSmsMatchStatusByIds,
+} from '@/services/database/sms-messages-repository'
 import { compileTemplateToRegex } from '@/utils/pattern/compile-template-to-regex'
 import { normalizeSMSTemplate } from '@/utils/pattern/normalize-sms-template'
 import type { SMSMessage } from 'rose-sms-reader'
@@ -10,12 +15,21 @@ jest.mock('@/services/database/patterns-repository', () => ({
   getPatterns: jest.fn(),
 }))
 
+jest.mock('@/services/database/sms-messages-repository', () => ({
+  enqueueUnmatchedSms: jest.fn(),
+  getUnmatchedSms: jest.fn(),
+  updateSmsMatchStatusByIds: jest.fn(),
+}))
+
 jest.mock('./sms-service', () => ({
   SMSService: { getTransactionalSMS: jest.fn() },
 }))
 
 const mockGetPatterns = getPatterns as jest.Mock
 const mockGetTransactionalSMS = SMSService.getTransactionalSMS as jest.Mock
+const mockEnqueue = enqueueUnmatchedSms as jest.Mock
+const mockGetUnmatched = getUnmatchedSms as jest.Mock
+const mockUpdateStatus = updateSmsMatchStatusByIds as jest.Mock
 
 const DEBIT_SMS =
   'Rs.250 debited from a/c **1234 on 15-08-25 to VPA swiggy@icici UPI Ref 987654321098. Avl Bal Rs.3,750.25'
@@ -25,6 +39,7 @@ const DEBIT_TEMPLATE =
   'Rs.<AMT> debited from a/c **1234 on 15-08-25 to VPA <MERCHANT> UPI Ref 987654321098. Avl Bal Rs.3,750.25'
 const PROMO_SMS = 'Flat 50% off! Order now for just Rs.99. T&C apply.'
 const OTP_SMS = '123456 is your OTP for login. Do not share it with anyone.'
+const ATM_SMS = 'ATM withdrawal of Rs.2,000 from card **9876 on 18-08-25 at HDFC ATM MG ROAD'
 
 let nextId = 1
 function makeSms(body: string): SMSMessage {
@@ -65,6 +80,7 @@ describe('SmsSyncService', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockGetPatterns.mockResolvedValue({ active: [], rejected: [] })
+    mockGetUnmatched.mockResolvedValue([])
   })
 
   it('extracts from SMS matching an approved pattern, lazily compiling the template', async () => {
@@ -144,5 +160,62 @@ describe('SmsSyncService', () => {
     })
 
     await expect(SmsSyncService.sync({ startTimestamp: 0, endTimestamp: 100 })).rejects.toThrow('Permission denied')
+  })
+
+  describe('syncWithQueue', () => {
+    it('persists transaction-relevant fresh SMS and answers from the queue', async () => {
+      mockRead([DEBIT_SMS, OTP_SMS])
+      mockGetUnmatched.mockResolvedValue([
+        { id: 11, sender: 'AD-HDFCBK-T', body: DEBIT_SMS, date: 5 },
+        { id: 12, sender: 'BZ-SBIINB-T', body: DEBIT_VARIANT, date: 6 },
+      ])
+
+      const result = await SmsSyncService.syncWithQueue({ startTimestamp: 0, endTimestamp: 100 })
+
+      // The fresh debit was enqueued; the OTP was not.
+      expect(mockEnqueue).toHaveBeenCalledTimes(1)
+      expect(mockEnqueue.mock.calls[0][0]).toEqual([expect.objectContaining({ body: DEBIT_SMS })])
+
+      // Results come from the queue rows (durable ids), not the fresh scan.
+      expect(result.candidates.map((c) => c.sms.id)).toEqual(['11', '12'])
+      expect(result.totalRead).toBe(2)
+      expect(mockUpdateStatus).toHaveBeenCalledWith([], 'ignored')
+    })
+
+    it('resurfaces the backlog once a pattern is approved', async () => {
+      const pattern = makePattern({
+        id: 9,
+        groupingPattern: normalizeSMSTemplate(DEBIT_SMS),
+        extractionPattern: DEBIT_TEMPLATE,
+      })
+      mockGetPatterns.mockResolvedValue({ active: [pattern], rejected: [] })
+      mockRead([])
+      mockGetUnmatched.mockResolvedValue([
+        { id: 21, sender: 'AD-HDFCBK-T', body: DEBIT_SMS, date: 5 },
+        { id: 22, sender: 'AD-HDFCBK-T', body: DEBIT_VARIANT, date: 6 },
+      ])
+
+      const result = await SmsSyncService.syncWithQueue({ startTimestamp: 0, endTimestamp: 100 })
+
+      expect(result.extracted.map((e) => ({ id: e.sms.id, amount: e.amount }))).toEqual([
+        { id: '21', amount: 250 },
+        { id: '22', amount: 1500 },
+      ])
+    })
+
+    it('flushes queue rows whose pattern was rejected', async () => {
+      const rejected = makePattern({ status: 'rejected', groupingPattern: normalizeSMSTemplate(DEBIT_SMS) })
+      mockGetPatterns.mockResolvedValue({ active: [], rejected: [rejected] })
+      mockRead([])
+      mockGetUnmatched.mockResolvedValue([
+        { id: 31, sender: 'AD-HDFCBK-T', body: DEBIT_SMS, date: 5 },
+        { id: 32, sender: 'BZ-SBIINB-T', body: ATM_SMS, date: 6 },
+      ])
+
+      const result = await SmsSyncService.syncWithQueue({ startTimestamp: 0, endTimestamp: 100 })
+
+      expect(mockUpdateStatus).toHaveBeenCalledWith([31], 'ignored')
+      expect(result.candidates.map((c) => c.sms.id)).toEqual(['32'])
+    })
   })
 })

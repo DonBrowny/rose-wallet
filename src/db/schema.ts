@@ -23,13 +23,22 @@ export const SMS_MATCH_STATUS = {
   Ignored: 'ignored',
 } as const satisfies Record<string, SmsMatchStatus>
 
-export const smsMessages = sqliteTable('sms_messages', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  sender: text('sender').notNull(),
-  body: text('body').notNull(),
-  dateTime: integer('date_time', { mode: 'timestamp' }).notNull(),
-  matchStatus: text('match_status', { enum: SMS_MATCH_STATUSES }).notNull().default('unmatched'),
-})
+export const smsMessages = sqliteTable(
+  'sms_messages',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    sender: text('sender').notNull(),
+    body: text('body').notNull(),
+    dateTime: integer('date_time', { mode: 'timestamp' }).notNull(),
+    matchStatus: text('match_status', { enum: SMS_MATCH_STATUSES }).notNull().default('unmatched'),
+    // MurmurHash32 of the plaintext sender|date|body — dedupe key so overlapping
+    // sync windows never enqueue the same SMS twice. Null on rows predating it.
+    smsHash: text('sms_hash'),
+  },
+  (table) => ({
+    uniqueSmsHash: uniqueIndex('unique_sms_hash').on(table.smsHash),
+  })
+)
 
 export const merchants = sqliteTable('merchants', {
   id: integer('id').primaryKey({ autoIncrement: true }),

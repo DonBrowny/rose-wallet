@@ -61,6 +61,15 @@ export async function updatePatternTemplateByName(name: string, extractionPatter
     .where(eq(patterns.name, name))
 }
 
+export async function incrementPatternUsageByName(name: string, count: number) {
+  if (count <= 0) return
+  const db = getDrizzleDb()
+  await db
+    .update(patterns)
+    .set({ usageCount: sql`${patterns.usageCount} + ${count}`, lastUsedAt: new Date(), updatedAt: new Date() })
+    .where(eq(patterns.name, name))
+}
+
 export interface PatternsByStatus {
   active: Pattern[]
   rejected: Pattern[]

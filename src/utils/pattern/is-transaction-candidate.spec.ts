@@ -4,6 +4,7 @@ describe('isTransactionCandidate', () => {
   it('detects completed debits', () => {
     expect(isTransactionCandidate('Rs.250 debited from a/c **1234 to VPA swiggy@icici')).toBe('debit')
     expect(isTransactionCandidate('You spent Rs.1,500.00 on your HDFC card at AMAZON')).toBe('debit')
+    expect(isTransactionCandidate('ATM withdrawal of Rs.2,000 from card **9876 at HDFC ATM MG ROAD')).toBe('debit')
   })
 
   it('detects completed credits', () => {

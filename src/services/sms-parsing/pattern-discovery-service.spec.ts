@@ -15,7 +15,7 @@ jest.mock('@/utils/mmkv/pattern-samples', () => ({
 }))
 
 jest.mock('./sms-sync-service', () => ({
-  SmsSyncService: { sync: jest.fn() },
+  SmsSyncService: { syncWithQueue: jest.fn() },
 }))
 
 jest.mock('./sms-reader-service', () => ({
@@ -24,7 +24,7 @@ jest.mock('./sms-reader-service', () => ({
   },
 }))
 
-const mockSync = SmsSyncService.sync as jest.Mock
+const mockSync = SmsSyncService.syncWithQueue as jest.Mock
 const mockUpsert = upsertPatternsByGrouping as jest.Mock
 const mockSetSamples = setPatternSamplesByName as jest.Mock
 

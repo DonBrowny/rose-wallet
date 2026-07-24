@@ -17,7 +17,7 @@ async function fetchSMSTransactions(): Promise<Transaction[]> {
   const startTimestamp = typeof lastRead === 'number' ? lastRead : getOneMonthAgoTimestamp()
   const endTimestamp = Date.now()
 
-  const result = await SmsSyncService.sync({ startTimestamp, endTimestamp })
+  const result = await SmsSyncService.syncWithQueue({ startTimestamp, endTimestamp })
 
   // Pattern-matched messages: deterministic extraction, linked to their pattern.
   const fromPatterns: Transaction[] = result.extracted.map((e) => ({

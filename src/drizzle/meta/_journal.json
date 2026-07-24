@@ -36,6 +36,13 @@
       "when": 1784780522518,
       "tag": "0004_sticky_cammi",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1784861835710,
+      "tag": "0005_curly_war_machine",
+      "breakpoints": true
     }
   ]
 }
