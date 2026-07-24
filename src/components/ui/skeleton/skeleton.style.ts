@@ -6,7 +6,11 @@ export const styles = StyleSheet.create((theme) => ({
     overflow: 'hidden',
   },
   shimmer: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: theme.colors.grey2,
   },
 }))
