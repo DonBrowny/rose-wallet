@@ -50,9 +50,6 @@ importers:
       diff:
         specifier: ^9.0.0
         version: 9.0.0
-      diff-match-patch-ts:
-        specifier: ^0.6.0
-        version: 0.6.0
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.5(expo-sqlite@16.0.10(expo@54.0.36)(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))
@@ -149,21 +146,12 @@ importers:
       react-native-web:
         specifier: ~0.21.2
         version: 0.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      react-native-webview:
-        specifier: 13.15.0
-        version: 13.15.0(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       react-native-worklets:
         specifier: 0.5.1
         version: 0.5.1(@babel/core@7.29.7)(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       rose-sms-reader:
         specifier: file:modules/rose-sms-reader
         version: file:modules/rose-sms-reader(expo@54.0.36)
-      string-similarity-js:
-        specifier: ^2.1.4
-        version: 2.1.4
-      transaction-sms-parser:
-        specifier: ^3.3.0
-        version: 3.3.0
       zustand:
         specifier: ^5.0.10
         version: 5.0.14(@types/react@19.1.17)(immer@10.1.3)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))
@@ -2984,9 +2972,6 @@ packages:
 
   detect-node-es@1.1.0:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
-
-  diff-match-patch-ts@0.6.0:
-    resolution: {integrity: sha512-U0uPIJ+wJqgaBoVw2MFSFpGIk7q3mJJ+/sehbxDZFv4Gx6a1GOmrsSLmxVDDrGtRL4Q9de084aa5lVpCHn+eUw==}
 
   diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
@@ -5996,9 +5981,6 @@ packages:
     resolution: {integrity: sha512-9Ep08KAMUn0OadnVaBuRdE2l615CQ508kr0XMadjClfYpdCyvrbFp6Taebo8yyxokQ4viUd/xPPUA4FGgUa0ow==}
     engines: {node: '>=12.20'}
 
-  string-similarity-js@2.1.4:
-    resolution: {integrity: sha512-uApODZNjCHGYROzDSAdCmAHf60L/pMDHnP/yk6TAbvGg7JSPZlSto/ceCI7hZEqzc53/juU2aOJFkM2yUVTMTA==}
-
   string-width@1.0.2:
     resolution: {integrity: sha512-0XsVpQLnVCXHJfyEs8tC0zpTVIr5PKKsQtkT29IwupnPTjtPmQ3xT/4yCREF9hYkV/3M3kzcUTSAZT6a6h81tw==}
     engines: {node: '>=0.10.0'}
@@ -6208,9 +6190,6 @@ packages:
   tr46@3.0.0:
     resolution: {integrity: sha512-l7FvfAHlcmulp8kr+flpQZmVwtu7nfRV7NZujtN0OqES8EL4O4e0qqzL0DC5gAvx/ZC/9lk6rhcUwYvkBnBnYA==}
     engines: {node: '>=12'}
-
-  transaction-sms-parser@3.3.0:
-    resolution: {integrity: sha512-OcqIyUTFI1wAgUNoEIwAhXaP47vwMnYCA6AoiRNiN3hiR7bfMegA1vWet3lLde8O6SOHzXd5y2kygZoh/OxDVw==}
 
   ts-api-utils@2.1.0:
     resolution: {integrity: sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==}
@@ -9771,8 +9750,6 @@ snapshots:
 
   detect-node-es@1.1.0: {}
 
-  diff-match-patch-ts@0.6.0: {}
-
   diff-sequences@29.6.3: {}
 
   diff@9.0.0: {}
@@ -12903,6 +12880,7 @@ snapshots:
       invariant: 2.2.4
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0)
+    optional: true
 
   react-native-worklets@0.5.1(@babel/core@7.29.7)(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -13437,8 +13415,6 @@ snapshots:
       char-regex: 2.0.2
       strip-ansi: 7.1.0
 
-  string-similarity-js@2.1.4: {}
-
   string-width@1.0.2:
     dependencies:
       code-point-at: 1.1.0
@@ -13671,8 +13647,6 @@ snapshots:
   tr46@3.0.0:
     dependencies:
       punycode: 2.3.1
-
-  transaction-sms-parser@3.3.0: {}
 
   ts-api-utils@2.1.0(typescript@5.9.3):
     dependencies:

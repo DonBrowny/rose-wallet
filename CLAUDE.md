@@ -99,7 +99,7 @@ The SMS parsing system is the core of the app, consisting of several services:
 
 3. **SMSDataExtractor** (`src/services/sms-parsing/sms-data-extractor-service.ts`):
    - Extracts transaction details (amount, merchant, bank) from SMS body
-   - Uses the `transaction-sms-parser` library
+   - Rule-based (in-house regex heuristics) — used as the bootstrap path for messages with no approved pattern
 
 4. **SMSService** (`src/services/sms-parsing/sms-service.ts`):
    - Orchestrates the full pipeline: permission → read → classify → extract
