@@ -2,7 +2,7 @@ import { incrementPatternUsageByName, updatePatternTemplateByName } from '@/serv
 import { getUnmatchedSms } from '@/services/database/sms-messages-repository'
 import type { Transaction } from '@/types/sms/transaction'
 import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
-import { extractWithPattern } from '@/utils/pattern/extract-with-pattern'
+import { extractWithTemplate } from '@/utils/pattern/extract-with-template'
 import { PatternApprovalService } from './pattern-approval-service'
 
 jest.mock('@/services/database/patterns-repository', () => ({
@@ -54,7 +54,7 @@ describe('PatternApprovalService', () => {
     mockGetUnmatched.mockResolvedValue([])
   })
 
-  it('builds, verifies, and saves the template with its compiled regex', async () => {
+  it('builds, verifies, and saves the template', async () => {
     const result = await PatternApprovalService.approve('pattern-name', samples)
 
     expect(result.accuracy).toBe(1)
@@ -62,14 +62,14 @@ describe('PatternApprovalService', () => {
     expect(mockSetSamples).toHaveBeenCalledWith('pattern-name', samples)
     expect(mockUpdate).toHaveBeenCalledTimes(1)
 
-    const [name, template, regexSource] = mockUpdate.mock.calls[0]
+    const [name, template] = mockUpdate.mock.calls[0]
     expect(name).toBe('pattern-name')
     expect(template).toContain('<AMT>')
     expect(template).toContain('<MERCHANT>')
 
     const fresh =
       'Rs.2,345.67 debited from a/c **1234 on 18-08-25 to VPA bigbasket@icici UPI Ref 111222333444. Avl Bal Rs.10,000.00'
-    expect(extractWithPattern(regexSource, fresh)).toEqual({ amount: 2345.67, merchantRaw: 'bigbasket@icici' })
+    expect(extractWithTemplate(template, fresh)).toEqual({ amount: 2345.67, merchantRaw: 'bigbasket@icici' })
   })
 
   it('sweeps the residual queue and reports how many messages the pattern now reads', async () => {

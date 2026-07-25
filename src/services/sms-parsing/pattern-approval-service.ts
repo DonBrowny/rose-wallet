@@ -3,7 +3,7 @@ import { getUnmatchedSms } from '@/services/database/sms-messages-repository'
 import type { Transaction } from '@/types/sms/transaction'
 import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { buildTemplateFromLabels } from '@/utils/pattern/build-template-from-labels'
-import { extractWithPattern } from '@/utils/pattern/extract-with-pattern'
+import { extractWithTemplate } from '@/utils/pattern/extract-with-template'
 
 /** A template must reproduce at least this fraction of its own reviewed samples. */
 const MIN_ACCURACY = 0.5
@@ -40,13 +40,13 @@ export class PatternApprovalService {
       throw new Error('Could not build a template that reproduces the reviewed samples')
     }
 
-    await updatePatternTemplateByName(name, built.template, built.regexSource)
+    await updatePatternTemplateByName(name, built.template)
 
     // Backlog sweep: count queued messages the new template reads. They stay
     // 'unmatched' — the next sync surfaces them as ready-to-confirm expenses;
     // they leave the queue when the user saves them.
     const queue = await getUnmatchedSms()
-    const backlogMatches = queue.filter((row) => extractWithPattern(built.regexSource, row.body)?.amount).length
+    const backlogMatches = queue.filter((row) => extractWithTemplate(built.template, row.body)?.amount).length
     await incrementPatternUsageByName(name, backlogMatches)
 
     return { warnings: built.warnings, accuracy: built.accuracy, backlogMatches }

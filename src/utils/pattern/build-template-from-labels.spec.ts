@@ -1,5 +1,5 @@
 import { buildTemplateFromLabels } from './build-template-from-labels'
-import { extractWithPattern } from './extract-with-pattern'
+import { extractWithTemplate } from './extract-with-template'
 
 describe('buildTemplateFromLabels', () => {
   const samples = [
@@ -29,7 +29,7 @@ describe('buildTemplateFromLabels', () => {
     expect(built!.template).toContain('<MERCHANT>')
 
     for (const sample of samples) {
-      const extraction = extractWithPattern(built!.regexSource, sample.body)
+      const extraction = extractWithTemplate(built!.template, sample.body)
       expect(extraction?.amount).toBe(sample.amount)
       expect(extraction?.merchantRaw).toBe(sample.merchant)
     }
@@ -39,7 +39,7 @@ describe('buildTemplateFromLabels', () => {
     const built = buildTemplateFromLabels(samples)
     const fresh =
       'Rs.2,345.67 debited from a/c **1234 on 18-08-25 to VPA bigbasket@icici UPI Ref 111222333444. Avl Bal Rs.10,000.00'
-    expect(extractWithPattern(built!.regexSource, fresh)).toEqual({
+    expect(extractWithTemplate(built!.template, fresh)).toEqual({
       amount: 2345.67,
       merchantRaw: 'bigbasket@icici',
     })
@@ -50,7 +50,7 @@ describe('buildTemplateFromLabels', () => {
       { body: 'ATM withdrawal of Rs.500 from card **9876 on 15-08-25', amount: 500 },
     ])
     expect(built?.accuracy).toBe(1)
-    expect(extractWithPattern(built!.regexSource, 'ATM withdrawal of Rs.2,000 from card **9876 on 20-08-25')).toEqual({
+    expect(extractWithTemplate(built!.template, 'ATM withdrawal of Rs.2,000 from card **9876 on 20-08-25')).toEqual({
       amount: 2000,
     })
   })

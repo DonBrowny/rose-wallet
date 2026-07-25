@@ -5,7 +5,6 @@ import {
   getUnmatchedSms,
   updateSmsMatchStatusByIds,
 } from '@/services/database/sms-messages-repository'
-import { compileTemplateToRegex } from '@/utils/pattern/compile-template-to-regex'
 import { normalizeSMSTemplate } from '@/utils/pattern/normalize-sms-template'
 import type { SMSMessage } from 'rose-sms-reader'
 import { SMSService } from './sms-service'
@@ -83,7 +82,7 @@ describe('SmsSyncService', () => {
     mockGetUnmatched.mockResolvedValue([])
   })
 
-  it('extracts from SMS matching an approved pattern, lazily compiling the template', async () => {
+  it('extracts from SMS matching an approved pattern', async () => {
     const pattern = makePattern({
       id: 7,
       name: 'hdfc-upi-debit',
@@ -101,11 +100,11 @@ describe('SmsSyncService', () => {
     expect(result.candidates).toHaveLength(0)
   })
 
-  it('uses the stored compiled regex when present', async () => {
+  it('extracts from the template even when a stale compiled regex is stored', async () => {
     const pattern = makePattern({
       groupingPattern: normalizeSMSTemplate(DEBIT_SMS),
       extractionPattern: DEBIT_TEMPLATE,
-      extractionRegex: compileTemplateToRegex(DEBIT_TEMPLATE).source,
+      extractionRegex: '^a stale compiled regex that matches nothing$',
     })
     mockGetPatterns.mockResolvedValue({ active: [pattern], rejected: [] })
     mockRead([DEBIT_SMS])
