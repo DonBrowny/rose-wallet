@@ -86,6 +86,7 @@ export const patterns = sqliteTable(
     name: text('name').notNull(),
     groupingPattern: text('grouping_pattern').notNull(),
     extractionPattern: text('extraction_pattern').notNull(),
+    // Unused since diff-based extraction replaced compiled regexes; kept so no migration is needed.
     extractionRegex: text('extraction_regex'),
     sender: text('sender'),
     normalizerVersion: integer('normalizer_version').notNull().default(1),

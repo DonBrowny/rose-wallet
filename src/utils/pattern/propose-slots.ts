@@ -1,5 +1,5 @@
 import { amountToPattern } from './amount-to-pattern'
-import { AMT_PLACEHOLDER, MERCHANT_PLACEHOLDER } from './compile-template-to-regex'
+import { AMT_PLACEHOLDER, MERCHANT_PLACEHOLDER } from './placeholders'
 
 export interface SlotProposal {
   template: string

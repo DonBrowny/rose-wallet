@@ -8,8 +8,7 @@ import {
   type QueuedSms,
 } from '@/services/database/sms-messages-repository'
 import { bigrams } from '@/utils/pattern/bigrams'
-import { compileTemplateToRegex } from '@/utils/pattern/compile-template-to-regex'
-import { extractWithPattern } from '@/utils/pattern/extract-with-pattern'
+import { extractWithTemplate } from '@/utils/pattern/extract-with-template'
 import { isTransactionCandidate } from '@/utils/pattern/is-transaction-candidate'
 import { matchPattern, type MatchCandidate } from '@/utils/pattern/match-pattern'
 import { normalizeSMSTemplate } from '@/utils/pattern/normalize-sms-template'
@@ -42,7 +41,6 @@ export interface SyncResult {
 interface TriageContext {
   activeCandidates: MatchCandidate<Pattern>[]
   rejectedCandidates: MatchCandidate<Pattern>[]
-  getRegexSource: (pattern: Pattern) => string
 }
 
 function toMatchCandidates(patternList: Pattern[]): MatchCandidate<Pattern>[] {
@@ -63,23 +61,9 @@ export class SmsSyncService {
   private static async buildContext(): Promise<TriageContext> {
     const { active, rejected } = await getPatterns()
 
-    // Stored patterns approved before regex compilation existed carry only the
-    // template — compile once per pattern per sync.
-    const regexCache = new Map<number, string>()
-    const getRegexSource = (pattern: Pattern): string => {
-      const cached = regexCache.get(pattern.id)
-      if (cached !== undefined) return cached
-      const source =
-        pattern.extractionRegex ??
-        (pattern.extractionPattern ? compileTemplateToRegex(pattern.extractionPattern).source : '')
-      regexCache.set(pattern.id, source)
-      return source
-    }
-
     return {
       activeCandidates: toMatchCandidates(active),
       rejectedCandidates: toMatchCandidates(rejected),
-      getRegexSource,
     }
   }
 
@@ -96,7 +80,7 @@ export class SmsSyncService {
 
       const match = matchPattern(normalized, context.activeCandidates)
       if (match) {
-        const extraction = extractWithPattern(context.getRegexSource(match.value), sms.body)
+        const extraction = extractWithTemplate(match.value.extractionPattern, sms.body)
         if (extraction?.amount) {
           result.extracted.push({
             sms,
