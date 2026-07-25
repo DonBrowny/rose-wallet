@@ -4,8 +4,8 @@ import { getMonthRange } from '@/utils/date/get-month-range'
 import { GroupedExpenseItem, groupExpensesByDate } from '@/utils/expense/group-expenses-by-date'
 import { useQuery } from '@tanstack/react-query'
 
-export const EXPENSES_BY_MONTH_QUERY_KEY = ['expenses-by-month'] as const
-export const MONTH_TOTAL_QUERY_KEY = ['month-total'] as const
+export const EXPENSES_BY_MONTH_QUERY_KEY = 'expenses-by-month'
+export const MONTH_TOTAL_QUERY_KEY = 'month-total'
 
 export interface MonthExpensesData {
   groupedItems: GroupedExpenseItem[]
@@ -23,7 +23,7 @@ function transformExpenses(expenses: Expense[]): MonthExpensesData {
 
 export function useGetExpensesByMonth(year: number, month: number) {
   return useQuery({
-    queryKey: [...EXPENSES_BY_MONTH_QUERY_KEY, year, month],
+    queryKey: [EXPENSES_BY_MONTH_QUERY_KEY, year, month],
     queryFn: () => fetchExpensesByMonth(year, month),
     select: transformExpenses,
   })
@@ -32,7 +32,7 @@ export function useGetExpensesByMonth(year: number, month: number) {
 export function useGetMonthTotal(year: number, month: number) {
   const { start, end } = getMonthRange(year, month)
   return useQuery<ExpenseMonthStats>({
-    queryKey: [...MONTH_TOTAL_QUERY_KEY, year, month],
+    queryKey: [MONTH_TOTAL_QUERY_KEY, year, month],
     queryFn: () => getExpenseStats({ filter: { startDate: start, endDate: end } }),
   })
 }

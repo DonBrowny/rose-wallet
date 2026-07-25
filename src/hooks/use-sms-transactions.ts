@@ -52,9 +52,11 @@ async function fetchSMSTransactions(): Promise<Transaction[]> {
   return [...fromPatterns, ...fromCandidates].sort((a, b) => a.transactionDate - b.transactionDate)
 }
 
+export const SMS_TRANSACTIONS_QUERY_KEY = 'sms-transactions'
+
 export function useSMSTransactions() {
   const query = useQuery({
-    queryKey: ['sms-transactions'],
+    queryKey: [SMS_TRANSACTIONS_QUERY_KEY],
     queryFn: fetchSMSTransactions,
   })
 

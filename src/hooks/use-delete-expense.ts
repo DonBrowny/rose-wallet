@@ -10,8 +10,8 @@ export function useDeleteExpense() {
   return useMutation({
     mutationFn: (id: number) => deleteTransaction(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: MONTH_TOTAL_QUERY_KEY })
-      queryClient.invalidateQueries({ queryKey: EXPENSES_BY_MONTH_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: [MONTH_TOTAL_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: [EXPENSES_BY_MONTH_QUERY_KEY] })
       queryClient.invalidateQueries({ queryKey: RECENT_EXPENSES_QUERY_KEY })
       queryClient.invalidateQueries({ queryKey: [GETTING_STARTED_TRANSACTIONS_QUERY_KEY] })
     },
