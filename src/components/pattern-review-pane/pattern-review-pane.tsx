@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card/card'
 import { GETTING_STARTED_PATTERNS_QUERY_KEY } from '@/hooks/use-getting-started'
 import { finalizeReview, reviewNext, reviewPrev, reviewReset, reviewUpdateItem } from '@/hooks/use-store'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
-import type { Transaction } from '@/types/sms/transaction'
+import type { ReviewTxn } from '@/types/sms-parsing'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTourGuide } from '@wrack/react-native-tour-guide'
 import { useRouter } from 'expo-router'
@@ -16,7 +16,7 @@ import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './pattern-review-pane.styes'
 
 interface Props {
-  sample: Transaction | undefined
+  sample: ReviewTxn | undefined
   index: number
   total: number
 }
@@ -66,13 +66,13 @@ export function PatternReviewPane({ sample, index, total }: Props) {
   const isLast = index === total - 1
 
   const [amountValue, setAmountValue] = useState(sample ? String(sample.amount) : '')
-  const [merchantValue, setMerchantValue] = useState(sample?.merchant ?? '')
+  const [merchantValue, setMerchantValue] = useState(sample?.merchantRaw ?? '')
 
   // Sync local state when sample changes
   useEffect(() => {
     if (!sample) return
     setAmountValue(String(sample.amount))
-    setMerchantValue(sample.merchant)
+    setMerchantValue(sample.merchantRaw)
   }, [sample])
 
   if (!sample) return null
@@ -80,7 +80,7 @@ export function PatternReviewPane({ sample, index, total }: Props) {
   const persist = () => {
     const parsed = parseFloat(amountValue)
     const amount = isNaN(parsed) ? sample.amount : parsed
-    reviewUpdateItem(index, { amount, merchant: merchantValue })
+    reviewUpdateItem(index, { amount, merchantRaw: merchantValue })
   }
 
   const handleNextOrApprove = () => {
@@ -110,11 +110,11 @@ export function PatternReviewPane({ sample, index, total }: Props) {
       <View ref={viewRef}>
         <Card>
           <SmsReviewItem
-            id={sample.message.id}
-            bankName={sample.bankName}
-            date={sample.message.date}
-            messageBody={sample.message.body}
-            merchant={sample.merchant}
+            id={String(sample.smsId)}
+            bankName={sample.bank ?? 'Unknown'}
+            date={sample.date}
+            messageBody={sample.body}
+            merchant={sample.merchantRaw}
             amount={sample.amount}
             amountValue={amountValue}
             merchantValue={merchantValue}

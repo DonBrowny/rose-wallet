@@ -22,7 +22,7 @@ import { styles } from './add-expense.style'
 export default function AddExpenseScreen() {
   const { theme } = useUnistyles()
   const router = useRouter()
-  const { data: transactions = [], isLoading, isFetching, errorMessage, refetch } = useSMSTransactions()
+  const { data: transactions = [], isLoading, errorMessage, refetch } = useSMSTransactions()
   const { data: favoriteCategories = [], isLoading: isFavoriteCategoriesLoading } = useGetFavoriteCategories()
   const { mutate: saveFavoriteCategories } = useSetFavoriteCategories()
   const { mutate: saveExpense, isPending: isSaving } = useSaveExpense()
@@ -42,12 +42,12 @@ export default function AddExpenseScreen() {
     const tx = transactions[currentIndex]
     if (!tx) return
     setAmountValue(String(tx.amount ?? ''))
-    setMerchantValue(tx.merchant ?? '')
+    setMerchantValue(tx.merchantRaw)
 
     // Auto-fill category based on merchant-category mapping
     async function autoFillCategory() {
-      if (tx.merchant) {
-        const category = await getCategoryByMerchantName(tx.merchant)
+      if (tx.merchantRaw) {
+        const category = await getCategoryByMerchantName(tx.merchantRaw)
         setCategoryValue(category ?? '')
       } else {
         setCategoryValue('')
@@ -63,7 +63,7 @@ export default function AddExpenseScreen() {
   function handleReject() {
     const tx = transactions[currentIndex]
     if (tx) {
-      updateLastReadSmsTimestamp(tx.transactionDate)
+      updateLastReadSmsTimestamp(tx.date)
     }
 
     if (isLastItem) {
@@ -86,11 +86,11 @@ export default function AddExpenseScreen() {
       },
       {
         onSuccess: () => {
+          // The saved item is removed from the cached list, so the next
+          // transaction slides into currentIndex — advancing would skip one.
           if (isLastItem) {
             setIsCompleted(true)
-            return
           }
-          setCurrentIndex(currentIndex + 1)
         },
         onError: (e) => {
           console.warn('Confirm expense failed', e)
@@ -103,7 +103,7 @@ export default function AddExpenseScreen() {
     router.back()
   }
 
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return (
       <View style={styles.centeredContainer}>
         <Loading

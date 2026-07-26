@@ -19,6 +19,7 @@ export interface ExtractedSms {
   sms: SMSMessage
   patternId: number
   patternName: string
+  type: TransactionType
   amount: number
   merchantRaw?: string
 }
@@ -86,6 +87,7 @@ export class SmsSyncService {
             sms,
             patternId: match.value.id,
             patternName: match.value.name,
+            type: match.value.type,
             amount: extraction.amount,
             merchantRaw: extraction.merchantRaw,
           })

@@ -10,6 +10,14 @@ export interface ExtractedTxn {
   patternId?: number
 }
 
+/** An ExtractedTxn joined with its decrypted source SMS, for review screens. */
+export interface ReviewTxn extends ExtractedTxn {
+  sender: string
+  body: string
+  /** Best-effort bank display name from the bootstrap extractor. */
+  bank?: string
+}
+
 /** A discovered pattern awaiting user review. Field names match the patterns table. */
 export interface PatternDraft
   extends Pick<NewPattern, 'name' | 'groupingPattern' | 'extractionPattern' | 'type' | 'sender'> {
