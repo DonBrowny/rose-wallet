@@ -4,7 +4,7 @@ import { MMKV_KEYS } from '@/types/mmkv-keys'
 import type { ReviewTxn } from '@/types/sms-parsing'
 import { TRANSACTION_TYPE } from '@/db/schema'
 import { storage } from '@/utils/mmkv/storage'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, type QueryClient } from '@tanstack/react-query'
 
 function getOneMonthAgoTimestamp(): number {
   const d = new Date()
@@ -57,6 +57,17 @@ async function fetchSMSTransactions(): Promise<ReviewTxn[]> {
 }
 
 export const SMS_TRANSACTIONS_QUERY_KEY = 'sms-transactions'
+
+/**
+ * Drop a reviewed (saved or rejected) SMS from the cached review list instead of
+ * invalidating: a refetch re-runs the whole SMS sync pipeline (native read + queue
+ * triage) between every review action. Cancel any in-flight refetch first so its
+ * stale result — fetched before this SMS's DB status changed — can't resurrect it.
+ */
+export async function removeReviewedSmsFromCache(queryClient: QueryClient, smsId: number) {
+  await queryClient.cancelQueries({ queryKey: [SMS_TRANSACTIONS_QUERY_KEY] })
+  queryClient.setQueryData<ReviewTxn[]>([SMS_TRANSACTIONS_QUERY_KEY], (old) => old?.filter((t) => t.smsId !== smsId))
+}
 
 export function useSMSTransactions() {
   const query = useQuery({

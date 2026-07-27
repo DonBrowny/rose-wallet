@@ -7,13 +7,13 @@ import { Text } from '@/components/ui/text/text'
 import { DEFAULT_CATEGORIES } from '@/constants/categories'
 import { useGetFavoriteCategories, useSetFavoriteCategories } from '@/hooks/use-categories'
 import { useRefetchOnFocus } from '@/hooks/use-refetch-on-focus'
+import { useRejectExpense } from '@/hooks/use-reject-expense'
 import { useSaveExpense } from '@/hooks/use-save-expense'
 import { useSMSTransactions } from '@/hooks/use-sms-transactions'
 import { getCategoryByMerchantName } from '@/services/database/categories-repository'
-import { updateLastReadSmsTimestamp } from '@/utils/mmkv/storage'
 import { useRouter } from 'expo-router'
 import { Check, MessageSquareText, X } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import { useUnistyles } from 'react-native-unistyles'
@@ -26,7 +26,7 @@ export default function AddExpenseScreen() {
   const { data: favoriteCategories = [], isLoading: isFavoriteCategoriesLoading } = useGetFavoriteCategories()
   const { mutate: saveFavoriteCategories } = useSetFavoriteCategories()
   const { mutate: saveExpense, isPending: isSaving } = useSaveExpense()
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const { mutate: rejectExpense, isPending: isRejecting } = useRejectExpense()
   const [amountValue, setAmountValue] = useState('')
   const [merchantValue, setMerchantValue] = useState('')
   const [categoryValue, setCategoryValue] = useState('')
@@ -35,11 +35,20 @@ export default function AddExpenseScreen() {
 
   useRefetchOnFocus(refetch)
 
-  const isLastItem = currentIndex >= transactions.length - 1
+  // Confirming/rejecting removes the item from the list rather than advancing
+  // through it, so the original count has to be captured once for "X of Y".
+  const initialTotalRef = useRef<number | null>(null)
+  if (transactions.length > 0 && initialTotalRef.current === null) {
+    initialTotalRef.current = transactions.length
+  }
+  const totalCount = initialTotalRef.current ?? transactions.length
+
+  const isLastItem = transactions.length <= 1
+  const isBusy = isSaving || isRejecting
 
   // Prefill inputs when the current item changes (including auto-fill category)
   useEffect(() => {
-    const tx = transactions[currentIndex]
+    const tx = transactions[0]
     if (!tx) return
     setAmountValue(String(tx.amount ?? ''))
     setMerchantValue(tx.merchantRaw)
@@ -54,27 +63,32 @@ export default function AddExpenseScreen() {
       }
     }
     autoFillCategory()
-  }, [transactions, currentIndex])
+  }, [transactions])
 
   function handleSaveCategories(categories: string[]) {
     saveFavoriteCategories(categories)
   }
 
   function handleReject() {
-    const tx = transactions[currentIndex]
-    if (tx) {
-      updateLastReadSmsTimestamp(tx.date)
-    }
+    const tx = transactions[0]
+    if (!tx) return
 
-    if (isLastItem) {
-      setIsCompleted(true)
-      return
-    }
-    setCurrentIndex(currentIndex + 1)
+    rejectExpense(tx, {
+      onSuccess: () => {
+        // The rejected item is removed from the cached list, so the next
+        // transaction slides into position 0 on its own.
+        if (isLastItem) {
+          setIsCompleted(true)
+        }
+      },
+      onError: (e) => {
+        console.warn('Reject expense failed', e)
+      },
+    })
   }
 
   function handleConfirm() {
-    const tx = transactions[currentIndex]
+    const tx = transactions[0]
     if (!tx) return
 
     saveExpense(
@@ -87,7 +101,7 @@ export default function AddExpenseScreen() {
       {
         onSuccess: () => {
           // The saved item is removed from the cached list, so the next
-          // transaction slides into currentIndex — advancing would skip one.
+          // transaction slides into position 0 on its own.
           if (isLastItem) {
             setIsCompleted(true)
           }
@@ -159,13 +173,13 @@ export default function AddExpenseScreen() {
               variant='pSmBold'
               color='muted'
             >
-              {transactions.length - currentIndex} of {transactions.length} remaining
+              {transactions.length} of {totalCount} remaining
             </Text>
           </View>
         </View>
         <View style={styles.cardContainer}>
           <ExpenseReview
-            transaction={transactions[currentIndex]}
+            transaction={transactions[0]}
             amountValue={amountValue}
             merchantValue={merchantValue}
             categoryValue={categoryValue}
@@ -186,27 +200,27 @@ export default function AddExpenseScreen() {
       />
       <View style={styles.actionsRow}>
         <IconButton
-          disabled={isSaving}
+          disabled={isBusy}
           onPress={handleReject}
         >
-          <View style={[styles.iconCircleBase, styles.rejectCircle(isSaving)]}>
+          <View style={[styles.iconCircleBase, styles.rejectCircle(isBusy)]}>
             <X
               size={32}
-              color={styles.rejectColor(isSaving).color}
+              color={styles.rejectColor(isBusy).color}
             />
           </View>
           <Text
             variant='pSm'
-            style={styles.rejectColor(isSaving)}
+            style={styles.rejectColor(isBusy)}
           >
             Reject
           </Text>
         </IconButton>
         <IconButton
-          disabled={isSaving}
+          disabled={isBusy}
           onPress={handleConfirm}
         >
-          <View style={[styles.iconCircleBase, styles.confirmCircle(isSaving)]}>
+          <View style={[styles.iconCircleBase, styles.confirmCircle(isBusy)]}>
             <Check
               size={32}
               color={theme.colors.surface}
@@ -214,7 +228,7 @@ export default function AddExpenseScreen() {
           </View>
           <Text
             variant='pSmBold'
-            style={styles.confirmColor(isSaving)}
+            style={styles.confirmColor(isBusy)}
           >
             Confirm
           </Text>
