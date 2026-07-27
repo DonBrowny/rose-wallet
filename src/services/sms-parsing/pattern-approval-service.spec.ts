@@ -1,6 +1,6 @@
 import { incrementPatternUsageByName, updatePatternTemplateByName } from '@/services/database/patterns-repository'
 import { getUnmatchedSms } from '@/services/database/sms-messages-repository'
-import type { Transaction } from '@/types/sms/transaction'
+import type { ReviewTxn } from '@/types/sms-parsing'
 import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { extractWithTemplate } from '@/utils/pattern/extract-with-template'
 import { PatternApprovalService } from './pattern-approval-service'
@@ -24,14 +24,16 @@ const mockGetUnmatched = getUnmatchedSms as jest.Mock
 const mockSetSamples = setPatternSamplesByName as jest.Mock
 
 let nextId = 1
-function makeSample(body: string, amount: number, merchant: string): Transaction {
+function makeSample(body: string, amount: number, merchant: string): ReviewTxn {
   return {
-    id: String(nextId++),
+    smsId: nextId++,
     amount,
-    merchant,
-    bankName: 'HDFC',
-    transactionDate: nextId,
-    message: { id: String(nextId), body, address: 'AD-HDFCBK-T', date: nextId, read: true, type: 1 },
+    type: 'debit',
+    merchantRaw: merchant,
+    bank: 'HDFC',
+    date: nextId,
+    sender: 'AD-HDFCBK-T',
+    body,
   }
 }
 

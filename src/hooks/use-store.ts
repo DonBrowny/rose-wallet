@@ -1,5 +1,5 @@
 import { PatternApprovalService } from '@/services/sms-parsing/pattern-approval-service'
-import type { Transaction } from '@/types/sms/transaction'
+import type { ReviewTxn } from '@/types/sms-parsing'
 import { create, type StoreApi, type UseBoundStore } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
@@ -17,11 +17,11 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_store: S) =
 
 interface AppState {
   patternReview: {
-    transactions: Transaction[]
+    transactions: ReviewTxn[]
     name: string
     currentIndex: number
   }
-  setPatternReview: (transactions: Transaction[], name: string) => void
+  setPatternReview: (transactions: ReviewTxn[], name: string) => void
   editExpenseModal: {
     isOpen: boolean
     expenseId: number | null
@@ -39,7 +39,7 @@ const useAppStoreBase = create<AppState>()(
       name: '',
       currentIndex: 0,
     },
-    setPatternReview: (transactions: Transaction[], name: string) =>
+    setPatternReview: (transactions: ReviewTxn[], name: string) =>
       set((state) => {
         state.patternReview.transactions = transactions
         state.patternReview.name = name
@@ -79,7 +79,7 @@ export const reviewPrev = () =>
 export const reviewReset = () =>
   useAppStoreBase.setState((state) => ({ patternReview: { ...state.patternReview, currentIndex: 0 } }))
 
-export const reviewUpdateItem = (index: number, patch: Partial<Transaction>) =>
+export const reviewUpdateItem = (index: number, patch: Partial<ReviewTxn>) =>
   useAppStoreBase.setState((state) => {
     const { transactions } = state.patternReview
     const next = transactions.map((t, i) => (i === index ? { ...t, ...patch } : t))

@@ -13,7 +13,8 @@ export const MMKV_KEYS = {
   },
   PATTERNS: {
     IS_PATTERN_DISCOVERY_COMPLETED: 'patterns.is_pattern_discovery_completed',
-    DISCOVERY_SAMPLES_V1: 'patterns.discovery_samples_v1',
+    // V2: samples stored as ReviewTxn (flat sms fields); V1 held the legacy Transaction shape.
+    DISCOVERY_SAMPLES_V2: 'patterns.discovery_samples_v2',
     PATTERN_GUIDE_SEEN: 'patterns.pattern_guide_seen',
     REVIEW_GUIDE_SEEN: 'patterns.review_guide_seen',
   },

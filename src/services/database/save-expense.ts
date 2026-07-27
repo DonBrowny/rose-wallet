@@ -1,15 +1,15 @@
-import { TRANSACTION_TYPE, type TransactionType } from '@/db/schema'
+import { SMS_MATCH_STATUS, TRANSACTION_TYPE, type TransactionType } from '@/db/schema'
 import { updateLastReadSmsTimestamp } from '@/utils/mmkv/storage'
 import { getOrCreateCategoryIdByName } from './categories-repository'
 import { ensureMerchantCategoryGroup } from './merchant-category-groups-repository'
 import { getOrCreateMerchantIdByName } from './merchants-repository'
 import { ensurePatternSmsGroupLink } from './patterns-repository'
-import { insertEncryptedSms } from './sms-messages-repository'
+import { updateSmsMatchStatusByIds } from './sms-messages-repository'
 import { insertTransaction } from './transactions-repository'
 
 interface SaveExpense {
-  smsBody: string
-  smsSender: string
+  /** Residual-queue row of the source SMS — every reviewed expense is queue-backed. */
+  smsId: number
   smsDate: number
   merchantName: string
   categoryName: string
@@ -24,16 +24,12 @@ export async function saveExpense(input: SaveExpense) {
   try {
     const merchantName = input.merchantName.trim()
     const categoryName = input.categoryName.trim()
-    const { description, patternId, smsBody, smsDate, smsSender } = input
+    const { description, patternId, smsId, smsDate } = input
 
-    const [merchantId, categoryId, smsId] = await Promise.all([
+    const [merchantId, categoryId] = await Promise.all([
       getOrCreateMerchantIdByName(merchantName),
       getOrCreateCategoryIdByName(categoryName),
-      insertEncryptedSms({
-        sender: smsSender,
-        body: smsBody,
-        date: smsDate,
-      }),
+      updateSmsMatchStatusByIds([smsId], SMS_MATCH_STATUS.Matched),
     ])
 
     await ensureMerchantCategoryGroup(merchantId, categoryId)
@@ -55,7 +51,7 @@ export async function saveExpense(input: SaveExpense) {
       merchantId,
     })
 
-    updateLastReadSmsTimestamp(input.smsDate)
+    updateLastReadSmsTimestamp(smsDate)
 
     return { merchantId, categoryId, smsId, patternId }
   } catch (error) {

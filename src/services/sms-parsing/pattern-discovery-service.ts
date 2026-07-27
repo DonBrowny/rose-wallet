@@ -1,6 +1,7 @@
 import { PATTERN_STATUS, TRANSACTION_TYPE } from '@/db/schema'
 import { upsertPatternsByGrouping } from '@/services/database/patterns-repository'
-import type { DistinctPattern, Transaction } from '@/types/sms/transaction'
+import type { ReviewTxn } from '@/types/sms-parsing'
+import type { DistinctPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
 import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { groupByTemplate } from '@/utils/pattern/group-by-template'
@@ -14,7 +15,7 @@ const SAMPLES_PER_PATTERN = 3
 
 interface CandidateSample {
   candidate: CandidateSms
-  transaction: Transaction
+  transaction: ReviewTxn
 }
 
 /**
@@ -38,12 +39,14 @@ export class PatternDiscoveryService {
       samples.push({
         candidate,
         transaction: {
-          id: candidate.sms.id,
+          smsId: Number(candidate.sms.id),
           amount,
-          merchant: fields.merchant || 'Unknown',
-          bankName: fields.bank?.name || 'Unknown',
-          transactionDate: candidate.sms.date,
-          message: candidate.sms,
+          type: candidate.type,
+          merchantRaw: fields.merchant ?? '',
+          date: candidate.sms.date,
+          sender: candidate.sms.address,
+          body: candidate.sms.body,
+          bank: fields.bank?.name,
         },
       })
     }
@@ -54,11 +57,7 @@ export class PatternDiscoveryService {
 
     const drafts: DistinctPattern[] = groups.map((group, index) => {
       const first = group.items[0].transaction
-      const { template } = proposeSlots(
-        first.message.body,
-        first.amount,
-        first.merchant !== 'Unknown' ? first.merchant : undefined
-      )
+      const { template } = proposeSlots(first.body, first.amount, first.merchantRaw || undefined)
 
       return {
         id: String(index + 1),

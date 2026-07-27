@@ -1,6 +1,6 @@
 import { incrementPatternUsageByName, updatePatternTemplateByName } from '@/services/database/patterns-repository'
 import { getUnmatchedSms } from '@/services/database/sms-messages-repository'
-import type { Transaction } from '@/types/sms/transaction'
+import type { ReviewTxn } from '@/types/sms-parsing'
 import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { buildTemplateFromLabels } from '@/utils/pattern/build-template-from-labels'
 import { extractWithTemplate } from '@/utils/pattern/extract-with-template'
@@ -22,7 +22,7 @@ export interface ApprovalResult {
  * After saving, sweeps the residual queue so the approval retroactively pays off.
  */
 export class PatternApprovalService {
-  static async approve(name: string, samples: Transaction[]): Promise<ApprovalResult> {
+  static async approve(name: string, samples: ReviewTxn[]): Promise<ApprovalResult> {
     if (!name) throw new Error('Pattern name is required')
     if (samples.length === 0) throw new Error('At least one reviewed sample is required')
 
@@ -30,9 +30,9 @@ export class PatternApprovalService {
 
     const built = buildTemplateFromLabels(
       samples.map((t) => ({
-        body: t.message.body,
+        body: t.body,
         amount: t.amount,
-        merchant: t.merchant && t.merchant !== 'Unknown' ? t.merchant : undefined,
+        merchant: t.merchantRaw || undefined,
       }))
     )
 

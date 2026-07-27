@@ -2,7 +2,7 @@ import { QuickCategoryChips } from '@/components/quick-category-chips/quick-cate
 import { Input } from '@/components/ui/input/input'
 import { Text } from '@/components/ui/text/text'
 import { Category } from '@/db/schema'
-import type { Transaction } from '@/types/sms/transaction'
+import type { ReviewTxn } from '@/types/sms-parsing'
 import { formatDateTime } from '@/utils/date/format-date-time'
 import { formatCurrency } from '@/utils/formatter/format-currency'
 import { MessageSquare, Store, Tag } from 'lucide-react-native'
@@ -12,7 +12,7 @@ import { useUnistyles } from 'react-native-unistyles'
 import { styles } from './expense-review.style'
 
 interface Props {
-  transaction: Transaction
+  transaction: ReviewTxn
   style?: ViewStyle
   amountValue: string
   merchantValue: string
@@ -49,21 +49,19 @@ export function ExpenseReview({
         >
           {formatCurrency(transaction.amount)}
         </Text>
-        {transaction.merchant && (
-          <View style={styles.merchantDetected}>
-            <Store
-              size={14}
-              color={theme.colors.surface}
-              opacity={0.8}
-            />
-            <Text
-              variant='pSm'
-              style={styles.merchantText}
-            >
-              {transaction.merchant}
-            </Text>
-          </View>
-        )}
+        <View style={styles.merchantDetected}>
+          <Store
+            size={14}
+            color={theme.colors.surface}
+            opacity={0.8}
+          />
+          <Text
+            variant='pSm'
+            style={styles.merchantText}
+          >
+            {transaction.merchantRaw || 'Unknown'}
+          </Text>
+        </View>
       </View>
 
       <View style={styles.smsSection}>
@@ -75,12 +73,12 @@ export function ExpenseReview({
             />
           </View>
           <View style={styles.smsMeta}>
-            <Text variant='pMdBold'>{transaction.message.address}</Text>
+            <Text variant='pMdBold'>{transaction.sender}</Text>
             <Text
               variant='pSm'
               color='muted'
             >
-              {formatDateTime(new Date(transaction.message.date))}
+              {formatDateTime(new Date(transaction.date))}
             </Text>
           </View>
         </View>
@@ -89,7 +87,7 @@ export function ExpenseReview({
           style={styles.smsBody}
           selectable
         >
-          {transaction.message.body}
+          {transaction.body}
         </Text>
       </View>
 

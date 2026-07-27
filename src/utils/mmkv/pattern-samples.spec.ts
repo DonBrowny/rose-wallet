@@ -54,9 +54,9 @@ describe('setPatternSamplesByName', () => {
 
     setPatternSamplesByName('HDFC', samples)
 
-    expect(getSpy).toHaveBeenCalledWith(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1)
+    expect(getSpy).toHaveBeenCalledWith(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V2)
     expect(setSpy).toHaveBeenCalledTimes(1)
-    expect(setSpy).toHaveBeenCalledWith(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1, JSON.stringify({ HDFC: samples }))
+    expect(setSpy).toHaveBeenCalledWith(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V2, JSON.stringify({ HDFC: samples }))
   })
 
   it('merges with existing map (overwrites given name)', () => {
@@ -68,7 +68,7 @@ describe('setPatternSamplesByName', () => {
     setPatternSamplesByName('SBI', samples)
 
     expect(setSpy).toHaveBeenCalledWith(
-      MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1,
+      MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V2,
       JSON.stringify({ ...existing, SBI: samples })
     )
   })
@@ -80,6 +80,6 @@ describe('setPatternSamplesByName', () => {
     const samples = [{ id: 'z' } as any]
     setPatternSamplesByName('AXIS', samples)
 
-    expect(setSpy).toHaveBeenCalledWith(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V1, JSON.stringify({ AXIS: samples }))
+    expect(setSpy).toHaveBeenCalledWith(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V2, JSON.stringify({ AXIS: samples }))
   })
 })

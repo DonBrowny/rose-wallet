@@ -2,22 +2,8 @@ import { act } from '@testing-library/react-native'
 import { finalizeReview, reviewNext, reviewPrev, reviewReset, reviewUpdateItem, useAppStore } from './use-store'
 
 const sampleTxns = [
-  {
-    id: '1',
-    amount: 100,
-    merchant: 'A',
-    bankName: 'B',
-    transactionDate: 1,
-    message: { id: 'm1', body: 'x', address: 'a', date: 1, read: true },
-  },
-  {
-    id: '2',
-    amount: 200,
-    merchant: 'C',
-    bankName: 'D',
-    transactionDate: 2,
-    message: { id: 'm2', body: 'y', address: 'b', date: 2, read: true },
-  },
+  { smsId: 1, amount: 100, type: 'debit', merchantRaw: 'A', bank: 'B', date: 1, sender: 'a', body: 'x' },
+  { smsId: 2, amount: 200, type: 'debit', merchantRaw: 'C', bank: 'D', date: 2, sender: 'b', body: 'y' },
 ] as any
 
 jest.mock('@/services/sms-parsing/pattern-approval-service', () => ({
@@ -60,9 +46,9 @@ describe('useAppStore', () => {
   it('updates a specific transaction via patch', () => {
     act(() => {
       useAppStore.getState().setPatternReview(sampleTxns, 'N')
-      reviewUpdateItem(1, { merchant: 'ZZ' } as any)
+      reviewUpdateItem(1, { merchantRaw: 'ZZ' })
     })
-    expect(useAppStore.getState().patternReview.transactions[1].merchant).toBe('ZZ')
+    expect(useAppStore.getState().patternReview.transactions[1].merchantRaw).toBe('ZZ')
   })
 
   it('finalizeReview persists and updates template', async () => {

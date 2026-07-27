@@ -22,32 +22,6 @@ export function computeSmsHash(input: SmsInput): string {
 }
 
 /**
- * Persist an SMS that became an expense. Upserts on the content hash, so an SMS
- * already sitting in the unmatched queue is flipped to matched instead of duplicated.
- */
-export async function insertEncryptedSms(input: SmsInput): Promise<number> {
-  const db = getDrizzleDb()
-  const smsHash = computeSmsHash(input)
-
-  await db
-    .insert(smsMessages)
-    .values({
-      sender: encryptText(input.sender),
-      body: encryptText(input.body),
-      dateTime: new Date(input.date),
-      smsHash,
-      matchStatus: SMS_MATCH_STATUS.Matched,
-    })
-    .onConflictDoUpdate({
-      target: smsMessages.smsHash,
-      set: { matchStatus: SMS_MATCH_STATUS.Matched },
-    })
-
-  const rows = await db.select().from(smsMessages).where(eq(smsMessages.smsHash, smsHash))
-  return rows[0]?.id as number
-}
-
-/**
  * Add transaction-relevant SMS to the residual queue. Content-hash conflicts are
  * ignored, so re-scanning an overlapping time window is a no-op.
  */

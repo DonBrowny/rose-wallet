@@ -1,8 +1,8 @@
-import { TRANSACTION_TYPE } from '@/db/schema'
 import { SMSDataExtractor } from '@/services/sms-parsing/sms-data-extractor-service'
 import { SmsSyncService } from '@/services/sms-parsing/sms-sync-service'
 import { MMKV_KEYS } from '@/types/mmkv-keys'
-import type { Transaction } from '@/types/sms/transaction'
+import type { ReviewTxn } from '@/types/sms-parsing'
+import { TRANSACTION_TYPE } from '@/db/schema'
 import { storage } from '@/utils/mmkv/storage'
 import { useQuery } from '@tanstack/react-query'
 
@@ -12,7 +12,7 @@ function getOneMonthAgoTimestamp(): number {
   return d.getTime()
 }
 
-async function fetchSMSTransactions(): Promise<Transaction[]> {
+async function fetchSMSTransactions(): Promise<ReviewTxn[]> {
   const lastRead = storage.getNumber(MMKV_KEYS.SMS.LAST_READ_AT)
   const startTimestamp = typeof lastRead === 'number' ? lastRead : getOneMonthAgoTimestamp()
   const endTimestamp = Date.now()
@@ -20,19 +20,21 @@ async function fetchSMSTransactions(): Promise<Transaction[]> {
   const result = await SmsSyncService.syncWithQueue({ startTimestamp, endTimestamp })
 
   // Pattern-matched messages: deterministic extraction, linked to their pattern.
-  const fromPatterns: Transaction[] = result.extracted.map((e) => ({
-    id: e.sms.id,
+  // Everything here is queue-row-backed after syncWithQueue, so sms.id is the DB id.
+  const fromPatterns: ReviewTxn[] = result.extracted.map((e) => ({
+    smsId: Number(e.sms.id),
     patternId: e.patternId,
     amount: e.amount,
-    merchant: e.merchantRaw || 'Unknown',
-    bankName: 'Unknown',
-    transactionDate: e.sms.date,
-    message: e.sms,
+    type: e.type,
+    merchantRaw: e.merchantRaw ?? '',
+    date: e.sms.date,
+    sender: e.sms.address,
+    body: e.sms.body,
   }))
 
   // Unmatched candidates: parser-library bootstrap so new banks show up before
   // their pattern exists; reviewing them in the patterns screen creates one.
-  const fromCandidates: Transaction[] = []
+  const fromCandidates: ReviewTxn[] = []
   for (const candidate of result.candidates) {
     const intent = candidate.type === TRANSACTION_TYPE.Credit ? 'income' : 'expense'
     const fields = SMSDataExtractor.extract(candidate.sms.body, intent)
@@ -40,16 +42,18 @@ async function fetchSMSTransactions(): Promise<Transaction[]> {
     if (!amount || amount <= 0) continue
 
     fromCandidates.push({
-      id: candidate.sms.id,
+      smsId: Number(candidate.sms.id),
       amount,
-      merchant: fields.merchant || 'Unknown',
-      bankName: fields.bank?.name || 'Unknown',
-      transactionDate: candidate.sms.date,
-      message: candidate.sms,
+      type: candidate.type,
+      merchantRaw: fields.merchant ?? '',
+      date: candidate.sms.date,
+      sender: candidate.sms.address,
+      body: candidate.sms.body,
+      bank: fields.bank?.name,
     })
   }
 
-  return [...fromPatterns, ...fromCandidates].sort((a, b) => a.transactionDate - b.transactionDate)
+  return [...fromPatterns, ...fromCandidates].sort((a, b) => a.date - b.date)
 }
 
 export const SMS_TRANSACTIONS_QUERY_KEY = 'sms-transactions'

@@ -51,22 +51,8 @@ describe('PatternReviewScreen', () => {
   it('renders header and closes via button (resets and navigates back)', () => {
     mockPatternReview.mockReturnValue({
       transactions: [
-        {
-          id: '1',
-          amount: 100,
-          merchant: 'A',
-          bankName: 'B',
-          transactionDate: 1,
-          message: { id: 'm1', body: 'x', address: 'a', date: 1, read: true },
-        },
-        {
-          id: '2',
-          amount: 200,
-          merchant: 'C',
-          bankName: 'D',
-          transactionDate: 2,
-          message: { id: 'm2', body: 'y', address: 'b', date: 2, read: true },
-        },
+        { smsId: 1, amount: 100, type: 'debit', merchantRaw: 'A', bank: 'B', date: 1, sender: 'a', body: 'x' },
+        { smsId: 2, amount: 200, type: 'debit', merchantRaw: 'C', bank: 'D', date: 2, sender: 'b', body: 'y' },
       ],
       name: 'PAT',
       currentIndex: 0,
