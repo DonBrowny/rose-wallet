@@ -8,13 +8,17 @@ import {
   type NewPattern,
   type NewSmsMessage,
 } from '@/db/schema'
+import { upsertPatternsByGrouping } from '@/services/database/patterns-repository'
 import type { ReviewTxn } from '@/types/sms-parsing'
+import type { DistinctPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
 import {
   deletePatternSamplesByName,
   getPatternSamplesByName,
   setPatternSamplesByName,
 } from '@/utils/mmkv/pattern-samples'
+import { bigrams } from '@/utils/pattern/bigrams'
+import { matchPattern } from '@/utils/pattern/match-pattern'
 import { NORMALIZER_VERSION, normalizeSMSTemplate } from '@/utils/pattern/normalize-sms-template'
 import { createClient } from '@libsql/client/node'
 import { eq } from 'drizzle-orm'
@@ -28,6 +32,13 @@ jest.mock('@/utils/mmkv/pattern-samples', () => ({
   getPatternSamplesByName: jest.fn(),
   setPatternSamplesByName: jest.fn(),
   deletePatternSamplesByName: jest.fn(),
+}))
+
+// Lets the real upsertPatternsByGrouping run against the injected libsql test DB
+// (the continuity tests exercise the actual discovery conflict path, not a mock).
+let mockDb: ReturnType<typeof drizzle> | undefined
+jest.mock('@/services/database/db', () => ({
+  getDrizzleDb: () => mockDb,
 }))
 
 const mockGetSamples = getPatternSamplesByName as jest.Mock
@@ -107,6 +118,7 @@ describe('recomputeStaleGroupingPatterns', () => {
     const created = await createTestDb(dbFile)
     client = created.client
     db = created.db
+    mockDb = db
   })
 
   afterEach(() => {
@@ -436,5 +448,146 @@ describe('recomputeStaleGroupingPatterns', () => {
 
     const second = await recomputeStaleGroupingPatterns(db)
     expect(second).toEqual({ recomputed: 0, merged: 0, deleted: 0, stampedOnly: 0 })
+  })
+
+  describe('continuity across a normalizer bump (doc acceptance criterion)', () => {
+    // The constant itself can't be bumped inside a test, but a bump's observable state
+    // can: rows stamped below NORMALIZER_VERSION whose groupingPattern is an older
+    // format, with MMKV samples carrying the original bodies. Bodies below are real
+    // format families from sms-extraction-corpus.spec.ts (digits/names cooked per its
+    // convention); each family seeds two sample bodies, and `fresh` is a held-out
+    // message of the same format "arriving" after the recompute.
+    interface ContinuityFamily {
+      staleName: string
+      staleTemplate: string
+      status: (typeof PATTERN_STATUS)[keyof typeof PATTERN_STATUS]
+      samples: string[]
+      fresh: string
+    }
+
+    // corpus: 'hdfc upi debit to biller vpa, cta tail "to report"'
+    const HDFC_VPA: ContinuityFamily = {
+      staleName: 'stale-hdfc-vpa',
+      staleTemplate:
+        '<CUR><AMT>00.00 debited from a/c **<NUM> on <NUM>-<NUM>-<NUM> to VPA <MERCH>(UPI Ref No <NUM>). Not you? Call on <NUM> to report',
+      status: PATTERN_STATUS.Approved,
+      samples: [
+        'Rs 589.00 debited from a/c **5432 on 29-05-19 to VPA billdesk.airtel-postpaid@icici(UPI Ref No 543210987654). Not you? Call on 54321098765 to report',
+        'Rs 1,249.00 debited from a/c **5432 on 14-08-19 to VPA billdesk.tneb@icici(UPI Ref No 543210912345). Not you? Call on 54321098765 to report',
+      ],
+      fresh:
+        'Rs 60.00 debited from a/c **5432 on 02-01-20 to VPA storeskm@okicici(UPI Ref No 543219876543). Not you? Call on 54321098765 to report',
+    }
+
+    // corpus: 'sbi upi transfer, amount without currency marker'
+    const SBI_TRF: ContinuityFamily = {
+      staleName: 'stale-sbi-trf',
+      staleTemplate:
+        'Dear UPI user A/C X<NUM> debited by <AMT>0.0 on date <NUM><MERCH> Refno <NUM>. If not u? call <NUM>. -SBI',
+      status: PATTERN_STATUS.Approved,
+      samples: [
+        'Dear UPI user A/C X5432 debited by 50.0 on date 05May24 trf to Mr Arun Prakash Refno 543210987654. If not u? call 5432109876. -SBI',
+        'Dear UPI user A/C X5432 debited by 250.0 on date 18Jun24 trf to Mrs Kavitha R Refno 543210955555. If not u? call 5432109876. -SBI',
+      ],
+      fresh:
+        'Dear UPI user A/C X5432 debited by 1500.0 on date 02Jul24 trf to PARKING PLAZA Refno 543210911111. If not u? call 5432109876. -SBI',
+    }
+
+    // corpus: 'icici credit card spend with Avl Lmt tail' — rejected, so this family
+    // also covers suppression continuity (the PR #46 bug class: rejected patterns
+    // resurfacing after a normalizer change).
+    const ICICI_CARD: ContinuityFamily = {
+      staleName: 'stale-icici-card',
+      staleTemplate:
+        '<CUR> <AMT>0.00 spent on ICICI Bank Card XX<NUM> at IND*<MERCH> -. Avl Lmt: <CUR> <NUM>. To dispute,call <NUM>/SMS BLOCK <NUM> to <NUM>',
+      status: PATTERN_STATUS.Rejected,
+      samples: [
+        'INR 920.00 spent on ICICI Bank Card XX5432 on 13-Oct-23 at IND*Amazon.in -. Avl Lmt: INR 2,63,617.00. To dispute,call 18002662/SMS BLOCK 4321 to 5432109876',
+        'INR 1,499.00 spent on ICICI Bank Card XX5432 on 02-Nov-23 at IND*Flipkart.com -. Avl Lmt: INR 1,13,618.00. To dispute,call 18002662/SMS BLOCK 4321 to 5432109876',
+      ],
+      fresh:
+        'INR 75.50 spent on ICICI Bank Card XX5432 on 25-Dec-23 at IND*Zomato.in -. Avl Lmt: INR 98,760.00. To dispute,call 18002662/SMS BLOCK 4321 to 5432109876',
+    }
+
+    const FAMILIES = [HDFC_VPA, SBI_TRF, ICICI_CARD]
+
+    function toCandidates<T extends { groupingPattern: string }>(rows: T[]) {
+      return rows.map((row) => ({
+        value: row,
+        groupingPattern: row.groupingPattern,
+        bigrams: bigrams(row.groupingPattern),
+      }))
+    }
+
+    async function seedFamilies() {
+      const idByStaleName = new Map<string, number>()
+      for (const family of FAMILIES) {
+        const row = await insertPattern({
+          name: family.staleName,
+          groupingPattern: family.staleTemplate,
+          status: family.status,
+        })
+        sampleStore[family.staleName] = family.samples.map((body, i) => makeSample({ body, smsId: 800 + i }))
+        idByStaleName.set(family.staleName, row.id)
+      }
+      return idByStaleName
+    }
+
+    it('recomputed patterns keep matching fresh messages of their format, and rejected ones keep suppressing', async () => {
+      const idByStaleName = await seedFamilies()
+
+      const summary = await recomputeStaleGroupingPatterns(db)
+      expect(summary).toEqual({ recomputed: 3, merged: 0, deleted: 0, stampedOnly: 0 })
+
+      const rows = await allRows()
+      expect(rows).toHaveLength(3)
+      for (const row of rows) {
+        expect(row.normalizerVersion).toBe(NORMALIZER_VERSION)
+      }
+
+      // Match the way sms-sync-service does: normalized fresh body against
+      // active/rejected candidates (exact fast path, Dice >= 0.8 fallback).
+      const active = toCandidates(rows.filter((r) => r.status !== PATTERN_STATUS.Rejected))
+      const rejected = toCandidates(rows.filter((r) => r.status === PATTERN_STATUS.Rejected))
+
+      const hdfcMatch = matchPattern(normalizeSMSTemplate(HDFC_VPA.fresh), active)
+      expect(hdfcMatch?.value.id).toBe(idByStaleName.get(HDFC_VPA.staleName))
+
+      const sbiMatch = matchPattern(normalizeSMSTemplate(SBI_TRF.fresh), active)
+      expect(sbiMatch?.value.id).toBe(idByStaleName.get(SBI_TRF.staleName))
+
+      const suppressed = matchPattern(normalizeSMSTemplate(ICICI_CARD.fresh), rejected)
+      expect(suppressed?.value.id).toBe(idByStaleName.get(ICICI_CARD.staleName))
+    })
+
+    it('a later discovery of the same format upserts into the recomputed row instead of duplicating', async () => {
+      await seedFamilies()
+      await recomputeStaleGroupingPatterns(db)
+
+      const [hdfcRow] = (await allRows()).filter((r) => r.groupingPattern === normalizeSMSTemplate(HDFC_VPA.samples[0]))
+      expect(hdfcRow).toBeDefined()
+
+      // Hash stability is what makes the upsert land on the same row: a fresh message
+      // of the format must normalize to exactly the recomputed groupingPattern.
+      const freshTemplate = normalizeSMSTemplate(HDFC_VPA.fresh)
+      expect(freshTemplate).toBe(hdfcRow.groupingPattern)
+
+      const draft: DistinctPattern = {
+        id: '1',
+        template: 'Rs <AMT> debited from a/c **5432 to VPA <MERCHANT>',
+        groupingTemplate: freshTemplate,
+        occurrences: 1,
+        transactions: [],
+        patternType: TRANSACTION_TYPE.Debit,
+        status: PATTERN_STATUS.NeedsReview,
+      }
+      await upsertPatternsByGrouping([draft])
+
+      const rows = await allRows()
+      expect(rows).toHaveLength(3) // updated in place — no fourth row
+      const [updated] = rows.filter((r) => r.id === hdfcRow.id)
+      expect(updated.name).toBe(murmurHash32(freshTemplate))
+      expect(updated.normalizerVersion).toBe(NORMALIZER_VERSION) // conflict path restamps too
+    })
   })
 })
