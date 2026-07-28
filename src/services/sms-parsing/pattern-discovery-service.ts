@@ -6,7 +6,7 @@ import { murmurHash32 } from '@/utils/hash/murmur32'
 import { setPatternSamplesByName } from '@/utils/mmkv/pattern-samples'
 import { groupByTemplate } from '@/utils/pattern/group-by-template'
 import { mergeSimilarGroups } from '@/utils/pattern/merge-similar-groups'
-import { proposeSlots } from '@/utils/pattern/propose-slots'
+import { reconcileGroupSamples } from '@/utils/pattern/reconcile-group-samples'
 import { SMSDataExtractor } from './sms-data-extractor-service'
 import { SMSReaderService } from './sms-reader-service'
 import { SmsSyncService, type CandidateSms } from './sms-sync-service'
@@ -20,8 +20,9 @@ interface CandidateSample {
 
 /**
  * Batch discovery: turn unmatched transaction-candidates into needs-review
- * pattern drafts. The parser library bootstraps amount/merchant so review
- * shows pre-filled guesses instead of blank slots.
+ * pattern drafts. The rule-based extractor bootstraps amount/merchant per
+ * message, then each group's guesses are reconciled against the consensus
+ * template so review shows consistent pre-fills instead of one-off misreads.
  */
 export class PatternDiscoveryService {
   static async discoverFromLastNDays(days: number): Promise<{ patternsFound: number }> {
@@ -56,15 +57,14 @@ export class PatternDiscoveryService {
     )
 
     const drafts: DistinctPattern[] = groups.map((group, index) => {
-      const first = group.items[0].transaction
-      const { template } = proposeSlots(first.body, first.amount, first.merchantRaw || undefined)
+      const { template, samples: transactions } = reconcileGroupSamples(group.items.map((s) => s.transaction))
 
       return {
         id: String(index + 1),
         template,
         groupingTemplate: group.groupingPattern,
         occurrences: group.items.length,
-        transactions: group.items.map((s) => s.transaction),
+        transactions,
         patternType: TRANSACTION_TYPE.Debit, // v1: only debit
         status: PATTERN_STATUS.NeedsReview,
       }
