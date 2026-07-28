@@ -166,7 +166,7 @@ describe('recomputeStaleGroupingPatterns', () => {
 
     const summary = await recomputeStaleGroupingPatterns(db)
 
-    expect(summary).toEqual({ renamed: 1, merged: 0, deleted: 0, stampedOnly: 0 })
+    expect(summary).toEqual({ recomputed: 1, merged: 0, deleted: 0, stampedOnly: 0 })
 
     const [updated] = await db.select().from(patterns).where(eq(patterns.id, row.id))
     expect(updated.name).toBe(CURRENT_NAME)
@@ -196,17 +196,22 @@ describe('recomputeStaleGroupingPatterns', () => {
     })
     const sms201 = await insertSms()
     const sms202 = await insertSms()
-    const sms203 = await insertSms() // shared by both patterns' links below — must dedupe after repoint
+    const sms203 = await insertSms()
 
+    // Sample-level overlap on sms202, placed BEFORE the cap boundary so an undeduped
+    // union would waste a slot on the duplicate and silently drop sms203 entirely
+    // (a naive slice(0, 3) of [201, 202, 202-dup, 203] never reaches 203).
     sampleStore['legacy-a'] = [
       makeSample({ body: CURRENT_BODIES[0], smsId: sms201.id }),
-      makeSample({ body: CURRENT_BODIES[1], smsId: sms203.id }),
+      makeSample({ body: CURRENT_BODIES[1], smsId: sms202.id }),
     ]
     sampleStore['legacy-b'] = [
-      makeSample({ body: CURRENT_BODIES[2], smsId: sms202.id }),
+      makeSample({ body: CURRENT_BODIES[1], smsId: sms202.id }),
       makeSample({ body: CURRENT_BODIES[0], smsId: sms203.id }),
     ]
 
+    // Link-level overlap on sms203 (independent of the sample overlap above) — must
+    // dedupe after repoint too.
     await insertLink(rowA.id, sms201.id)
     await insertLink(rowA.id, sms203.id)
     await insertLink(rowB.id, sms202.id)
@@ -216,7 +221,7 @@ describe('recomputeStaleGroupingPatterns', () => {
 
     // rowA is processed first and claims the converged name via a rename (neither row
     // started out named that); rowB then collides into it and merges.
-    expect(summary).toEqual({ renamed: 1, merged: 1, deleted: 0, stampedOnly: 0 })
+    expect(summary).toEqual({ recomputed: 1, merged: 1, deleted: 0, stampedOnly: 0 })
 
     const rows = await allRows()
     expect(rows).toHaveLength(1)
@@ -229,11 +234,62 @@ describe('recomputeStaleGroupingPatterns', () => {
 
     expect(sampleStore['legacy-a']).toBeUndefined()
     expect(sampleStore['legacy-b']).toBeUndefined()
-    expect(sampleStore[CURRENT_NAME]).toHaveLength(3) // 4 unioned, capped at SAMPLES_PER_PATTERN
+    // Deduped by smsId first, then capped — all 3 distinct messages survive instead of
+    // wasting a slot on the sms202 duplicate and losing sms203.
+    const unionedSmsIds = sampleStore[CURRENT_NAME].map((s) => s.smsId).sort((a, b) => a - b)
+    expect(unionedSmsIds).toEqual([sms201.id, sms202.id, sms203.id].sort((a, b) => a - b))
 
     const links = await linksFor(survivor.id)
     const smsIds = links.map((l) => l.smsId).sort((a, b) => a - b)
     expect(smsIds).toEqual([sms201.id, sms202.id, sms203.id].sort((a, b) => a - b)) // 203 deduped, not doubled
+  })
+
+  it("preserves a merge survivor's accumulated state across a 3-way collision within one sweep", async () => {
+    // Processing order (ascending id) matters here: B and C must merge into A's slot
+    // BEFORE A itself is reprocessed, so A's own pass is the one at risk of resetting
+    // the map to its stale pre-sweep usageCount and silently dropping B's and C's
+    // contributions — a loss only D's later merge would actually surface.
+    await insertPattern({
+      name: 'legacy-b-3way',
+      groupingPattern: '<CUR><AMT>00.00 legacy b 3way',
+      usageCount: 10,
+    })
+    await insertPattern({
+      name: 'legacy-c-3way',
+      groupingPattern: '<CUR> <AMT> legacy c 3way',
+      usageCount: 100,
+    })
+    // Already current-format but stale only from the pre-fix stamping gap, so its own
+    // recompute is a no-op rename onto its own name — exactly the shape that risks
+    // re-seeding the running survivor state instead of preserving it.
+    const rowA = await insertPattern({
+      name: CURRENT_NAME,
+      groupingPattern: CURRENT_TEMPLATE,
+      usageCount: 1,
+    })
+    await insertPattern({
+      name: 'legacy-d-3way',
+      groupingPattern: '<CUR><AMT>00.00 legacy d 3way',
+      usageCount: 1000,
+    })
+
+    sampleStore['legacy-b-3way'] = [makeSample({ body: CURRENT_BODIES[0], smsId: 901 })]
+    sampleStore['legacy-c-3way'] = [makeSample({ body: CURRENT_BODIES[1], smsId: 902 })]
+    sampleStore[CURRENT_NAME] = [makeSample({ body: CURRENT_BODIES[2], smsId: 903 })]
+    sampleStore['legacy-d-3way'] = [makeSample({ body: CURRENT_BODIES[0], smsId: 904 })]
+
+    const summary = await recomputeStaleGroupingPatterns(db)
+
+    expect(summary.recomputed).toBe(1) // rowA's own no-op rename
+    expect(summary.merged).toBe(3) // B, then C, then D — all into rowA
+
+    const rows = await allRows()
+    expect(rows).toHaveLength(1)
+    expect(rows[0].id).toBe(rowA.id)
+    // If rowA's reprocessing had reset the running total to its own stale pre-sweep
+    // usageCount (1), rowD's merge would land on 1 + 1000 = 1001, silently dropping
+    // rowB's and rowC's contributions instead of the correct sum of all four.
+    expect(rows[0].usageCount).toBe(10 + 100 + 1 + 1000)
   })
 
   it('resolves an approved-vs-rejected collision by latest updatedAt and logs a warning', async () => {
@@ -272,7 +328,7 @@ describe('recomputeStaleGroupingPatterns', () => {
 
     const summary = await recomputeStaleGroupingPatterns(db)
 
-    expect(summary).toEqual({ renamed: 0, merged: 0, deleted: 1, stampedOnly: 0 })
+    expect(summary).toEqual({ recomputed: 0, merged: 0, deleted: 1, stampedOnly: 0 })
     const remaining = await db.select().from(patterns).where(eq(patterns.id, row.id))
     expect(remaining).toHaveLength(0)
     expect(await linksFor(row.id)).toHaveLength(0)
@@ -288,7 +344,7 @@ describe('recomputeStaleGroupingPatterns', () => {
 
     const summary = await recomputeStaleGroupingPatterns(db)
 
-    expect(summary).toEqual({ renamed: 0, merged: 0, deleted: 0, stampedOnly: 1 })
+    expect(summary).toEqual({ recomputed: 0, merged: 0, deleted: 0, stampedOnly: 1 })
     const [updated] = await db.select().from(patterns).where(eq(patterns.id, row.id))
     expect(updated.name).toBe('orphan-approved')
     expect(updated.groupingPattern).toBe('<CUR><AMT>00.00 orphan approved')
@@ -296,6 +352,38 @@ describe('recomputeStaleGroupingPatterns', () => {
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining(`pattern ${row.id}`))
 
     warnSpy.mockRestore()
+  })
+
+  describe('samples present but unusable (every body normalizes to empty)', () => {
+    it('deletes a needs-review row instead of crashing the sweep', async () => {
+      const row = await insertPattern({ name: 'blank-needs-review', status: PATTERN_STATUS.NeedsReview })
+      sampleStore['blank-needs-review'] = [makeSample({ body: '   ' }), makeSample({ body: '' })]
+
+      const summary = await recomputeStaleGroupingPatterns(db)
+
+      expect(summary).toEqual({ recomputed: 0, merged: 0, deleted: 1, stampedOnly: 0 })
+      expect(await db.select().from(patterns).where(eq(patterns.id, row.id))).toHaveLength(0)
+    })
+
+    it('stamps an approved row without recomputing instead of crashing the sweep', async () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+      const row = await insertPattern({
+        name: 'blank-approved',
+        groupingPattern: '<CUR><AMT>00.00 blank approved',
+        status: PATTERN_STATUS.Approved,
+      })
+      sampleStore['blank-approved'] = [makeSample({ body: '' })]
+
+      const summary = await recomputeStaleGroupingPatterns(db)
+
+      expect(summary).toEqual({ recomputed: 0, merged: 0, deleted: 0, stampedOnly: 1 })
+      const [updated] = await db.select().from(patterns).where(eq(patterns.id, row.id))
+      expect(updated.groupingPattern).toBe('<CUR><AMT>00.00 blank approved')
+      expect(updated.normalizerVersion).toBe(NORMALIZER_VERSION)
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('no usable samples'))
+
+      warnSpy.mockRestore()
+    })
   })
 
   describe('first-run sweep (the stamping-gap: rows already current-format but stamped at the default 1)', () => {
@@ -309,7 +397,7 @@ describe('recomputeStaleGroupingPatterns', () => {
 
       const summary = await recomputeStaleGroupingPatterns(db)
 
-      expect(summary).toEqual({ renamed: 1, merged: 0, deleted: 0, stampedOnly: 0 })
+      expect(summary).toEqual({ recomputed: 1, merged: 0, deleted: 0, stampedOnly: 0 })
       const [updated] = await db.select().from(patterns).where(eq(patterns.id, row.id))
       expect(updated.name).toBe(CURRENT_NAME)
       expect(updated.groupingPattern).toBe(CURRENT_TEMPLATE)
@@ -326,7 +414,7 @@ describe('recomputeStaleGroupingPatterns', () => {
 
       const summary = await recomputeStaleGroupingPatterns(db)
 
-      expect(summary).toEqual({ renamed: 0, merged: 0, deleted: 1, stampedOnly: 0 })
+      expect(summary).toEqual({ recomputed: 0, merged: 0, deleted: 1, stampedOnly: 0 })
       expect(await db.select().from(patterns).where(eq(patterns.id, row.id))).toHaveLength(0)
     })
   })
@@ -336,7 +424,7 @@ describe('recomputeStaleGroupingPatterns', () => {
 
     const summary = await recomputeStaleGroupingPatterns(db)
 
-    expect(summary).toEqual({ renamed: 0, merged: 0, deleted: 0, stampedOnly: 0 })
+    expect(summary).toEqual({ recomputed: 0, merged: 0, deleted: 0, stampedOnly: 0 })
   })
 
   it('is safe to run twice — the second run touches nothing', async () => {
@@ -344,9 +432,9 @@ describe('recomputeStaleGroupingPatterns', () => {
     sampleStore['legacy-idempotent'] = CURRENT_BODIES.map((body) => makeSample({ body }))
 
     const first = await recomputeStaleGroupingPatterns(db)
-    expect(first.renamed).toBe(1)
+    expect(first.recomputed).toBe(1)
 
     const second = await recomputeStaleGroupingPatterns(db)
-    expect(second).toEqual({ renamed: 0, merged: 0, deleted: 0, stampedOnly: 0 })
+    expect(second).toEqual({ recomputed: 0, merged: 0, deleted: 0, stampedOnly: 0 })
   })
 })

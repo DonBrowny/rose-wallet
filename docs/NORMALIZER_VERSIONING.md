@@ -121,8 +121,9 @@ Algorithm, inside one transaction, for each row with `normalizerVersion < NORMAL
    - Status: if statuses differ, keep the row with the **latest `updatedAt`** (most recent
      user decision wins — matters when approved and rejected collide); log the conflict.
    - `usageCount`: sum. `createdAt`: earliest.
-   - MMKV samples: union, capped at 3 (`SAMPLES_PER_PATTERN` in
-     `pattern-discovery-service.ts`), keyed under `newName`; delete both old keys.
+   - MMKV samples: deduped by `smsId`, unioned, capped at 3 (`SAMPLES_PER_PATTERN` in
+     `src/types/constants.ts` — shared with `pattern-discovery-service.ts`, not
+     redeclared), keyed under `newName`; delete both old keys.
    - `patternSmsGroup` rows (check the FK — it references pattern **id**, so renames are
      free; merges must repoint the losing pattern's rows to the surviving id, then dedupe).
    - Delete the losing row.
@@ -146,8 +147,19 @@ merge logic. Use a real in-memory database for this one spec file:
 
 - Write `recomputeStaleGroupingPatterns(db, ...)` to **accept the Drizzle handle as a
   parameter** (production passes `getDrizzleDb()`); the spec injects its own.
-- Back the spec with drizzle over **`@libsql/client`** (`:memory:`) as a devDependency,
-  applying the SQL files from `src/drizzle/` to create the schema.
+- Back the spec with drizzle over **`@libsql/client`** as a devDependency, applying the
+  SQL files from `src/drizzle/` to create the schema.
+- **Do not use a bare `:memory:` URL.** Verified directly against `@libsql/client`,
+  outside Jest and outside Drizzle: its local driver opens a separate connection for
+  `db.transaction()`, and an anonymous `:memory:` database is private per-connection —
+  every table lookup after the first transaction fails with "no such table," even though
+  the same table worked moments earlier on the same `db` handle. **Use a real per-test
+  temp file instead** (`createClient({ url: `file:${path}` })`, deleted in `afterEach`,
+  including `-journal`/`-wal`/`-shm` siblings) — a real file is shared across connections
+  the way production SQLite is, so it doesn't hit this. (A shared-cache memory URI
+  — `file::memory:?cache=shared` — survives the transaction too, but leaks rows across
+  separate `createClient()` calls even after `.close()`, so it can't give per-test
+  isolation either; the temp file is the only option verified to give both.)
 - **Do not use `better-sqlite3`**: its Drizzle driver requires _synchronous_ transaction
   callbacks, and this codebase writes async ones against the expo driver
   (`db.transaction(async (tx) => …)`, see `sms-encryption-migration.ts`) — the routine
@@ -169,9 +181,20 @@ Cases:
    already in current format but whose `normalizerVersion` is at the default `1` —
    with samples → no-op restamp, same name, same hash; without samples and `needs-review`
    → deleted. This encodes the accepted consequence deliberately.
-6. Routine is a no-op when all rows are current (and safe to run twice — after one sweep,
+6. Samples present but unusable (every body normalizes to `''` — corrupt/empty MMKV
+   entries) → treated exactly like no-samples (delete `needs-review` / stamp-only
+   approved-rejected). Must not crash the sweep by reading `.groupingPattern` off an
+   empty group set — one bad MMKV record must not abort the whole migration.
+7. **3+-way collision within one sweep, survivor reprocessed later:** when a row that's
+   already the running survivor of an earlier merge is itself stale (e.g. the first-run
+   sweep case — already current-format, so its own recompute is a no-op rename onto its
+   own name), reprocessing it must not reset its accumulated status/usageCount/createdAt
+   back to its pre-sweep snapshot. A later collision into the same name would otherwise
+   silently undercount usage and tie-break against a stale `updatedAt` instead of the
+   folded-in one.
+8. Routine is a no-op when all rows are current (and safe to run twice — after one sweep,
    `shouldRun` must return false).
-7. Fixture realism: build "old" rows by hand-writing v1-style strings (e.g.
+9. Fixture realism: build "old" rows by hand-writing v1-style strings (e.g.
    `<CUR><AMT>00.00` truncation artifacts) so the test does not depend on old code.
 
 ## Acceptance criteria

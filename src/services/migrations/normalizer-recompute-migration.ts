@@ -1,6 +1,7 @@
 import * as schema from '@/db/schema'
 import { PATTERN_STATUS, patterns, patternSmsGroup, type Pattern } from '@/db/schema'
 import { getDrizzleDb } from '@/services/database/db'
+import { SAMPLES_PER_PATTERN } from '@/types/constants'
 import { murmurHash32 } from '@/utils/hash/murmur32'
 import {
   deletePatternSamplesByName,
@@ -13,13 +14,12 @@ import { eq, inArray, lt } from 'drizzle-orm'
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core'
 import type { Migration } from './migration-runner'
 
-const SAMPLES_PER_PATTERN = 3
-
 /** Loose enough to accept both the production expo-sqlite instance and an injected test driver. */
 export type RecomputeCapableDb = BaseSQLiteDatabase<'sync' | 'async', any, typeof schema>
 
 export interface RecomputeSummary {
-  renamed: number
+  /** Rows whose name/groupingPattern were (re)computed in place — includes no-op restamps. */
+  recomputed: number
   merged: number
   deleted: number
   stampedOnly: number
@@ -51,11 +51,13 @@ function toSurvivorState(row: Pattern): SurvivorState {
   }
 }
 
-function pickMajorityTemplate(bodies: string[]): string {
+/** Null when every body normalizes to '' (corrupt/empty MMKV entries) — nothing usable to recompute from. */
+function pickMajorityTemplate(bodies: string[]): string | null {
   const groups = groupByTemplate(
     bodies.map((body) => ({ body })),
     (item) => normalizeSMSTemplate(item.body)
   )
+  if (groups.length === 0) return null
   const [winner] = [...groups].sort((a, b) => b.items.length - a.items.length)
   return winner.groupingPattern
 }
@@ -66,7 +68,7 @@ function pickMajorityTemplate(bodies: string[]): string {
  * SMS. See docs/NORMALIZER_VERSIONING.md for the full algorithm and rationale.
  */
 export async function recomputeStaleGroupingPatterns(db: RecomputeCapableDb): Promise<RecomputeSummary> {
-  const summary: RecomputeSummary = { renamed: 0, merged: 0, deleted: 0, stampedOnly: 0 }
+  const summary: RecomputeSummary = { recomputed: 0, merged: 0, deleted: 0, stampedOnly: 0 }
 
   const allRows: Pattern[] = await db.select().from(patterns)
   const staleRows = allRows.filter((row) => row.normalizerVersion < NORMALIZER_VERSION)
@@ -82,8 +84,11 @@ export async function recomputeStaleGroupingPatterns(db: RecomputeCapableDb): Pr
   await db.transaction(async (tx) => {
     for (const row of staleRows) {
       const samples = getPatternSamplesByName(row.name)
+      const newTemplate = samples.length > 0 ? pickMajorityTemplate(samples.map((s) => s.body)) : null
 
-      if (samples.length === 0) {
+      if (!newTemplate) {
+        // Either no samples, or every sample body normalized to '' (corrupt/empty
+        // entries) — nothing usable to recompute from either way.
         if (row.status === PATTERN_STATUS.NeedsReview) {
           await tx.delete(patternSmsGroup).where(eq(patternSmsGroup.patternId, row.id))
           await tx.delete(patterns).where(eq(patterns.id, row.id))
@@ -91,14 +96,13 @@ export async function recomputeStaleGroupingPatterns(db: RecomputeCapableDb): Pr
         } else {
           await tx.update(patterns).set({ normalizerVersion: NORMALIZER_VERSION }).where(eq(patterns.id, row.id))
           console.warn(
-            `normalizer-recompute: pattern ${row.id} (${row.status}) has no samples — stamped without recompute`
+            `normalizer-recompute: pattern ${row.id} (${row.status}) has no usable samples — stamped without recompute`
           )
           summary.stampedOnly += 1
         }
         continue
       }
 
-      const newTemplate = pickMajorityTemplate(samples.map((s) => s.body))
       const newName = murmurHash32(newTemplate)
       const existing = survivorByName.get(newName)
 
@@ -117,10 +121,20 @@ export async function recomputeStaleGroupingPatterns(db: RecomputeCapableDb): Pr
         if (newName !== row.name) {
           setPatternSamplesByName(newName, samples.slice(0, SAMPLES_PER_PATTERN))
           deletePatternSamplesByName(row.name)
+          survivorByName.delete(row.name)
         }
 
-        survivorByName.set(newName, { ...toSurvivorState(row), id: row.id })
-        summary.renamed += 1
+        // Only seed from this row's own pre-sweep snapshot when nobody occupied
+        // newName yet. When existing.id === row.id, `existing` may already carry
+        // state folded in from an earlier collision this sweep (row can be a merge
+        // survivor and still show up here later, e.g. an already-current-format row
+        // that's stale only from the pre-fix stamping gap) — resetting it to row's
+        // original snapshot would silently drop that earlier merge's contribution.
+        if (!existing) {
+          survivorByName.set(newName, toSurvivorState(row))
+        }
+
+        summary.recomputed += 1
         continue
       }
 
@@ -131,10 +145,6 @@ export async function recomputeStaleGroupingPatterns(db: RecomputeCapableDb): Pr
       const mergedCreatedAt =
         row.createdAt.getTime() < existing.createdAt.getTime() ? row.createdAt : existing.createdAt
       const mergedOriginalUpdatedAt = rowIsNewer ? row.updatedAt : existing.updatedAt
-
-      const survivorSamples = getPatternSamplesByName(newName)
-      setPatternSamplesByName(newName, [...survivorSamples, ...samples].slice(0, SAMPLES_PER_PATTERN))
-      if (row.name !== newName) deletePatternSamplesByName(row.name)
 
       await tx
         .update(patterns)
@@ -162,6 +172,23 @@ export async function recomputeStaleGroupingPatterns(db: RecomputeCapableDb): Pr
       }
 
       await tx.delete(patterns).where(eq(patterns.id, row.id))
+
+      // MMKV last: if a crash lands between the SQL above and here, the loser row is
+      // already gone from the table, so it can't be reprocessed — but it also can't
+      // be stranded as a duplicate. Doing this before the SQL (as an earlier version
+      // did) let a crash leave the loser stamped-current-but-unmerged forever, since
+      // the no-samples branch above would find its key already moved and never retry.
+      const survivorSamples = getPatternSamplesByName(newName)
+      const seenSampleSmsIds = new Set<number>()
+      const unionedSamples = [...survivorSamples, ...samples]
+        .filter((sample) => {
+          if (seenSampleSmsIds.has(sample.smsId)) return false
+          seenSampleSmsIds.add(sample.smsId)
+          return true
+        })
+        .slice(0, SAMPLES_PER_PATTERN)
+      setPatternSamplesByName(newName, unionedSamples)
+      if (row.name !== newName) deletePatternSamplesByName(row.name)
 
       survivorByName.set(newName, {
         id: existing.id,
@@ -194,7 +221,7 @@ export const normalizerRecomputeMigration: Migration = {
   run: async () => {
     const summary = await recomputeStaleGroupingPatterns(getDrizzleDb())
     console.warn(
-      `normalizer-recompute: renamed=${summary.renamed} merged=${summary.merged} deleted=${summary.deleted} stampedOnly=${summary.stampedOnly}`
+      `normalizer-recompute: recomputed=${summary.recomputed} merged=${summary.merged} deleted=${summary.deleted} stampedOnly=${summary.stampedOnly}`
     )
   },
 }

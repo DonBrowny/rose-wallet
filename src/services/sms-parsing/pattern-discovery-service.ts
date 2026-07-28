@@ -1,5 +1,6 @@
 import { PATTERN_STATUS, TRANSACTION_TYPE } from '@/db/schema'
 import { upsertPatternsByGrouping } from '@/services/database/patterns-repository'
+import { SAMPLES_PER_PATTERN } from '@/types/constants'
 import type { ReviewTxn } from '@/types/sms-parsing'
 import type { DistinctPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
@@ -10,8 +11,6 @@ import { reconcileGroupSamples } from '@/utils/pattern/reconcile-group-samples'
 import { SMSDataExtractor } from './sms-data-extractor-service'
 import { SMSReaderService } from './sms-reader-service'
 import { SmsSyncService, type CandidateSms } from './sms-sync-service'
-
-const SAMPLES_PER_PATTERN = 3
 
 interface CandidateSample {
   candidate: CandidateSms
