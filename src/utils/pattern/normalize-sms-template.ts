@@ -2,14 +2,39 @@
  * Bump whenever the normalization rules below change: stored grouping patterns were
  * computed with the version recorded on their row and must be recomputed to keep
  * exact-match lookups working.
+ *
+ * v2: numbers keep whole plain digit runs ("10000" no longer splits), and only
+ * currency-adjacent numbers become <CUR><AMT> — dates and bare numbers now reach
+ * their own <DATE>/<NUM> tags. Recompute machinery is not built yet (see
+ * docs/NORMALIZER_VERSIONING.md); shipped during closed beta on clean-state basis.
  */
-export const NORMALIZER_VERSION = 1
+export const NORMALIZER_VERSION = 2
 
-const PROTECTED = ['UPI', 'IMPS', 'NEFT', 'RTGS', 'POS', 'ATM', 'NETBANKING', 'OTP', 'EMI', 'SI', 'AUTO-PAY', 'AUTOPAY']
+const PROTECTED = [
+  'UPI',
+  'VPA',
+  'IMPS',
+  'NEFT',
+  'RTGS',
+  'POS',
+  'ATM',
+  'NETBANKING',
+  'OTP',
+  'EMI',
+  'SI',
+  'AUTO-PAY',
+  'AUTOPAY',
+]
 
 const RX_CUR = /(?:₹|rs\.?|inr)/i
-const RX_NUM = /\d{1,3}(?:,\d{2,3})*(?:\.\d+)?|\d+(?:\.\d+)?/ // Indian + generic
-const RX_AMOUNT = new RegExp(`(?:${RX_CUR.source})\\s*${RX_NUM.source}|${RX_NUM.source}\\s*(?:${RX_CUR.source})`, 'gi')
+// Indian comma grouping (at least one group) or a whole plain run — never a 3-digit prefix.
+const RX_NUM = /\d{1,3}(?:,\d{2,3})+(?:\.\d+)?|\d+(?:\.\d+)?/
+// RX_NUM is an alternation, so interpolations must be wrapped — unwrapped, its second
+// branch becomes a top-level alternative that tags every bare number as an amount.
+const RX_AMOUNT = new RegExp(
+  `(?:${RX_CUR.source})\\s*(?:${RX_NUM.source})|(?:${RX_NUM.source})\\s*(?:${RX_CUR.source})`,
+  'gi'
+)
 
 const RX_BAL_CUE = /\b(avl\.?\s*bal|available\s*balance|ledger\s*balance|bal\.?)\b/gi
 const RX_VPA = /\b[a-z0-9._-]{2,}@[a-z]{2,}\b/gi
@@ -55,7 +80,7 @@ export function normalizeSMSTemplate(sms: string): string {
   // 5) Balance numbers right after the cue
   //    Replace "<BAL_CUE> ... <NUM>" → "<BAL_CUE> <CUR><BAL>" or "<BAL>"
   s = s.replace(
-    /<BAL_CUE>\s*(?:<CUR>)?\s*(?:<AMT>|(\d{1,3}(?:,\d{2,3})*(?:\.\d+)?|\d+(?:\.\d+)?))/gi,
+    /<BAL_CUE>\s*(?:<CUR>)?\s*(?:<AMT>|(\d{1,3}(?:,\d{2,3})+(?:\.\d+)?|\d+(?:\.\d+)?))/gi,
     (_m, numOnly) => `<BAL_CUE> ${/^\d/.test(String(numOnly)) ? '<BAL>' : '<CUR><BAL>'}`
   )
 
@@ -79,7 +104,7 @@ export function normalizeSMSTemplate(sms: string): string {
   s = s.replace(RX_DATE, '<DATE>')
 
   // 10) Collapse leftover pure numbers that aren’t already tagged → <NUM>
-  s = s.replace(/\b\d{1,3}(?:,\d{2,3})*(?:\.\d+)?\b/g, '<NUM>')
+  s = s.replace(/\b(?:\d{1,3}(?:,\d{2,3})+|\d+)(?:\.\d+)?\b/g, '<NUM>')
 
   // 11) Normalize spaces/punctuation
   s = s

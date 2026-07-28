@@ -16,8 +16,7 @@ describe('SMSDataExtractorService', () => {
     expect(res.intent).toBe('expense')
     expect(res.amount?.value).toBe(1250)
     expect(res.amount?.currency).toBe('INR')
-    // merchant neighbor by "at"
-    // expect(res.merchant).toBe('SWIGGY') // TODO: uncomment this
+    expect(res.merchant).toBe('SWIGGY')
     // bank heuristics absent here (no bank word), may be undefined
     expect(res.bank?.name === 'SBI' || res.bank === undefined).toBe(true)
     expect(res.datetimeText).toBeDefined()
@@ -30,7 +29,41 @@ describe('SMSDataExtractorService', () => {
     expect(res.isTransaction).toBe(true)
     expect(res.intent).toBe('income')
     expect(res.amount?.value).toBe(5000)
-    // expect(res.merchant).toBe('EMPLOYER') // TODO: uncomment this
+    expect(res.merchant).toBe('EMPLOYER')
+  })
+
+  it('captures multi-word merchants after case-insensitive cues', () => {
+    const sms = 'Sent Rs.60.00 From HDFC Bank A/C x1234 To PhonePe Merchant On 12/04 Ref 106122334455'
+    const res = SMSDataExtractor.extract(sms, 'expense')
+    expect(res.amount?.value).toBe(60)
+    expect(res.merchant).toBe('PhonePe Merchant')
+  })
+
+  it('does not return the bank itself as merchant', () => {
+    const sms = 'Rs 500 debited from HDFC Bank account. Avl bal Rs 2,000'
+    const res = SMSDataExtractor.extract(sms, 'expense')
+    expect(res.amount?.value).toBe(500)
+    expect(res.merchant).toBeUndefined()
+  })
+
+  it('captures a VPA named after a cue', () => {
+    const sms = 'Paid Rs.180.00 to swiggy8@ybl via UPI. Ref no 456712349876.'
+    const res = SMSDataExtractor.extract(sms, 'expense')
+    expect(res.amount?.value).toBe(180)
+    expect(res.merchant).toBe('swiggy8@ybl')
+  })
+
+  it('falls back to a VPA anywhere in the body when no cue captures a name', () => {
+    const sms = 'Rs.299 debited from A/c XX4321 for UPI to VPA netflix.upi@icici on 10-07-26. Avl Bal Rs.8,000'
+    const res = SMSDataExtractor.extract(sms, 'expense')
+    expect(res.amount?.value).toBe(299)
+    expect(res.merchant).toBe('netflix.upi@icici')
+  })
+
+  it('does not treat bank support e-mails as VPAs', () => {
+    const sms = 'Rs 120 debited. Avl bal Rs 900. Queries? Write to care@hdfcbank.com'
+    const res = SMSDataExtractor.extract(sms, 'expense')
+    expect(res.merchant).toBeUndefined()
   })
 
   it('prefers verb-proximal amount over balance amount', () => {
@@ -60,6 +93,7 @@ describe('SMSDataExtractorService', () => {
       ['Paid ₹750 to ABC', 750],
       ['debited by 60.0 at XYZ', 60],
       ['received 1,234 from John', 1234],
+      ['1,234 INR sent to Mark', 1234],
     ] as const
 
     for (const [text, expected] of cases) {

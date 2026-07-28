@@ -70,6 +70,32 @@ describe('PatternDiscoveryService', () => {
     expect(mockSetSamples).toHaveBeenCalledWith(murmurHash32(upiDraft.groupingTemplate), upiDraft.transactions)
   })
 
+  it('reconciles a bootstrap miss from the group consensus', async () => {
+    const bodies = [
+      'Rs.120.00 paid at STORE via UPI on 10-07-26. Avl Bal Rs.4,000.00',
+      'Rs.240.00 paid at BAKERY via UPI on 11-07-26. Avl Bal Rs.3,760.00',
+      // digit-leading name: the rule-based bootstrap cannot capture this merchant
+      'Rs.75.00 paid at 24SEVEN via UPI on 12-07-26. Avl Bal Rs.3,685.00',
+    ]
+    mockSync.mockResolvedValue({
+      extracted: [],
+      candidates: bodies.map(makeCandidate),
+      ignored: 0,
+      totalRead: bodies.length,
+    })
+
+    const result = await PatternDiscoveryService.discoverFromLastNDays(60)
+
+    expect(result.patternsFound).toBe(1)
+    const [draft] = mockUpsert.mock.calls[0][0]
+    expect(draft.transactions.map((t: { amount: number }) => t.amount)).toEqual([120, 240, 75])
+    expect(draft.transactions.map((t: { merchantRaw: string }) => t.merchantRaw)).toEqual([
+      'STORE',
+      'BAKERY',
+      '24SEVEN',
+    ])
+  })
+
   it('skips candidates where the parser finds no amount', async () => {
     mockSync.mockResolvedValue({
       extracted: [],

@@ -43,19 +43,84 @@ export class SMSDataExtractorService {
     'au small finance',
   ]
 
-  // core regex
+  // Numbers accept Indian comma grouping ("1,23,456") or plain digit runs ("10000") —
+  // requiring the comma branch to have at least one group keeps plain runs whole.
   private RX_AMOUNT =
-    /(?:(?:inr|rs\.?|₹)\s*)\d{1,3}(?:,\d{2,3})*(?:\.\d+)?|\b\d+(?:\.\d+)?\s*(?:inr|rs)\b|(?:debited|credited|paid|received|transferred|spent|withdrawn|deposited)\s+(?:by|of|for|to|from)?\s*(\d{1,3}(?:,\d{2,3})*(?:\.\d+)?)/gi
-  private RX_ANYNUM = /\d{1,3}(?:,\d{2,3})*(?:\.\d+)?/
+    /(?:(?:inr|rs\.?|₹)\s*)(?:\d{1,3}(?:,\d{2,3})+|\d+)(?:\.\d+)?|\b(?:\d{1,3}(?:,\d{2,3})+|\d+)(?:\.\d+)?\s*(?:inr|rs)\b|(?:debited|credited|paid|received|transferred|spent|withdrawn|deposited)\s+(?:by|of|for|to|from)?\s*((?:\d{1,3}(?:,\d{2,3})+|\d+)(?:\.\d+)?)/gi
+  private RX_ANYNUM = /(?:\d{1,3}(?:,\d{2,3})+|\d+)(?:\.\d+)?/
   private RX_BALANCE_CUE = /\b(avl\.?\s*bal|available\s*balance|ledger\s*balance|bal\.?)\b/i
   private RX_UTR_RRN = /\b[0-9A-Z]{10,22}\b/g
   private RX_DATETIME =
     /\b(?:\d{1,2}[:.]\d{2}\s?(?:am|pm)?)|(?:\d{1,2}[\/\-][A-Za-z]{3,9}[\/\-]?\d{0,4})|(?:\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})|(?:\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b\.?\s?\d{1,2}(?:,\s?\d{2,4})?)/gi
-  private RX_VPA = /\b[a-z0-9._-]{2,}@[a-z]{2,}\b/i // internal only
+  // Lowercase-only: banks print VPAs in lowercase, and this keeps uppercase Info-blob prefixes
+  // ("ICCL ZERODHA COIN-zerodhamf@hdfcbank") out of the handle; the alphanumeric first char
+  // stops a leading blob dash from joining. Trailing (?!\.[a-z]) rejects e-mail domains
+  // ("care@hdfcbank.com") while keeping VPAs at sentence end.
+  private RX_VPA = /\b[a-z0-9][a-z0-9._-]+@[a-z]{2,}\b(?!\.[a-z])/
   private RX_LAST4 = /(?:\*{2,}|x{2,})\s?(\d{3,6})\b|\b(\d{4})\b/gi // internal only
 
   private VERBS_DEBIT = /\b(debited|paid|spent|withdrawn|purchased?|sent|transferred|charged)\b/i
-  private VERBS_CREDIT = /\b(credited|received|reversed|refund(?:ed)?)\b/i
+  private VERBS_CREDIT = /\b(credited|received|deposited|reversed|refund(?:ed)?)\b/i
+
+  private RX_MERCH_CUE = /\b(?:at|to|from)\s+/gi
+  private RX_MASKED_ACCOUNT = /^x+\d/i
+  // Tokens that end a merchant name: what follows a name in bank SMS, never part of one.
+  private MERCHANT_STOP = new Set([
+    'on',
+    'via',
+    'ref',
+    'refno',
+    'txn',
+    'upi',
+    'vpa',
+    'avl',
+    'bal',
+    'balance',
+    'available',
+    'ledger',
+    'ac',
+    'acct',
+    'account',
+    'card',
+    'info',
+    'not',
+    'is',
+    'was',
+    'has',
+    'your',
+    'please',
+    'sms',
+    'call',
+    'dial',
+    'block',
+    'and',
+    'or',
+    'the',
+    'of',
+    'by',
+    'from',
+    'to',
+    'at',
+    'for',
+    'rs',
+    'inr',
+    'dated',
+    'dt',
+    'id',
+    'no',
+    'mobile',
+    'number',
+    'customer',
+    'helpline',
+    'linked',
+    'using',
+    'dispute',
+    'clearing',
+  ])
+  // A cue preceded by call-to-action context ("Call 1800... to report") is boilerplate, not a payee.
+  private RX_CTA_CONTEXT = /call|sms|dial|click|visit|quer|dispute/i
+  // Channel words that are valid inside a name ("HDFC ATM MG ROAD") but meaningless alone.
+  private MERCHANT_NOISE = new Set(['atm', 'upi', 'imps', 'neft', 'rtgs', 'pos', 'netbanking', 'card'])
 
   private toNumber = (s: string) => {
     const v = Number(s.replace(/,/g, ''))
@@ -64,7 +129,64 @@ export class SMSDataExtractorService {
   private pickCurrency = (s: string) => (/₹|inr|rs\b/i.test(s) ? 'INR' : 'INR')
   private windowHas = (hay: string, idx: number, rx: RegExp) =>
     rx.test(hay.slice(Math.max(0, idx - 30), Math.min(hay.length, idx + 30))) ? 1 : 0
-  private neighborName = (text: string) => text.match(/\b(?:at|to|from)\s+([A-Z][A-Za-z0-9 &._-]{2,})/)?.[1]?.trim()
+
+  /**
+   * Read a merchant-name run starting at `start`: word tokens up to a stop token,
+   * a slash/masked-account token, a digit-leading token (dates, refs), or trailing
+   * punctuation. Leading punctuation on the first token is skipped ("+MALL", "..STORE").
+   * Returns the verbatim slice so callers can locate it in the body.
+   */
+  private captureNameAt(raw: string, start: number): string | undefined {
+    const rx = /\S+/g
+    rx.lastIndex = start
+    let nameStart = -1
+    let end = -1
+    for (let count = 0; count < 5; count += 1) {
+      const match = rx.exec(raw)
+      if (!match) break
+      const token = match[0]
+      let word = token.replace(/[.,;:!?)'"]+$/, '')
+      let offset = 0
+      if (count === 0) {
+        offset = (word.match(/^[^A-Za-z0-9]+/)?.[0] ?? '').length
+        word = word.slice(offset)
+      }
+      const tildeAt = word.indexOf('~') // tilde-delimited formats fuse the next field onto the name
+      if (tildeAt !== -1) word = word.slice(0, tildeAt)
+      if (!word || !/^[A-Za-z]/.test(word) || word.includes('/')) break
+      if (this.RX_MASKED_ACCOUNT.test(word) || this.MERCHANT_STOP.has(word.toLowerCase())) break
+      if (nameStart === -1) nameStart = match.index + offset
+      end = match.index + offset + word.length
+      if (offset + word.length !== token.length) break // token was cut short: the name ends here
+    }
+    if (end === -1) return undefined
+    const name = raw.slice(nameStart, end).trim()
+    return name.length >= 2 ? name : undefined
+  }
+
+  /**
+   * Merchant = the name after the at/to/from cue closest to the transaction amount,
+   * skipping bank self-references and call-to-action tails; falls back to a UPI VPA
+   * anywhere in the body.
+   */
+  private findMerchant(raw: string, amountIdx: number): string | undefined {
+    const candidates: { name: string; index: number }[] = []
+    for (const cue of raw.matchAll(this.RX_MERCH_CUE)) {
+      const cueStart = cue.index ?? 0
+      if (this.RX_CTA_CONTEXT.test(raw.slice(Math.max(0, cueStart - 25), cueStart))) continue
+      const start = cueStart + cue[0].length
+      const name = this.captureNameAt(raw, start)
+      if (!name) continue
+      const lower = name.toLowerCase()
+      if (lower.includes('bank') || this.BANK_WORDS.includes(lower) || this.MERCHANT_NOISE.has(lower)) continue
+      candidates.push({ name, index: start })
+    }
+    if (candidates.length > 0) {
+      candidates.sort((a, b) => Math.abs(a.index - amountIdx) - Math.abs(b.index - amountIdx))
+      return candidates[0].name
+    }
+    return raw.match(this.RX_VPA)?.[0] ?? undefined
+  }
 
   extract(rawText: string, intent: Intent): TxnFields {
     const raw = String(rawText ?? '')
@@ -98,7 +220,6 @@ export class SMSDataExtractorService {
     const refs = Array.from(raw.matchAll(this.RX_UTR_RRN), (m) => m[0]).filter((x) => x.length >= 12)
     const bank = this.BANK_WORDS.find((b) => lower.includes(b))
     const datetime = raw.match(this.RX_DATETIME)?.[0] || undefined
-    const merchant = this.neighborName(raw)
 
     // pick transaction amount (verb proximity beats balance cues)
     let bestAmt = amounts[0]
@@ -113,6 +234,8 @@ export class SMSDataExtractorService {
         bestAmt = a
       }
     }
+
+    const merchant = this.findMerchant(raw, bestAmt?.start ?? 0)
 
     const amountField = bestAmt && {
       value: bestAmt.value,
