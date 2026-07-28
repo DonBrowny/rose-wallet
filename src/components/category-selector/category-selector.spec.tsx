@@ -52,7 +52,7 @@ describe('CategorySelector', () => {
   })
 
   it('does not allow selecting more than MAX_CATEGORIES', () => {
-    const selectedCategories = ['Food', 'Transportation', 'Groceries', 'Utilities']
+    const selectedCategories = availableCategories.slice(0, MAX_CATEGORIES)
     const { getByText } = render(
       <CategorySelector
         selectedCategories={selectedCategories}
@@ -103,7 +103,7 @@ describe('CategorySelector', () => {
   })
 
   it('does not auto-select custom category when at MAX_CATEGORIES', () => {
-    const selectedCategories = ['Food', 'Transportation', 'Groceries', 'Utilities']
+    const selectedCategories = availableCategories.slice(0, MAX_CATEGORIES)
     const { getByText, getByPlaceholderText } = render(
       <CategorySelector
         selectedCategories={selectedCategories}

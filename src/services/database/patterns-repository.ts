@@ -9,6 +9,7 @@ import {
 import { FilterOptions } from '@/types/filters'
 import type { DistinctPattern } from '@/types/sms/transaction'
 import { murmurHash32 } from '@/utils/hash/murmur32'
+import { NORMALIZER_VERSION } from '@/utils/pattern/normalize-sms-template'
 import { and, eq, gte, sql } from 'drizzle-orm'
 import { getDrizzleDb } from './db'
 
@@ -18,6 +19,7 @@ export async function upsertPatternsByGrouping(distinct: DistinctPattern[]): Pro
     name: murmurHash32(p.groupingTemplate),
     groupingPattern: p.groupingTemplate,
     extractionPattern: p.template,
+    normalizerVersion: NORMALIZER_VERSION,
     type: TRANSACTION_TYPE.Debit,
     status: p.status,
     isActive: true,
@@ -33,6 +35,7 @@ export async function upsertPatternsByGrouping(distinct: DistinctPattern[]): Pro
       target: patterns.name,
       set: {
         extractionPattern: sql`excluded.extraction_pattern`,
+        normalizerVersion: sql`excluded.normalizer_version`,
         type: sql`excluded.type`,
         status: sql`excluded.status`,
         updatedAt: new Date(),

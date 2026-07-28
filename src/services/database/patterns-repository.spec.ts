@@ -1,12 +1,19 @@
 import type { Pattern } from '@/db/schema'
-import { getPatterns } from './patterns-repository'
+import type { DistinctPattern } from '@/types/sms/transaction'
+import { NORMALIZER_VERSION } from '@/utils/pattern/normalize-sms-template'
+import { getPatterns, upsertPatternsByGrouping } from './patterns-repository'
 
 const mockFrom = jest.fn()
+const mockValues = jest.fn()
+const mockOnConflictDoUpdate = jest.fn()
 
 jest.mock('./db', () => ({
   getDrizzleDb: jest.fn(() => ({
     select: () => ({
       from: mockFrom,
+    }),
+    insert: () => ({
+      values: mockValues,
     }),
   })),
 }))
@@ -93,5 +100,40 @@ describe('getPatterns', () => {
     const result = await getPatterns()
 
     expect(result).toEqual({ active: [], rejected: [] })
+  })
+})
+
+describe('upsertPatternsByGrouping', () => {
+  function makeDistinctPattern(overrides: Partial<DistinctPattern> = {}): DistinctPattern {
+    return {
+      id: '1',
+      template: 'extraction template',
+      groupingTemplate: 'grouping template',
+      occurrences: 1,
+      transactions: [],
+      patternType: 'debit',
+      status: 'needs-review',
+      ...overrides,
+    }
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockValues.mockReturnValue({ onConflictDoUpdate: mockOnConflictDoUpdate })
+    mockOnConflictDoUpdate.mockReturnValue(Promise.resolve())
+  })
+
+  it('stamps the current NORMALIZER_VERSION on insert', async () => {
+    await upsertPatternsByGrouping([makeDistinctPattern()])
+
+    const insertedRows = mockValues.mock.calls[0][0]
+    expect(insertedRows[0].normalizerVersion).toBe(NORMALIZER_VERSION)
+  })
+
+  it('stamps the current NORMALIZER_VERSION in the conflict-update set', async () => {
+    await upsertPatternsByGrouping([makeDistinctPattern()])
+
+    const conflictConfig = mockOnConflictDoUpdate.mock.calls[0][0]
+    expect(conflictConfig.set.normalizerVersion).toBeDefined()
   })
 })
