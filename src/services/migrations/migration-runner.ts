@@ -1,7 +1,7 @@
 export interface Migration {
   id: string
   name: string
-  shouldRun: () => boolean
+  shouldRun: () => boolean | Promise<boolean>
   run: () => Promise<void>
 }
 
@@ -11,7 +11,12 @@ export interface MigrationRunnerResult {
 }
 
 export async function runMigrations(migrations: Migration[]): Promise<MigrationRunnerResult> {
-  const pending = migrations.filter((m) => m.shouldRun())
+  const pending: Migration[] = []
+  for (const migration of migrations) {
+    if (await migration.shouldRun()) {
+      pending.push(migration)
+    }
+  }
 
   if (pending.length === 0) {
     return { success: true }

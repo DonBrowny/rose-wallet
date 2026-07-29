@@ -29,3 +29,16 @@ export function setPatternSamplesByName(name: string, samples: ReviewTxn[]) {
     storage.set(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V2, JSON.stringify(map))
   }
 }
+
+export function deletePatternSamplesByName(name: string): void {
+  const json = storage.getString(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V2)
+  if (!json) return
+  try {
+    const map = JSON.parse(json) as Record<string, ReviewTxn[]>
+    if (!(name in map)) return
+    delete map[name]
+    storage.set(MMKV_KEYS.PATTERNS.DISCOVERY_SAMPLES_V2, JSON.stringify(map))
+  } catch {
+    // Corrupt map — nothing to delete safely.
+  }
+}
