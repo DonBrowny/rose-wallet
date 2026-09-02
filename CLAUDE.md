@@ -64,10 +64,24 @@ pnpm run app-release
 
 After creating a release:
 
-1. Publish GitHub Release (triggers QA build to Play Beta automatically)
-2. Monitor build at EAS dashboard or via `eas build:list`
-3. Test on device from Play Beta
-4. Promote to Production via GitHub Actions workflow
+1. Publish the GitHub Release — this fires `release-qa-android.yml`, which builds the
+   `preview` profile and auto-submits to the Play **Internal testing** track
+2. Monitor the build on the EAS dashboard or via `eas build:list`
+3. Install from Internal testing and verify on device. It is Play-signed, so it upgrades
+   an existing install in place — this is the only way to soak a DB migration against
+   real pre-upgrade data
+4. Promote that same artifact to Production in Play Console
+   (Testing → Internal testing → Releases → Promote release → Production)
+
+Production is always a **promoted preview artifact** — the bits that ship are the bits
+that were tested. There is a single `applicationId` (`com.rosewallet.app`) across both
+rungs, which is what makes promotion possible; the cost is that internal-testing and
+production builds cannot be installed side by side. Use a second Android user profile
+if you need a pristine pre-upgrade install to test against.
+
+`release-prod-android.yml` can submit from CI, but `eas submit --latest` re-uploads the
+AAB and Play rejects a versionCode it has already seen, so the Play Console promotion is
+the normal path.
 
 ## Architecture
 
@@ -232,12 +246,16 @@ Use absolute imports: `import { getDrizzleDb } from '@/services/database/db'`
 
 Profiles in `eas.json`:
 
-- `development`: Dev client (APK, local testing)
-- `preview`: Internal preview (APK)
-- `beta`: Play Store Beta track (AAB, auto-submit)
-- `production`: Play Store Production (AAB, auto-increment versionCode)
+- `development`: Dev client (APK, requires Metro). For local iteration prefer `pnpm android`
+- `preview`: Play **Internal testing** track (AAB, auto-increment, auto-submitted when a
+  GitHub Release is published)
+- `production`: Play **Production** track. Submit-only in practice — artifacts are promoted
+  from `preview` rather than rebuilt
 
 Version management:
 
 - `versionName` synced with `package.json` version via `app.config.ts`
-- Android `versionCode` auto-increments in production builds
+- Android `versionCode` auto-increments on `preview` builds (`appVersionSource: remote`);
+  a promoted production release keeps the versionCode it was built with
+- Production submits go out at a 20% staged rollout (`releaseStatus: inProgress`), so a
+  bad release can be halted in Play Console before it reaches everyone

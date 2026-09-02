@@ -12,12 +12,6 @@
       }
     },
     "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
-    },
-    "beta": {
       "autoIncrement": true,
       "distribution": "store",
       "android": {
@@ -32,15 +26,17 @@
     }
   },
   "submit": {
-    "beta": {
+    "preview": {
       "android": {
-        "track": "alpha",
+        "track": "internal",
         "serviceAccountKeyPath": ".github/keys/play.json"
       }
     },
     "production": {
       "android": {
         "track": "production",
+        "releaseStatus": "inProgress",
+        "rollout": 0.2,
         "serviceAccountKeyPath": ".github/keys/play.json"
       }
     }

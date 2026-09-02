@@ -1,4 +1,4 @@
-name: QA Android Release (EAS)
+name: Internal Testing Android Release (EAS)
 
 on:
   release:
@@ -27,10 +27,10 @@ jobs:
           mkdir -p .github/keys
           echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > .github/keys/play.json
 
-      - name: EAS build & auto-submit (Android QA - Play Console "Alpha" track)
+      - name: EAS build & auto-submit (Android - Play Console Internal testing track)
         uses: ./.github/actions/eas-build
         with:
           platform: android
-          profile: beta
+          profile: preview
           auto-submit: 'true'
-          submit-profile: beta
+          submit-profile: preview
