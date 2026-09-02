@@ -8,7 +8,7 @@ on:
         required: false
         default: ''
       mode:
-        description: 'promote (submit latest QA artifact) or build (new prod build)'
+        description: 'promote = submit the tested preview artifact (normal path); build = fresh prod AAB with a new versionCode (escape hatch only)'
         required: true
         default: 'promote'
         type: choice
@@ -42,7 +42,7 @@ jobs:
           mkdir -p .github/keys
           echo "$GOOGLE_SERVICE_ACCOUNT_KEY" > .github/keys/play.json
 
-      - name: Promote latest QA artifact to Production (no rebuild)
+      - name: Promote latest preview artifact to Production (no rebuild)
         if: inputs.mode == 'promote'
         uses: ./.github/actions/eas-submit
         env:
